@@ -19,6 +19,10 @@ _cgo_export.*
 
 _testmain.go
 
+gin-bin
+
 *.exe
 *.test
 *.prof
+
+test.db

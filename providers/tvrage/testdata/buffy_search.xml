@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Results>
+<show>
+<showid>2930</showid>
+<name>Buffy the Vampire Slayer</name>
+<link>http://www.tvrage.com/Buffy_The_Vampire_Slayer</link>
+<country>US</country>
+<started>1997</started>
+<ended>2003</ended>
+<seasons>7</seasons>
+<status>Ended</status>
+<classification>Scripted</classification>
+<genres><genre>Action</genre><genre>Adventure</genre><genre>Comedy</genre><genre>Drama</genre><genre>Horror/Supernatural</genre><genre>Mystery</genre><genre>Sci-Fi</genre></genres>
+</show>
+<show>
+<showid>31192</showid>
+<name>Buffy the Vampire Slayer - Season Eight: Motion comics</name>
+<link>http://www.tvrage.com/buffy-the-vampire-slayer-season-eight-mo</link>
+<country>US</country>
+<started>2010</started>
+<ended>2010</ended>
+<seasons>1</seasons>
+<status>Canceled/Ended</status>
+<classification>Animation</classification>
+<genres><genre>Animation General</genre><genre>Action</genre><genre>Adventure</genre><genre>Comedy</genre><genre>Drama</genre><genre>Horror/Supernatural</genre><genre>Sci-Fi</genre></genres>
+</show>
+<show>
+<showid>2931</showid>
+<name>Buffy the Animated Series</name>
+<link>http://www.tvrage.com/Buffy_the_Animated_Series</link>
+<country>US</country>
+<started>2002</started>
+<ended>0</ended>
+<seasons>1</seasons>
+<status>Pilot Rejected</status>
+<classification>Animation</classification>
+<genres><genre>Animation General</genre><genre>Action</genre><genre>Adventure</genre><genre>Horror/Supernatural</genre></genres>
+</show>
+</Results>
