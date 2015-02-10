@@ -207,3 +207,80 @@ func TestShowSeasons(t *testing.T) {
 	spew.Dump(response.Body)
 	Expect(response.Body.String()).Should(MatchJSON(ShowSeasonsGolden))
 }
+
+const EpisodeGolden = `{
+	"data":{
+		"airdate":"2006-01-10",
+		"description":"",
+		"file_size":0,
+		"file_size_human":"",
+		"location":"",
+		"name":"show1episode1",
+		"quality":"",
+		"release_name":"",
+		"status":""
+	},
+	"message":"",
+	"result":"success"
+}`
+
+func TestEpisode(t *testing.T) {
+	dbh, eng := setupTest(t)
+	db.LoadFixtures(t, dbh)
+	RegisterTestingT(t)
+
+	//Success
+	response := httptest.NewRecorder()
+	req, err := http.NewRequest("GET", "/api/1/?cmd=episode&tvdbid=1&season=1&episode=1&full_path=1", nil)
+	Expect(err).ToNot(HaveOccurred(), "Error creating request: %s", err)
+
+	eng.ServeHTTP(response, req)
+	if response.Code != 200 {
+		t.Fatalf("Expected 200 response code, got %d", response.Code)
+	}
+	Expect(response.Body.String()).Should(MatchJSON(EpisodeGolden))
+
+	//Invalid - missing tvdbid
+	response = httptest.NewRecorder()
+	req, err = http.NewRequest("GET", "/api/1/?cmd=episode&season=1&episode=1&full_path=1", nil)
+	Expect(err).ToNot(HaveOccurred(), "Error creating request: %s", err)
+
+	eng.ServeHTTP(response, req)
+	if response.Code != 400 {
+		t.Fatalf("Expected 400 response code, got %d", response.Code)
+	}
+	Expect(response.Body.String()).Should(MatchJSON(`{
+		"message": "Bad Request",
+		"result": "failure"
+	}`))
+
+	//Invalid - non integer tvdbid
+	response = httptest.NewRecorder()
+	req, err = http.NewRequest("GET", "/api/1/?cmd=episode&tvdbid=a&season=1&episode=1&full_path=1", nil)
+	Expect(err).ToNot(HaveOccurred(), "Error creating request: %s", err)
+
+	eng.ServeHTTP(response, req)
+	if response.Code != 400 {
+		t.Fatalf("Expected 400 response code, got %d", response.Code)
+	}
+	Expect(response.Body.String()).Should(MatchJSON(`{
+		"message": "Bad Request",
+		"result": "failure"
+	}`))
+
+	//nonexisting episode
+	response = httptest.NewRecorder()
+	req, err = http.NewRequest("GET", "/api/1/?cmd=episode&tvdbid=a&season=1&episode=100", nil)
+	Expect(err).ToNot(HaveOccurred(), "Error creating request: %s", err)
+
+	eng.ServeHTTP(response, req)
+	spew.Dump(response.Body)
+	if response.Code != 400 {
+		t.Fatalf("Expected 400 response code, got %d", response.Code)
+	}
+	Expect(response.Body.String()).Should(MatchJSON(`{
+		"message": "Bad Request",
+		"result": "failure"
+	}`))
+
+}

@@ -169,7 +169,6 @@ func ShowSeasons(c *gin.Context) {
 	h := c.MustGet("dbh").(*db.Handle)
 	var formVals ShowSeasonsForm
 	if !c.BindWith(&formVals, binding.Form) {
-		spew.Dump(&formVals)
 		return
 	}
 
@@ -183,19 +182,73 @@ func ShowSeasons(c *gin.Context) {
 	}
 	result := make(map[string]ShowSeasonResponse, len(eps))
 	for _, ep := range eps {
-		r := ShowSeasonResponse{
+		result[strconv.FormatInt(ep.Episode, 10)] = ShowSeasonResponse{
+			AirDate: ep.AirDateString(),
 			Name:    ep.Name,
 			Quality: ep.Quality,
 			Status:  ep.Status,
 		}
-		// DRY this up
-		if !ep.AirDate.IsZero() {
-			r.AirDate = ep.AirDate.Format("2006-01-01T00:00:00Z")
-		}
-		result[strconv.FormatInt(ep.Episode, 10)] = r
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"data":    result,
+		"message": "",
+		"result":  "success",
+	})
+}
+
+type EpisodeResponse struct {
+	AirDate       string `json:"airdate"`
+	Description   string `json:"description"`
+	FileSize      int64  `json:"file_size"`
+	FileSizeHuman string `json:"file_size_human"`
+	Location      string `json:"location"`
+	Name          string `json:"name"`
+	Quality       string `json:"quality"`
+	ReleaseName   string `json:"release_name"`
+	Status        string `json:"status"`
+}
+
+// &tvdbid=101501&season=4&episode=8&full_path=1
+type EpisodeRequestForm struct {
+	TVDBID   int64 `form:"tvdbid" binding:"required"`
+	Season   int64 `form:"season"`
+	Episode  int64 `form:"episode"`
+	FullPath int   `form:"full_path"`
+}
+
+func Episode(c *gin.Context) {
+	h := c.MustGet("dbh").(*db.Handle)
+	var formVals EpisodeRequestForm
+	if !c.BindWith(&formVals, binding.Form) {
+		c.JSON(http.StatusBadRequest, GenericResult{
+			Message: "Bad Request",
+			Result:  "failure",
+		})
+		return
+	}
+
+	ep, err := h.GetShowEpisodeBySeasonAndNumber(
+		formVals.TVDBID, formVals.Season, formVals.Episode,
+	)
+	if err != nil {
+		c.JSON(http.StatusNotFound, GenericResult{
+			Message: err.Error(),
+			Result:  "failure",
+		})
+		return
+	}
+	resp := EpisodeResponse{
+		AirDate:     ep.AirDateString(),
+		Description: ep.Description,
+		FileSize:    ep.FileSize,
+		Location:    ep.Location,
+		Name:        ep.Name,
+		Quality:     ep.Quality,
+		ReleaseName: ep.ReleaseName,
+		Status:      ep.Status,
+	}
+	c.JSON(200, gin.H{
+		"data":    resp,
 		"message": "",
 		"result":  "success",
 	})
@@ -314,6 +367,10 @@ func createServer(dbh *db.Handle) *gin.Engine {
 
 		case "show.addnew":
 			AddShow(c)
+			return
+
+		case "episode":
+			Episode(c)
 			return
 
 		case "future":

@@ -191,6 +191,15 @@ func (e *Episode) BeforeSave() error {
 	return nil
 }
 
+// AirDateString returns the episode's airdate as a YYYY-MM-DD date if set.
+// Otherwise it returns the empty string.
+func (e *Episode) AirDateString() string {
+	if !e.AirDate.IsZero() {
+		return e.AirDate.Format("2006-01-20")
+	}
+	return ""
+}
+
 // AfterFind fixes the SQLite driver sets everything to local
 func (e *Episode) AfterFind() error {
 	e.AirDate = e.AirDate.UTC()
@@ -286,6 +295,18 @@ func (h *Handle) GetShowEpisodes(s *Show) ([]Episode, error) {
 	err := h.db.Model(s).Related(&episodes).Error
 	spew.Dump(episodes)
 	return episodes, err
+}
+
+func (h *Handle) GetShowEpisodeBySeasonAndNumber(showid, season, episode int64) (*Episode, error) {
+	var ep Episode
+
+	show, err := h.GetShowById(showid)
+	if err != nil {
+		return &ep, err
+	}
+	err = h.db.Where("show_id = ? AND season = ? AND episode = ?", show.ID, season, episode).Find(&ep).Error
+	return &ep, err
+
 }
 
 func (h *Handle) GetShowSeason(showid, season int64) ([]Episode, error) {
