@@ -1,0 +1,13 @@
+{
+  "Db": {
+    "Path": "tv2go.db",
+    "Verbose": true,
+    "UpdateDb": true,
+    "WatchInterval": 60,
+    "Type": "file"
+  },
+  "WebServer": {
+    "ListenAddress": "localhost:9000",
+    "EnableAPI": false
+  }
+}

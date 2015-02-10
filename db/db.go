@@ -1,10 +1,12 @@
 package db
 
 import (
+	"errors"
 	"fmt"
 	"sync"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/golang/glog"
 	"github.com/jinzhu/gorm"
 
@@ -12,15 +14,11 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-// Type system:
-// AnimeShow
-// AnimeEpisode
-// TvShow
-// TvEpisode
-// Movie
-// MusicAlbum
-// MusicTrack
-// FanArt
+func init() {
+	gorm.NowFunc = func() time.Time {
+		return time.Now().UTC()
+	}
+}
 
 /* From SickRage
 *CREATE TABLE tv_shows
@@ -63,30 +61,63 @@ type Indexer struct {
 
 // Show is a TV Show
 type Show struct {
-	ID              int64  `gorm:"column:id; primary_key:yes"`
-	Name            string `sql:"not null"`
-	Indexer         Indexer
-	Location        string
-	Network         string
-	Genre           string
-	Classification  string
-	Runtime         int64
-	Quality         int64 // convert to foreign key
-	Airs            string
-	Status          string
-	FlattenFolders  bool
-	Paused          bool
-	StartYear       int
-	AirByDate       bool
-	Lang            string
-	Subtitles       bool
-	ImdbID          string
-	Sports          bool
-	Anime           bool
-	Scene           bool
-	DefaultEpStatus int64 // convert to enum
-	CreatedAt       time.Time
-	UpdatedAt       time.Time
+	ID                int64  `gorm:"column:id; primary_key:yes"`
+	Name              string `sql:"not null"`
+	Indexer           Indexer
+	IndexerID         int64 `gorm:"column:indexer_key"` // id to use when looking up with the indexer
+	Episodes          []Episode
+	Location          string
+	Network           string
+	Genre             string
+	Classification    string
+	Runtime           int64
+	Quality           int64 // convert to foreign key
+	Airs              string
+	Status            string
+	FlattenFolders    bool
+	Paused            bool
+	StartYear         int
+	AirByDate         bool
+	Language          string
+	Subtitles         bool
+	ImdbID            string
+	Sports            bool
+	Anime             bool
+	Scene             bool
+	DefaultEpStatus   int64 // convert to enum
+	LastIndexerUpdate time.Time
+	CreatedAt         time.Time
+	UpdatedAt         time.Time
+}
+
+func (s *Show) BeforeSave() error {
+	if s.Name == "" {
+		return fmt.Errorf("Name can not be empty")
+	}
+	if s.IndexerID == 0 {
+		return fmt.Errorf("IndexerID can not be unset")
+	}
+	return nil
+}
+
+// SQLite driver sets everything to local
+func (s *Show) AfterFind() error {
+	s.LastIndexerUpdate = s.LastIndexerUpdate.UTC()
+	s.CreatedAt = s.CreatedAt.UTC()
+	s.UpdatedAt = s.UpdatedAt.UTC()
+	return nil
+}
+
+func (h *Handle) ShowSeasons(s *Show) []int64 {
+	var seas []int64
+	rows, _ := h.db.Table("episode").Select("season").Group("show_id,season").Where("show_id = ?", s.ID).Rows()
+	defer rows.Close()
+	for rows.Next() {
+		var i int64
+		rows.Scan(&i)
+		seas = append(seas, i)
+	}
+	return seas
 }
 
 /* Sickrage
@@ -118,19 +149,20 @@ CREATE TABLE tv_episodes
      version               NUMERIC,
      release_group         TEXT
   );
-
 */
 type Episode struct {
 	ID                  int64 `gorm:"column:id; primary_key:yes"`
-	ShowID              Show
+	Show                Show
+	ShowId              int64
 	Name                string
 	Season              int64
 	Episode             int64
 	Description         string
-	Airdate             int64
-	HasNFO              bool
-	HasTBN              bool
-	Status              int64
+	AirDate             time.Time
+	HasNFO              bool `gorm:"column:has_nfo"`
+	HasTBN              bool `gorm:"column:has_tbn"`
+	Status              string
+	Quality             string
 	Location            string
 	FileSize            int64
 	ReleaseName         string
@@ -142,10 +174,33 @@ type Episode struct {
 	ReleaseGroup        string
 }
 
+// BeforeSave performs validation on the record before saving
+func (e *Episode) BeforeSave() error {
+	if e.Name == "" {
+		return errors.New("Name can not be empty")
+	}
+	if e.Season == 0 {
+		return errors.New("Season must be set")
+	}
+	if e.Episode == 0 {
+		return errors.New("Episode must be set")
+	}
+	if e.ShowId == 0 {
+		return errors.New("ShowId can not be unset")
+	}
+	return nil
+}
+
+// AfterFind fixes the SQLite driver sets everything to local
+func (e *Episode) AfterFind() error {
+	e.AirDate = e.AirDate.UTC()
+	return nil
+}
+
 // Handle controls access to the database and makes sure only one
 // operation is in process at a time.
 type Handle struct {
-	DB           gorm.DB
+	db           gorm.DB
 	writeUpdates bool
 	syncMutex    sync.Mutex
 }
@@ -153,6 +208,9 @@ type Handle struct {
 func setupDB(db gorm.DB) error {
 	tx := db.Begin()
 	err := tx.AutoMigrate(&Show{}, &Episode{}).Error
+	tx.Model(&Episode{}).AddIndex(
+		"idx_show_season_ep", "show_id", "season", "episode",
+	)
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -189,7 +247,7 @@ func createAndOpenDb(dbPath string, verbose bool, memory bool) *Handle {
 	if err != nil {
 		panic(err.Error())
 	}
-	return &Handle{DB: db}
+	return &Handle{db: db}
 }
 
 // NewDBHandle creates a new DBHandle
@@ -210,5 +268,110 @@ func NewMemoryDBHandle(verbose bool, writeUpdates bool) *Handle {
 }
 
 func (h *Handle) AddShow(s *Show) error {
+	return h.db.Create(s).Error
+}
+
+func (h *Handle) DB() *gorm.DB {
+	return &h.db
+}
+
+func (h *Handle) GetAllShows() ([]Show, error) {
+	shows := []Show{}
+	err := h.db.Find(&shows).Error
+	return shows, err
+}
+
+func (h *Handle) GetShowEpisodes(s *Show) ([]Episode, error) {
+	var episodes []Episode
+	err := h.db.Model(s).Related(&episodes).Error
+	spew.Dump(episodes)
+	return episodes, err
+}
+
+func (h *Handle) GetShowSeason(showid, season int64) ([]Episode, error) {
+	var episodes []Episode
+	show, err := h.GetShowById(showid)
+	if err != nil {
+		return episodes, err
+	}
+	err = h.db.Where("show_id = ? AND season = ?", show.ID, season).Find(&episodes).Error
+	return episodes, err
+}
+
+func (h *Handle) GetShowById(showID int64) (*Show, error) {
+	var show Show
+
+	err := h.db.Where("indexer_key = ?", showID).Find(&show).Error
+	if err != nil {
+		return nil, err
+	}
+	err = h.db.Model(&show).Related(&show.Episodes).Error
+	if err != nil {
+		return nil, err
+	}
+	return &show, err
+}
+
+func (h *Handle) SaveShow(s *Show) error {
+	if h.writeUpdates {
+		return h.db.Save(s).Error
+	}
 	return nil
+}
+
+// Testing functionality
+//
+// TestReporter is a shim interface so we don't need to include the testing
+// package in the compiled binary
+type TestReporter interface {
+	Errorf(format string, args ...interface{})
+	Fatalf(format string, args ...interface{})
+}
+
+// LoadFixtures adds a base set of Fixtures to the given database.
+func LoadFixtures(t TestReporter, d *Handle) []Show {
+	shows := []Show{
+		{
+			Name:      "show1",
+			IndexerID: 1,
+			Episodes: []Episode{
+				{
+					Name:    "show1episode1",
+					Season:  1,
+					Episode: 1,
+					AirDate: time.Date(2006, time.January, 1, 0, 0, 0, 0, time.UTC),
+				},
+				{
+					Name:    "show1episode2",
+					Season:  1,
+					Episode: 2,
+				},
+			},
+		},
+		{
+			Name:      "show2",
+			IndexerID: 2,
+			Episodes: []Episode{
+				{
+					Name:    "show2episode1",
+					Season:  1,
+					Episode: 1,
+					AirDate: time.Date(2001, time.January, 1, 0, 0, 0, 0, time.UTC),
+				},
+				{
+					Name:    "show2episode2",
+					Season:  2,
+					Episode: 1,
+					AirDate: time.Date(2002, time.February, 1, 0, 0, 0, 0, time.UTC),
+				},
+			},
+		},
+	}
+	for _, s := range shows {
+		err := d.SaveShow(&s)
+		if err != nil {
+			t.Fatalf("Error saving show fixture to db: %s", err)
+		}
+	}
+	return shows
 }

@@ -2,7 +2,7 @@ package web
 
 import "github.com/gin-gonic/gin"
 
-const SHOWSEASONSRESP = gin.H{
+var SHOWSEASONSRESP = gin.H{
 	"data": gin.H{
 		"1": gin.H{
 			"airdate":      "2014-04-21",
@@ -319,7 +319,7 @@ const SHOWSEASONSRESP = gin.H{
 	"result":  "success",
 }
 
-const SHOWRESP = gin.H{
+var SHOWRESP = gin.H{
 	"message": "",
 	"result":  "success",
 	"data": gin.H{
@@ -364,52 +364,5 @@ const SHOWRESP = gin.H{
 		"show_name":         "Adventure Time",
 		"sports":            0,
 		"status":            "Continuing",
-	},
-}
-
-const SHOWSRESP = gin.H{
-	"data": gin.H{
-		"Buffy the Vampire Slayer": gin.H{
-			"air_by_date": 0,
-			"cache": gin.H{
-				"banner": 1,
-				"poster": 1,
-			},
-			"anime":           0,
-			"indexerid":       70327,
-			"language":        "en",
-			"network":         "The WB",
-			"next_ep_airdate": "",
-			"paused":          0,
-			"quality":         "HD",
-			"show_name":       "Buffy the Vampire Slayer",
-			"sports":          0,
-			"status":          "Ended",
-			"subtitles":       0,
-			"tvdbid":          70327,
-			"tvrage_id":       2930,
-			"tvrage_name":     "Buffy the Vampire Slayer",
-		},
-		"Adventure Time": gin.H{
-			"air_by_date": 0,
-			"anime":       0,
-			"cache": gin.H{
-				"banner": 1,
-				"poster": 1,
-			},
-			"indexerid":       152831,
-			"language":        "en",
-			"network":         "Cartoon Network",
-			"next_ep_airdate": "2015-02-12",
-			"paused":          0,
-			"quality":         "HD",
-			"show_name":       "Adventure Time",
-			"sports":          0,
-			"status":          "Continuing",
-			"subtitles":       0,
-			"tvdbid":          152831,
-			"tvrage_id":       23369,
-			"tvrage_name":     "Adventure Time",
-		},
 	},
 }

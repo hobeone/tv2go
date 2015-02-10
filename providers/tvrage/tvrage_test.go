@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/davecgh/go-spew/spew"
-	tvr "github.com/drbig/tvrage"
+	tvr "github.com/hobeone/tvrage"
 
 	"github.com/golang/glog"
 )
@@ -34,7 +34,12 @@ func TestGet(t *testing.T) {
 				glog.Fatalf("Error reading test feed: %s", err.Error())
 			}
 			w.Write(content)
-
+		} else if strings.Contains(r.RequestURI, "showinfo.php") {
+			content, err := ioutil.ReadFile("testdata/buffy_showinfo.xml")
+			if err != nil {
+				glog.Fatalf("Error reading test feed: %s", err.Error())
+			}
+			w.Write(content)
 		}
 	}))
 	defer server.Close()
@@ -54,10 +59,12 @@ func TestGet(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Error getting shows: %s", err)
 	}
+	fmt.Println("******************")
 	showinfo, err := GetShowInfo(shows[0].ID)
 	if err != nil {
 		t.Fatalf("Error getting show: %s", err)
 	}
-	spew.Dump(err)
 	spew.Dump(showinfo)
+	dbshow := TVRageToShow(showinfo)
+	spew.Dump(dbshow)
 }
