@@ -1,13 +1,13 @@
 package web
 
 import (
+	"flag"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
 
-	"github.com/davecgh/go-spew/spew"
 	. "github.com/onsi/gomega"
 
 	"github.com/gin-gonic/gin"
@@ -15,7 +15,10 @@ import (
 )
 
 func setupTest(t *testing.T) (*db.Handle, *gin.Engine) {
-	dbh := db.NewMemoryDBHandle(true, true)
+	flag.Set("logtostderr", "false")
+	gin.SetMode("test")
+
+	dbh := db.NewMemoryDBHandle(false, true)
 	e := createServer(dbh)
 	return dbh, e
 }
@@ -177,7 +180,7 @@ func TestShows(t *testing.T) {
 const ShowSeasonsGolden = `{
 	"data":{
 		"1":{
-			"airdate":"2006-01-01T00:00:00Z",
+			"airdate":"2006-01-10",
 			"name":"show1episode1",
 			"quality":"",
 			"status":""
@@ -188,7 +191,9 @@ const ShowSeasonsGolden = `{
 			"quality":"",
 			"status":""
 		}
-	}
+	},
+	"message":"",
+	"result":"success"
 }`
 
 func TestShowSeasons(t *testing.T) {
@@ -197,14 +202,13 @@ func TestShowSeasons(t *testing.T) {
 	RegisterTestingT(t)
 
 	response := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", "/api/1/?cmd=show.seasons&indexerid=1&season=1", nil)
+	req, err := http.NewRequest("GET", "/api/1/?cmd=show.seasons&tvdbid=1&season=1", nil)
 	Expect(err).ToNot(HaveOccurred(), "Error creating request: %s", err)
 
 	eng.ServeHTTP(response, req)
 	if response.Code != 200 {
 		t.Fatalf("Expected 200 response code, got %d", response.Code)
 	}
-	spew.Dump(response.Body)
 	Expect(response.Body.String()).Should(MatchJSON(ShowSeasonsGolden))
 }
 
@@ -274,7 +278,6 @@ func TestEpisode(t *testing.T) {
 	Expect(err).ToNot(HaveOccurred(), "Error creating request: %s", err)
 
 	eng.ServeHTTP(response, req)
-	spew.Dump(response.Body)
 	if response.Code != 400 {
 		t.Fatalf("Expected 400 response code, got %d", response.Code)
 	}

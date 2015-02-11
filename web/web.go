@@ -5,15 +5,15 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/golang/glog"
 	"github.com/hobeone/tv2go/config"
 	"github.com/hobeone/tv2go/db"
-	"github.com/hobeone/tv2go/providers/tvdb"
-	"github.com/hobeone/tv2go/providers/tvrage"
+	"github.com/hobeone/tv2go/indexers/tvdb"
+	"github.com/hobeone/tv2go/indexers/tvrage"
 )
 
 func Ping(c *gin.Context) {
@@ -104,7 +104,6 @@ func genError(c *gin.Context, status int, msg string) {
 func Show(c *gin.Context) {
 	h := c.MustGet("dbh").(*db.Handle)
 	tvdbidstr := c.Request.Form.Get("tvdbid")
-	spew.Dump(tvdbidstr)
 	tvdbid, err := strconv.ParseInt(tvdbidstr, 10, 64)
 	if err != nil {
 		genError(c, http.StatusInternalServerError, "invalid show id")
@@ -273,7 +272,6 @@ func AddShow(c *gin.Context) {
 			return
 		}
 		s, err := tvdb.GetShowById(tvdbid)
-		spew.Dump(s)
 		dbshow := tvdb.TVDBToShow(s)
 		h := c.MustGet("dbh").(*db.Handle)
 		err = h.AddShow(&dbshow)
@@ -296,7 +294,6 @@ func AddShow(c *gin.Context) {
 			return
 		}
 		showinfo, err := tvrage.GetShowInfo(rageid)
-		spew.Dump(showinfo)
 		if err != nil {
 			c.JSON(500, "Couldn't get info from tvrage")
 			return
@@ -324,9 +321,30 @@ func DBHandler(dbh *db.Handle) gin.HandlerFunc {
 		c.Next()
 	}
 }
+func Logger() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		t := time.Now()
+		// before request
+		c.Next()
 
+		// after request
+		end := time.Now()
+		latency := end.Sub(t)
+
+		glog.Infof("[GIN] |%3d| %12v | %s |%-7s %s\n%s",
+			c.Writer.Status(),
+			latency,
+			c.ClientIP(),
+			c.Request.Method,
+			c.Request.URL.RequestURI(),
+			c.Errors.String(),
+		)
+
+	}
+}
 func createServer(dbh *db.Handle) *gin.Engine {
-	r := gin.Default()
+	r := gin.New()
+	r.Use(Logger())
 
 	r.Use(DBHandler(dbh))
 	r.GET("/ping", func(c *gin.Context) {

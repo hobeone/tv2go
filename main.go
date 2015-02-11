@@ -7,7 +7,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/hobeone/tv2go/config"
 	"github.com/hobeone/tv2go/db"
-	"github.com/hobeone/tv2go/providers/tvdb"
+	"github.com/hobeone/tv2go/indexers/tvdb"
 	"github.com/hobeone/tv2go/web"
 )
 
