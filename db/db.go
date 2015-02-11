@@ -179,9 +179,9 @@ func (e *Episode) BeforeSave() error {
 	if e.Name == "" {
 		return errors.New("Name can not be empty")
 	}
-	if e.Season == 0 {
-		return errors.New("Season must be set")
-	}
+	//	if e.Season == 0 {
+	//		return errors.New("Season must be set")
+	//	}
 	if e.Episode == 0 {
 		return errors.New("Episode must be set")
 	}
@@ -195,7 +195,7 @@ func (e *Episode) BeforeSave() error {
 // Otherwise it returns the empty string.
 func (e *Episode) AirDateString() string {
 	if !e.AirDate.IsZero() {
-		return e.AirDate.Format("2006-01-20")
+		return e.AirDate.Format("2006-01-02")
 	}
 	return ""
 }
@@ -285,7 +285,7 @@ func (h *Handle) DB() *gorm.DB {
 }
 
 func (h *Handle) GetAllShows() ([]Show, error) {
-	shows := []Show{}
+	var shows []Show
 	err := h.db.Find(&shows).Error
 	return shows, err
 }

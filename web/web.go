@@ -253,9 +253,21 @@ func Episode(c *gin.Context) {
 	})
 }
 
-func History(c *gin.Context) {}
+func History(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"data":    []string{},
+		"message": "",
+		"result":  "success",
+	})
+}
 
-func Logs(c *gin.Context)   {}
+func Logs(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"data":    []string{},
+		"message": "",
+		"result":  "success",
+	})
+}
 func Future(c *gin.Context) {}
 
 // cmd=show.addnew&tvdbid=73871
@@ -263,6 +275,7 @@ func AddShow(c *gin.Context) {
 	tvdbid := c.Request.Form.Get("tvdbid")
 	tvrageid := c.Request.Form.Get("tvrageid")
 
+	h := c.MustGet("dbh").(*db.Handle)
 	glog.Info("Adding show with args: %s", c.Request.URL)
 	if tvdbid != "" {
 		glog.Infof("Got tvdbid to add: %s", tvdbid)
@@ -271,9 +284,18 @@ func AddShow(c *gin.Context) {
 			c.JSON(500, "Bad tvrageid")
 			return
 		}
-		s, err := tvdb.GetShowById(tvdbid)
+		s, eps, err := tvdb.GetShowById(tvdbid)
+		if err != nil {
+			c.JSON(500, GenericResult{
+				Message: err.Error(),
+				Result:  "failure",
+			})
+			return
+		}
 		dbshow := tvdb.TVDBToShow(s)
-		h := c.MustGet("dbh").(*db.Handle)
+		for _, ep := range eps {
+			dbshow.Episodes = append(dbshow.Episodes, tvdb.ConvertTvdbEpisodeToDbEpisode(ep))
+		}
 		err = h.AddShow(&dbshow)
 		if err != nil {
 			c.JSON(500, err.Error())

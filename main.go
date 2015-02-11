@@ -13,11 +13,14 @@ import (
 
 // ShowUpdater is ment to be run as a background goroutine for that looks for
 // Show which need updates from their indexer.
-func ShowUpdater(dbh *db.Handle) {
-	h := db.NewDBHandle("test.db", true, true)
+func ShowUpdater(h *db.Handle) {
 	oldage := time.Duration(86400) * time.Second
 	for {
-		shows, _ := h.GetAllShows()
+		shows, err := h.GetAllShows()
+		if err != nil {
+			glog.Errorf("Error getting shows: %s", err)
+			break
+		}
 		glog.Infof("Got %d shows, checking if they need updates", len(shows))
 		for _, s := range shows {
 			if time.Now().Sub(s.LastIndexerUpdate) > oldage {
@@ -37,7 +40,7 @@ func ShowUpdater(dbh *db.Handle) {
 			}
 		}
 		glog.Info("Updated shows, sleeping.")
-		time.Sleep(time.Duration(60) * time.Second)
+		time.Sleep(time.Duration(5) * time.Second)
 	}
 }
 
