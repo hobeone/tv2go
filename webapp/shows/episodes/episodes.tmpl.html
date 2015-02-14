@@ -1,0 +1,18 @@
+<h1>{{episodesListCtrl.currentShowName}}</h1>
+<div ng-repeat="ep in episodesListCtrl.episodes | filter:{show:episodesListCtrl.getCurrentShowName()}">
+  <button type="button" ng-click="episodesListCtrl.deleteEpisode(ep)" class="close">&times;</button>
+  <button type="button" class="btn btn-link" ui-sref="tv2go.shows.episodes.edit({episodeId:ep.id})">
+    <span class="glyphicon glyphicon-pencil"></span>
+  </button>
+  {{ep.title}}
+</div>
+<hr/>
+<!-- create -->
+<ui-view> 
+<div ng-if="episodesListCtrl.getCurrentShow()">
+  <button type="button" class="btn btn-link" ui-sref="tv2go.shows.episodes.create">
+    <span class="glyphicon glyphicon-plus"></span>
+    CreateEpisode
+  </button>
+</div>
+</ui-view>

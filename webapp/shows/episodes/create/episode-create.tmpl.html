@@ -1,0 +1,8 @@
+<form class="create-form" role="form" ng-submit="createEpisodeCtrl.createEpisode(createEpisodeCtrl.newEpisode)" novalidate>
+  <div class="form-group">
+    <label for="newEpisodeTitle">Episode Title</label>
+    <input type="text" class="form-control" id="newEpisodeTitle" ng-model="createEpisodeCtrl.newEpisode.title" placeholder="Enter title">
+  </div>
+  <button type="submit" class="btn btn-info btn-lg">Create</button>
+  <button type="button" class="btn btn-default btn-lg pull-right" ng-click="createEpisodeCtrl.cancelCreating()">Cancel</button>
+</form>

@@ -29,3 +29,11 @@ gin-bin
 *.prof
 
 test.db
+tv2go.db
+
+# webapp stuff
+webapp/logs/*
+webapp/node_modules/
+webapp/bower_components/
+webapp/tmp
+webapp/npm-debug.log

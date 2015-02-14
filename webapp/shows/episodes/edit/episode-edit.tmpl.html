@@ -1,0 +1,11 @@
+<h4> Editing {{editEpisodeCtrl.episode.title}}</h4>
+
+<form class="edit-form" role="form" ng-submit="editEpisodeCtrl.updateEpisode(editEpisodeCtrl.editedEpisode)" novalidate>
+    <div class="form-group">
+      <label>Episode Title</label>
+      <input type="text" class="form-control" ng-model="editEpisodeCtrl.editedEpisode.title" placeholder="Enter title">
+    </div>
+    <button type="submit" class="btn btn-info btn-lg">Save</button>
+    <button type="button" class="btn btn-default btn-lg pull-right" ng-click="editEpisodeCtrl.cancelEditing()">Cancel</button>
+  </form>
+

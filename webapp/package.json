@@ -1,0 +1,18 @@
+{
+  "name": "tv2go",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Web frontend for tv2go",
+  "repository": "https://github.com/hobeone/tv2go",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^0.6.1"
+  },
+  "scripts": {
+    "postinstall": "bower install",
+
+    "prestart": "npm install",
+
+    "start": "http-server -a localhost -p 8080 -c-1"
+  }
+}
