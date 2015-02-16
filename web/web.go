@@ -11,7 +11,6 @@ import (
 	"github.com/hobeone/tv2go/config"
 	"github.com/hobeone/tv2go/db"
 	"github.com/hobeone/tv2go/indexers/tvdb"
-	"github.com/hobeone/tv2go/indexers/tvrage"
 )
 
 type genericResult struct {
@@ -230,70 +229,101 @@ func UpdateEpisode(c *gin.Context) {
 	c.JSON(200, episode)
 }
 
+type searchShowRequest struct {
+	IndexerName string `form:"indexer_name" binding:"required"`
+	SearchTerm  string `form:"name" binding:"required"`
+}
+
+// ShowSearch searches for the search term on the given indexer
+func ShowSearch(c *gin.Context) {
+	//	h := c.MustGet("dbh").(*db.Handle)
+
+	var reqJSON searchShowRequest
+
+	if !c.Bind(&reqJSON) {
+		c.JSON(http.StatusBadRequest, genericResult{
+			Message: c.Errors.String(),
+			Result:  "failure",
+		})
+		return
+	}
+	series, err := tvdb.Search(reqJSON.SearchTerm)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, genericResult{
+			Message: err.Error(),
+			Result:  "failure",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, series)
+}
+
+type addShowRequest struct {
+	IndexerName string `form:"indexer_name" binding:"required"`
+	IndexerID   string `form:"indexer_id" binding:"required"`
+}
+
 // AddShow adds the current show to the database.
 func AddShow(c *gin.Context) {
-	tvdbid := c.Request.Form.Get("tvdbid")
-	tvrageid := c.Request.Form.Get("tvrageid")
-
 	h := c.MustGet("dbh").(*db.Handle)
-	glog.Info("Adding show with args: %s", c.Request.URL)
-	if tvdbid != "" {
-		glog.Infof("Got tvdbid to add: %s", tvdbid)
-		tvdbid, err := strconv.ParseInt(tvdbid, 10, 64)
-		if err != nil {
-			c.JSON(500, "Bad tvrageid")
-			return
-		}
-		s, eps, err := tvdb.GetShowById(tvdbid)
-		if err != nil {
-			c.JSON(500, genericResult{
-				Message: err.Error(),
-				Result:  "failure",
-			})
-			return
-		}
-		dbshow := tvdb.TVDBToShow(s)
-		for _, ep := range eps {
-			dbshow.Episodes = append(dbshow.Episodes, tvdb.ConvertTvdbEpisodeToDbEpisode(ep))
-		}
-		err = h.AddShow(&dbshow)
-		if err != nil {
-			c.JSON(500, err.Error())
-		}
-		c.JSON(200, gin.H{
-			"data": gin.H{
-				"name": dbshow.Name,
-			},
-			"message": fmt.Sprintf("%s has been queued to be added", dbshow.Name),
-			"result":  "success",
+
+	var reqJSON addShowRequest
+
+	if !c.Bind(&reqJSON) {
+		c.JSON(http.StatusBadRequest, genericResult{
+			Message: c.Errors.String(),
+			Result:  "failure",
 		})
+		return
 	}
-	if tvrageid != "" {
-		glog.Infof("Got tvrage to add: %s", tvdbid)
-		rageid, err := strconv.ParseInt(tvrageid, 10, 64)
-		if err != nil {
-			c.JSON(500, "Bad tvrageid")
-			return
-		}
-		showinfo, err := tvrage.GetShowInfo(rageid)
-		if err != nil {
-			c.JSON(500, "Couldn't get info from tvrage")
-			return
-		}
-		rageshow := tvrage.TVRageToShow(showinfo)
-		h := c.MustGet("dbh").(*db.Handle)
-		err = h.AddShow(&rageshow)
-		if err != nil {
-			c.JSON(500, err.Error())
-		}
-		c.JSON(200, gin.H{
-			"data": gin.H{
-				"name": rageshow.Name,
-			},
-			"message": fmt.Sprintf("%s has been queued to be added", rageshow.Name),
-			"result":  "success",
+
+	// Assume TVDB only for now
+	// TODO:
+	// indexer.GetIndexerFromString(reqJSON.IndexerName)
+
+	indexerID, err := strconv.ParseInt(reqJSON.IndexerID, 10, 64)
+	if err != nil {
+		c.JSON(500, fmt.Sprintf("Bad indexerid: %s", err.Error()))
+		return
+	}
+	glog.Infof("Got id to add: %s", indexerID)
+	s, eps, err := tvdb.GetShowById(indexerID)
+	if err != nil {
+		c.JSON(500, genericResult{
+			Message: err.Error(),
+			Result:  "failure",
 		})
+		return
 	}
+	dbshow := tvdb.TVDBToShow(s)
+	for _, ep := range eps {
+		dbshow.Episodes = append(dbshow.Episodes, tvdb.ConvertTvdbEpisodeToDbEpisode(ep))
+	}
+	err = h.AddShow(&dbshow)
+	if err != nil {
+		c.JSON(500, err.Error())
+	}
+	response := jsonShow{
+		ID:        dbshow.ID,
+		AirByDate: dbshow.AirByDate,
+		//Cache
+		Anime:     dbshow.Anime,
+		IndexerID: dbshow.IndexerID,
+		Language:  dbshow.Language,
+		Network:   dbshow.Network,
+		//NextEpAirdate: dbshow.NextEpAirdate(),
+		Paused:     dbshow.Paused,
+		Quality:    strconv.FormatInt(dbshow.Quality, 10),
+		Name:       dbshow.Name,
+		Sports:     dbshow.Sports,
+		Status:     dbshow.Status,
+		Subtitles:  dbshow.Subtitles,
+		TVDBID:     dbshow.IndexerID,
+		SeasonList: h.ShowSeasons(&dbshow),
+		//TVdbid, rageid + name
+	}
+
+	c.JSON(200, response)
 }
 
 // DBHandler makes a database connection available to other handlers
@@ -371,10 +401,13 @@ func createServer(dbh *db.Handle) *gin.Engine {
 		api.OPTIONS("/*cors", func(c *gin.Context) {})
 		api.GET("shows", Shows)
 		api.GET("shows/:showid", Show)
+		api.POST("shows", AddShow)
+
 		api.GET("shows/:showid/episodes", ShowEpisodes)
 		api.GET("shows/:showid/episodes/:episodeid", Episode)
-
 		api.PUT("shows/:showid/episodes", UpdateEpisode)
+
+		api.GET("indexers/search", ShowSearch)
 	}
 
 	return r

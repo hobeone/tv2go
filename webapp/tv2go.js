@@ -5,12 +5,14 @@ angular.module('tv2go', [
   'shows.episodes',
 ])
 .config(function($stateProvider, $urlRouterProvider){
-  $urlRouterProvider.otherwise("/");
+  'use strict';
+  $urlRouterProvider.otherwise('/shows');
 
   $stateProvider
   .state('tv2go', {
-    url: '',
-    abstract: true
+    templateUrl: 'layout.tmpl.html',
+    controller: 'IndexCtrl as indexCtrl',
+    abstract: true,
   });
 })
-;
+.controller('IndexCtrl', function(){});

@@ -33,6 +33,12 @@ func GetShowById(tvdbid int64) (*tvd.Series, []tvd.Episode, error) {
 	return series, eps, nil
 }
 
+func Search(term string) ([]tvd.SeriesSummary, error) {
+	t := tvd.NewClient("90D7DF3AE9E4841E")
+	res, err := t.SearchSeries(term, "en")
+	return res, err
+}
+
 func parseYear(s string) int {
 	parseddate := 0
 	t, err := time.Parse("1999-03-28", s)

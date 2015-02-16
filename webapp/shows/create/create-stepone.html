@@ -1,0 +1,17 @@
+<form class="create-form" role="form" ng-submit="createShowsCtrl.searchShow(createShowsCtrl.showSearchTerm)" novalidate>
+  <div class="form-group">
+    <label for="newShowName">Show Name</label>
+    <input type="text" class="form-control" id="newShowName" ng-model="createShowsCtrl.showSearchReqest.name" placeholder="Enter show name">
+  </div>
+  <div class="form-group">
+    <label for="newShowIndexerName">Indexer to Use:</label>
+  <select id="newShowIndexerName" ng-model="createShowsCtrl.showSearchReqest.indexer_name">
+    <option value="tvdb">tvdb</option>
+  </select>
+</div>
+    <a ng-click="createShowsCtrl.searchShow(createShowsCtrl.showSearchReqest)" class="btn btn-block btn-info">
+    Search for Show<span class="glyphicon glyphicon-circle-arrow-right"></span>
+    </a>
+
+  <button type="button" class="btn btn-default btn-lg pull-right" ng-click="createShowsCtrl.cancelCreating()">Cancel</button>
+</form>

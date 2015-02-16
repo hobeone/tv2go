@@ -1,63 +1,105 @@
-html,
+/*
+ * Base structure
+ */
+
+/* Move down content because we have a fixed navbar that is 50px tall */
 body {
-    background-color: #D5DBD8;
-    width: 100%;
-    height: 100%;
-    color: #4F534E;
-}
-
-.sidebar a {
-    color: #5bc0de;
-    font-size: 30px;
-    text-decoration: none;
+  padding-top: 50px;
 }
 
 
+/*
+ * Global add-ons
+ */
+
+.sub-header {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+/*
+ * Top navigation
+ * Hide default border to remove 1px line.
+ */
+.navbar-fixed-top {
+  border: 0;
+}
+
+/*
+ * Sidebar
+ */
+
+/* Hide for mobile, show later */
 .sidebar {
-    display: none;
-    padding-left: 0px;
-    padding-right: 0px;
-}
-
-.sidebar > ul {
-    margin: 0px;
-    padding: 0px;
-}
-
-.sidebar .active {
-    background-color: #D5DBD8;
-}
-
-.sidebar .active > a {
-    text-decoration: none;
-    color: #2B2828;
-}
-
-.main .active span,
-.main .active > a {
-    color: #5bc0de;
-}
-
-.nav > li > a:hover, .nav > li > a:focus {
-    text-decoration: none;
-    background-color: #D5DBD8;
-}
-
-.main {
-    padding-top: 96px;
-    padding-left: 24px;
+  display: none;
 }
 @media (min-width: 768px) {
-    .sidebar {
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        z-index: 1000;
-        display: block;
-        overflow-x: hidden;
-        overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
-        background-color: #2B2828;
-        border-right: 1px solid #7B807E;
-    }
+  .sidebar {
+    position: fixed;
+    top: 51px;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    display: block;
+    padding: 20px;
+    overflow-x: hidden;
+    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+    background-color: #f5f5f5;
+    border-right: 1px solid #eee;
+  }
+}
+
+/* Sidebar navigation */
+.nav-sidebar {
+  margin-right: -21px; /* 20px padding + 1px border */
+  margin-bottom: 20px;
+  margin-left: -20px;
+}
+.nav-sidebar > li > a {
+  padding-right: 20px;
+  padding-left: 20px;
+}
+.nav-sidebar > .active > a,
+.nav-sidebar > .active > a:hover,
+.nav-sidebar > .active > a:focus {
+  color: #fff;
+  background-color: #428bca;
+}
+
+
+/*
+ * Main content
+ */
+
+.main {
+  padding: 20px;
+}
+@media (min-width: 768px) {
+  .main {
+    padding-right: 40px;
+    padding-left: 40px;
+  }
+}
+.main .page-header {
+  margin-top: 0;
+}
+
+
+/*
+ * Placeholder dashboard ideas
+ */
+
+.placeholders {
+  margin-bottom: 30px;
+  text-align: center;
+}
+.placeholders h4 {
+  margin-bottom: 0;
+}
+.placeholder {
+  margin-bottom: 20px;
+}
+.placeholder img {
+  display: inline-block;
+  border-radius: 50%;
 }

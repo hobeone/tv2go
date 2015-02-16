@@ -1,0 +1,10 @@
+<form class="create-form" role="form" ng-submit="createShowsCtrl.createShow(createShowsCtrl.newShow)" novalidate>
+
+  <div class="form-group">
+      <label for="newShow.IndexerID">Pick a show:</label>
+      <select id="newShowIndexerID" ng-model="createShowsCtrl.newShow.indexer_id">
+        <option ng-repeat="s in createShowsCtrl.showSearchResult" value="{{s.ID}}">{{s.Name}}</option>
+      </select>
+  <button type="submit" class="btn btn-info btn-lg">Create</button>
+  <button type="button" class="btn btn-default btn-lg pull-right" ng-click="createShowsCtrl.cancelCreating()">Cancel</button>
+</form>

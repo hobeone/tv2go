@@ -1,17 +1,24 @@
 showService = angular.module('tv2go.showsService', ['ngResource']);
 
 showService.factory('Show', function($cacheFactory, $resource) {
-    return $resource('http://localhost:9001/api/1/shows/:showid', {}, {
-      all: {
-        method: "GET",
-        isArray:true,
-        cache: true,
-      },
-      update: {
-        method: "PUT"
-      },
-    });
+  return $resource('http://localhost:9001/api/1/shows/:showid', {}, {
+    all: {
+      method: "GET",
+      isArray:true,
+      cache: true,
+    },
+    update: {
+      method: "PUT"
+    },
   });
+});
+
+indexerSearchService = angular.module('tv2go.indexerSearchService', ['ngResource']);
+
+indexerSearchService.factory('IndexerSearch', function($resource) {
+  return $resource('http://localhost:9001/api/1/indexers/search');
+});
+
 
 angular.module('tv2go.models.shows',['tv2go.showsService'])
 .service('ShowsModel', function($http, $q, Show) {
@@ -58,6 +65,11 @@ angular.module('tv2go.models.shows',['tv2go.showsService'])
       });
     }
     return deferred.promise;
+  };
+
+  model.createShow = function(show) {
+    show.$save();
+    shows.push(show);
   };
 })
 ;
