@@ -1,6 +1,6 @@
 <a ui-sref="tv2go.shows">tv2go</a>
 <ul class="nav nav-sidebar">
   <li ng-repeat="show in showsListCtrl.shows">
-  <a href="#" ui-sref="tv2go.shows.episodes({show:show.name})">{{show.name}}</a>
+  <a href="#" ui-sref="tv2go.shows.episodes({show:show.id})">{{show.name}}</a>
   </li>
 </ul>

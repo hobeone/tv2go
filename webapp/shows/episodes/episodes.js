@@ -14,20 +14,20 @@ angular.module('shows.episodes',[
           controller: 'EpisodesListCtrl as episodesListCtrl',
         }
       },
+      resolve: {
+        show: function($stateParams, ShowsModel){
+          return ShowsModel.getShowById($stateParams.show);
+        },
+        eps: function($stateParams, EpisodesModel) {
+          return EpisodesModel.getEpisodes($stateParams.show);
+        }
+      },
     });
 })
-.controller('EpisodesListCtrl', function ($stateParams, EpisodesModel, ShowsModel) {
+.controller('EpisodesListCtrl', function ($stateParams, show, eps) {
   var EpisodesListCtrl = this;
-
-  ShowsModel.setCurrentShow($stateParams.show);
-
-  EpisodesModel.getEpisodes()
-  .then(function(episodes){
-    EpisodesListCtrl.episodes = episodes;
-  });
-
-  EpisodesListCtrl.getCurrentShow = ShowsModel.getCurrentShow;
-  EpisodesListCtrl.getCurrentShowName = ShowsModel.getCurrentShowName;
-  EpisodesListCtrl.deleteEpisode = EpisodesModel.deleteEpisode;
+  
+  EpisodesListCtrl.episodes = eps;
+  EpisodesListCtrl.show = show;
 })
 ;

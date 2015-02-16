@@ -10,10 +10,6 @@ angular.module('shows', [
           controller: "ShowsListCtrl as showsListCtrl",
           templateUrl: "shows/shows.tmpl.html",
         },
-        'episodes@': {
-          templateUrl: 'shows/episodes/episodes.tmpl.html',
-          controller: 'EpisodesListCtrl as episodesListCtrl',
-        }
       }
     });
 })

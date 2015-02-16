@@ -66,7 +66,7 @@ func NewDaemon(cfg *config.Config) *Daemon {
 
 func runDaemon(cfg *config.Config) {
 	d := NewDaemon(cfg)
-	go ShowUpdater(d.DBH)
+	//go ShowUpdater(d.DBH)
 
 	web.StartServer(cfg, d.DBH)
 }

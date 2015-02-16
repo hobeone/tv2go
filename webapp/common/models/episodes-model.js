@@ -1,53 +1,52 @@
 episodeService = angular.module('tv2go.episodesService', ['ngResource']);
 
-episodeService.factory('Episode', ['$resource',
-  function($resource) {
-    return $resource('data/:episodeId.json', {}, {
+episodeService.factory('Episode', ['$cacheFactory','$resource',
+  function($cacheFactory, $resource) {
+    return $resource('http://localhost:9001/api/1/shows/:showid/episodes/:episodeid', {}, {
+      all: {
+        method: "GET",
+        cache: true,
+        isArray: true,
+      },
       update: {
         method: "PUT"
       },
-      query: {
-        method: "GET",
-        params: {
-          episodeId: 'episodes',
-        },
-        isArray:true
-      }
     });
   }]);
 
 angular.module('tv2go.models.episodes',['tv2go.episodesService'])
 .service('EpisodesModel', function($http, $q, Episode){
-  var model = this,
-    episodes;
+  var model = this;
+  var episodes;
 
   function cacheEpisodes(result) {
     episodes = result;
     return episodes;
   }
 
-  model.getEpisodes = function() {
+  model.getEpisodes = function(showid) {
     var deferred = $q.defer();
 
-    if(episodes) {
-      deferred.resolve(episodes);
-    } else {
-      Episode.query().$promise.then(function(episodes){
+      Episode.all(
+        {
+          showid: showid,
+        }
+      ).$promise.then(function(episodes){
         deferred.resolve(cacheEpisodes(episodes));
       });
-    }
-
     return deferred.promise;
   };
 
   model.createEpisode = function(episode) {
-    console.log(episode);
     episode.$save();
     episodes.push(episode);
   };
 
   model.updateEpisode = function(episode) {
-    episode.$save();
+    console.log(episode);
+    episode.$update({
+      showid: episode.showid,
+    });
 
     var index = _.findIndex(episodes, function(e){
       return e.id == episode.id;
@@ -64,7 +63,6 @@ angular.module('tv2go.models.episodes',['tv2go.episodesService'])
   model.getEpisodeById = function(episodeId) {
     var deferred = $q.defer();
 
-    episode.$save();
     if(episodes) {
       deferred.resolve(model.findEpisode(episodeId));
     } else {

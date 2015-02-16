@@ -1,41 +1,34 @@
 showService = angular.module('tv2go.showsService', ['ngResource']);
 
-showService.factory('Show', ['$resource',
-  function($resource) {
-    return $resource('data/:showId.json', {}, {
+showService.factory('Show', function($cacheFactory, $resource) {
+    return $resource('http://localhost:9001/api/1/shows/:showid', {}, {
+      all: {
+        method: "GET",
+        isArray:true,
+        cache: true,
+      },
       update: {
         method: "PUT"
       },
-      query: {
-        method: "GET",
-        params: {
-          showId: 'shows',
-        },
-        isArray:true
-      }
     });
-  }]);
+  });
 
 angular.module('tv2go.models.shows',['tv2go.showsService'])
 .service('ShowsModel', function($http, $q, Show) {
   var model = this;
-  var URLS = {
-    FETCH: "data/shows.json",
-  };
   var shows;
   var currentShow;
 
   function cacheShows(result) {
-    console.log(result);
     shows = result;
     return shows;
   }
   model.getShows = function() {
-    return (shows) ? $q.when(shows): Show.query().$promise.then(cacheShows);
+    return (shows) ? $q.when(shows): Show.all().$promise.then(cacheShows);
   };
 
-  model.setCurrentShow = function(showName) {
-    return model.getShowByName(showName)
+  model.setCurrentShow = function(showId) {
+    return model.getShowById(showId)
     .then(function(show){
       currentShow = show;
     });
@@ -45,15 +38,15 @@ angular.module('tv2go.models.shows',['tv2go.showsService'])
     return currentShow;
   };
 
-  model.getCurrentShowName = function() {
-    return currentShow ? currentShow.name : "";
+  model.getCurrentShowId = function() {
+    return currentShow ? currentShow.id : "";
   };
 
-  model.getShowByName = function(showName) {
+  model.getShowById = function(showId) {
     var deferred = $q.defer();
     function findShow() {
       return _.find(shows, function(s) {
-        return s.name == showName;
+        return s.id === _.parseInt(showId,10);
       });
     }
     if(shows) {

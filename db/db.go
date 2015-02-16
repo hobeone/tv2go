@@ -6,7 +6,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/golang/glog"
 	"github.com/jinzhu/gorm"
 
@@ -293,20 +292,14 @@ func (h *Handle) GetAllShows() ([]Show, error) {
 func (h *Handle) GetShowEpisodes(s *Show) ([]Episode, error) {
 	var episodes []Episode
 	err := h.db.Model(s).Related(&episodes).Error
-	spew.Dump(episodes)
 	return episodes, err
 }
 
-func (h *Handle) GetShowEpisodeBySeasonAndNumber(showid, season, episode int64) (*Episode, error) {
+func (h *Handle) GetEpisodeByID(episodeid int64) (*Episode, error) {
 	var ep Episode
 
-	show, err := h.GetShowById(showid)
-	if err != nil {
-		return &ep, err
-	}
-	err = h.db.Where("show_id = ? AND season = ? AND episode = ?", show.ID, season, episode).Find(&ep).Error
+	err := h.db.Find(&ep, episodeid).Error
 	return &ep, err
-
 }
 
 func (h *Handle) GetShowSeason(showid, season int64) ([]Episode, error) {
@@ -322,7 +315,7 @@ func (h *Handle) GetShowSeason(showid, season int64) ([]Episode, error) {
 func (h *Handle) GetShowById(showID int64) (*Show, error) {
 	var show Show
 
-	err := h.db.Where("indexer_key = ?", showID).Find(&show).Error
+	err := h.db.Find(&show, showID).Error
 	if err != nil {
 		return nil, err
 	}

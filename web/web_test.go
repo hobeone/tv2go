@@ -2,10 +2,8 @@ package web
 
 import (
 	"flag"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 
 	. "github.com/onsi/gomega"
@@ -23,33 +21,8 @@ func setupTest(t *testing.T) (*db.Handle, *gin.Engine) {
 	return dbh, e
 }
 
-func TestPing(t *testing.T) {
-	dbh, eng := setupTest(t)
-	db.LoadFixtures(t, dbh)
-	RegisterTestingT(t)
-
-	pingGoldenResponse := fmt.Sprintf(`{
-	"data":{
-		"pid":%d
-	},
-	"message":"Pong",
-	"result":"success"
-}`, os.Getpid())
-
-	response := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", "/api/1/?cmd=sb.ping", nil)
-	Expect(err).ToNot(HaveOccurred(), "Error creating request: %s", err)
-
-	eng.ServeHTTP(response, req)
-	if response.Code != 200 {
-		t.Fatalf("Expected 200 response code, got %d", response.Code)
-	}
-
-	Expect(response.Body.String()).Should(MatchJSON(pingGoldenResponse))
-}
-
 const GoldenShowResponse = `{
-	"data":{
+	"id":1,
 		"air_by_date":0,
 		"cache":{
 			"Banner":0,
@@ -62,7 +35,7 @@ const GoldenShowResponse = `{
 		"next_ep_airdate":"",
 		"paused":0,
 		"quality":"0",
-		"show_name":"show1",
+		"name":"show1",
 		"sports":0,
 		"status":"",
 		"subtitles":0,
@@ -70,9 +43,6 @@ const GoldenShowResponse = `{
 		"tvrage_id":0,
 		"tvrage_name":"",
 		"season_list":[1]
-	},
-	"message":"",
-	"result":"success"
 }`
 
 func TestShow(t *testing.T) {
@@ -82,7 +52,7 @@ func TestShow(t *testing.T) {
 
 	// Invalid
 	response := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", "/api/1/?cmd=show&tvdbid=NOTFOUND", nil)
+	req, err := http.NewRequest("GET", "/api/1/shows/NOTFOUND", nil)
 	Expect(err).ToNot(HaveOccurred(), "Error creating request: %s", err)
 
 	eng.ServeHTTP(response, req)
@@ -92,7 +62,7 @@ func TestShow(t *testing.T) {
 
 	// Unknown
 	response = httptest.NewRecorder()
-	req, err = http.NewRequest("GET", "/api/1/?cmd=show&tvdbid=0", nil)
+	req, err = http.NewRequest("GET", "/api/1/shows/0", nil)
 	Expect(err).ToNot(HaveOccurred(), "Error creating request: %s", err)
 
 	eng.ServeHTTP(response, req)
@@ -102,7 +72,7 @@ func TestShow(t *testing.T) {
 
 	// Success
 	response = httptest.NewRecorder()
-	req, err = http.NewRequest("GET", "/api/1/?cmd=show&tvdbid=1", nil)
+	req, err = http.NewRequest("GET", "/api/1/shows/1", nil)
 	Expect(err).ToNot(HaveOccurred(), "Error creating request: %s", err)
 
 	eng.ServeHTTP(response, req)
@@ -112,9 +82,9 @@ func TestShow(t *testing.T) {
 	Expect(response.Body.String()).Should(MatchJSON(GoldenShowResponse))
 }
 
-const ShowsGoldenResp = `{
-	"data":{
-		"show1":{
+const ShowsGoldenResp = `[
+		{
+			"id": 1,
 			"air_by_date":0,
 			"cache":{
 				"Banner":0,
@@ -127,7 +97,7 @@ const ShowsGoldenResp = `{
 			"next_ep_airdate":"",
 			"paused":0,
 			"quality":"0",
-			"show_name":"show1",
+			"name":"show1",
 			"sports":0,
 			"status":"",
 			"subtitles":0,
@@ -136,7 +106,8 @@ const ShowsGoldenResp = `{
 			"tvrage_name":"",
 			"season_list":null
 		},
-		"show2":{
+		{
+			"id": 2,
 			"air_by_date":0,
 			"cache":{
 				"Banner":0,
@@ -149,7 +120,7 @@ const ShowsGoldenResp = `{
 			"next_ep_airdate":"",
 			"paused":0,
 			"quality":"0",
-			"show_name":"show2",
+			"name":"show2",
 			"sports":0,
 			"status":"",
 			"subtitles":0,
@@ -158,8 +129,7 @@ const ShowsGoldenResp = `{
 			"tvrage_name":"",
 			"season_list":null
 		}
-	}
-}`
+	]`
 
 func TestShows(t *testing.T) {
 	dbh, eng := setupTest(t)
@@ -167,7 +137,7 @@ func TestShows(t *testing.T) {
 	RegisterTestingT(t)
 
 	response := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", "/api/1/?cmd=shows", nil)
+	req, err := http.NewRequest("GET", "/api/1/shows", nil)
 	Expect(err).ToNot(HaveOccurred(), "Error creating request: %s", err)
 
 	eng.ServeHTTP(response, req)
@@ -177,55 +147,20 @@ func TestShows(t *testing.T) {
 	Expect(response.Body.String()).Should(MatchJSON(ShowsGoldenResp))
 }
 
-const ShowSeasonsGolden = `{
-	"data":{
-		"1":{
-			"airdate":"2006-01-10",
-			"name":"show1episode1",
-			"quality":"",
-			"status":""
-		},
-		"2":{
-			"airdate":"",
-			"name":"show1episode2",
-			"quality":"",
-			"status":""
-		}
-	},
-	"message":"",
-	"result":"success"
-}`
-
-func TestShowSeasons(t *testing.T) {
-	dbh, eng := setupTest(t)
-	db.LoadFixtures(t, dbh)
-	RegisterTestingT(t)
-
-	response := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", "/api/1/?cmd=show.seasons&tvdbid=1&season=1", nil)
-	Expect(err).ToNot(HaveOccurred(), "Error creating request: %s", err)
-
-	eng.ServeHTTP(response, req)
-	if response.Code != 200 {
-		t.Fatalf("Expected 200 response code, got %d", response.Code)
-	}
-	Expect(response.Body.String()).Should(MatchJSON(ShowSeasonsGolden))
-}
-
 const EpisodeGolden = `{
-	"data":{
-		"airdate":"2006-01-10",
-		"description":"",
-		"file_size":0,
-		"file_size_human":"",
-		"location":"",
-		"name":"show1episode1",
-		"quality":"",
-		"release_name":"",
-		"status":""
-	},
-	"message":"",
-	"result":"success"
+	"id": 1,
+	"showid": 1,
+	"name": "show1episode1",
+	"season": 0,
+	"episode": 0,
+	"airdate": "2006-01-01",
+	"description": "",
+	"file_size": 0,
+	"file_size_human": "",
+	"location": "",
+	"quality": "",
+	"release_name": "",
+	"status": ""
 }`
 
 func TestEpisode(t *testing.T) {
@@ -235,7 +170,7 @@ func TestEpisode(t *testing.T) {
 
 	//Success
 	response := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", "/api/1/?cmd=episode&tvdbid=1&season=1&episode=1&full_path=1", nil)
+	req, err := http.NewRequest("GET", "/api/1/shows/1/episodes/1", nil)
 	Expect(err).ToNot(HaveOccurred(), "Error creating request: %s", err)
 
 	eng.ServeHTTP(response, req)
@@ -244,46 +179,39 @@ func TestEpisode(t *testing.T) {
 	}
 	Expect(response.Body.String()).Should(MatchJSON(EpisodeGolden))
 
-	//Invalid - missing tvdbid
+	//invalid - missing show id
 	response = httptest.NewRecorder()
-	req, err = http.NewRequest("GET", "/api/1/?cmd=episode&season=1&episode=1&full_path=1", nil)
+	req, err = http.NewRequest("GET", "/api/1/shows/episodes/1", nil)
 	Expect(err).ToNot(HaveOccurred(), "Error creating request: %s", err)
 
 	eng.ServeHTTP(response, req)
-	if response.Code != 400 {
-		t.Fatalf("Expected 400 response code, got %d", response.Code)
+	if response.Code != 405 {
+		t.Fatalf("Expected 405 response code, got %d", response.Code)
 	}
-	Expect(response.Body.String()).Should(MatchJSON(`{
-		"message": "Bad Request",
-		"result": "failure"
-	}`))
+	Expect(response.Body.String()).Should(Equal("Method Not Allowed\n"))
 
-	//Invalid - non integer tvdbid
+	//Valid - showid is ignored
 	response = httptest.NewRecorder()
-	req, err = http.NewRequest("GET", "/api/1/?cmd=episode&tvdbid=a&season=1&episode=1&full_path=1", nil)
+	req, err = http.NewRequest("GET", "/api/1/shows/XX/episodes/1", nil)
 	Expect(err).ToNot(HaveOccurred(), "Error creating request: %s", err)
 
 	eng.ServeHTTP(response, req)
-	if response.Code != 400 {
-		t.Fatalf("Expected 400 response code, got %d", response.Code)
+	if response.Code != 200 {
+		t.Fatalf("Expected 200 response code, got %d", response.Code)
 	}
-	Expect(response.Body.String()).Should(MatchJSON(`{
-		"message": "Bad Request",
-		"result": "failure"
-	}`))
+	Expect(response.Body.String()).Should(MatchJSON(EpisodeGolden))
 
 	//nonexisting episode
 	response = httptest.NewRecorder()
-	req, err = http.NewRequest("GET", "/api/1/?cmd=episode&tvdbid=a&season=1&episode=100", nil)
+	req, err = http.NewRequest("GET", "/api/1/shows/1/episodes/100000", nil)
 	Expect(err).ToNot(HaveOccurred(), "Error creating request: %s", err)
 
 	eng.ServeHTTP(response, req)
-	if response.Code != 400 {
-		t.Fatalf("Expected 400 response code, got %d", response.Code)
+	if response.Code != 404 {
+		t.Fatalf("Expected 404 response code, got %d", response.Code)
 	}
 	Expect(response.Body.String()).Should(MatchJSON(`{
-		"message": "Bad Request",
+		"message": "Record Not Found",
 		"result": "failure"
 	}`))
-
 }
