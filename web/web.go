@@ -14,61 +14,67 @@ import (
 	"github.com/hobeone/tv2go/indexers/tvrage"
 )
 
-type JSONShowCache struct {
+type genericResult struct {
+	Message string `json:"message"`
+	Result  string `json:"result"`
+}
+
+func genError(c *gin.Context, status int, msg string) {
+	c.JSON(status, genericResult{
+		Message: msg,
+		Result:  "failure",
+	})
+}
+
+type jsonShowCache struct {
 	Banner int
 	Poster int
 }
-type JSONShow struct {
+type jsonShow struct {
 	ID            int64         `json:"id"`
-	AirByDate     int           `json:"air_by_date"`
-	Cache         JSONShowCache `json:"cache"`
-	Anime         int           `json:"anime"`
+	AirByDate     bool          `json:"air_by_date"`
+	Cache         jsonShowCache `json:"cache"`
+	Anime         bool          `json:"anime"`
 	IndexerID     int64         `json:"indexerid"`
 	Language      string        `json:"language"`
 	Network       string        `json:"network"`
 	NextEpAirdate string        `json:"next_ep_airdate"`
-	Paused        int           `json:"paused"`
+	Paused        bool          `json:"paused"`
 	Quality       string        `json:"quality"`
 	Name          string        `json:"name"`
-	Sports        int           `json:"sports"`
+	Sports        bool          `json:"sports"`
 	Status        string        `json:"status"`
-	Subtitles     int           `json:"subtitles"`
+	Subtitles     bool          `json:"subtitles"`
 	TVDBID        int64         `json:"tvdbid"`
 	TVRageID      int64         `json:"tvrage_id"`
 	TVRageName    string        `json:"tvrage_name"`
 	SeasonList    []int64       `json:"season_list"`
 }
 
-func Btoi(b bool) int {
-	if b {
-		return 1
-	}
-	return 0
-}
-
+// Shows returns all the shows
 func Shows(c *gin.Context) {
 	h := c.MustGet("dbh").(*db.Handle)
 	shows, err := h.GetAllShows()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, "")
 	}
-	jsonshows := make([]JSONShow, len(shows))
+	jsonshows := make([]jsonShow, len(shows))
 	for i, s := range shows {
-		jsonshows[i] = JSONShow{
+		jsonshows[i] = jsonShow{
 			ID:        s.ID,
-			AirByDate: Btoi(s.AirByDate),
+			AirByDate: s.AirByDate,
 			//Cache
-			Anime:     Btoi(s.Anime),
+			Anime:     s.Anime,
 			IndexerID: s.IndexerID,
 			Language:  s.Language,
 			Network:   s.Network,
 			//NextEpAirdate: s.NextEpAirdate(),
-			Paused:    Btoi(s.Paused),
+			Paused:    s.Paused,
 			Quality:   strconv.FormatInt(s.Quality, 10),
 			Name:      s.Name,
-			Sports:    Btoi(s.Sports),
+			Sports:    s.Sports,
 			Status:    s.Status,
-			Subtitles: Btoi(s.Subtitles),
+			Subtitles: s.Subtitles,
 			TVDBID:    s.IndexerID,
 			//TVdbid, rageid + name
 		}
@@ -76,18 +82,7 @@ func Shows(c *gin.Context) {
 	c.JSON(200, jsonshows)
 }
 
-type GenericResult struct {
-	Message string `json:"message"`
-	Result  string `json:"result"`
-}
-
-func genError(c *gin.Context, status int, msg string) {
-	c.JSON(status, GenericResult{
-		Message: msg,
-		Result:  "failure",
-	})
-}
-
+// Show returns just one show
 func Show(c *gin.Context) {
 	h := c.MustGet("dbh").(*db.Handle)
 	id := c.Params.ByName("showid")
@@ -101,21 +96,21 @@ func Show(c *gin.Context) {
 		genError(c, http.StatusNotFound, "Show not found")
 		return
 	}
-	response := JSONShow{
+	response := jsonShow{
 		ID:        s.ID,
-		AirByDate: Btoi(s.AirByDate),
+		AirByDate: s.AirByDate,
 		//Cache
-		Anime:     Btoi(s.Anime),
+		Anime:     s.Anime,
 		IndexerID: s.IndexerID,
 		Language:  s.Language,
 		Network:   s.Network,
 		//NextEpAirdate: s.NextEpAirdate(),
-		Paused:     Btoi(s.Paused),
+		Paused:     s.Paused,
 		Quality:    strconv.FormatInt(s.Quality, 10),
 		Name:       s.Name,
-		Sports:     Btoi(s.Sports),
+		Sports:     s.Sports,
 		Status:     s.Status,
-		Subtitles:  Btoi(s.Subtitles),
+		Subtitles:  s.Subtitles,
 		TVDBID:     s.IndexerID,
 		SeasonList: h.ShowSeasons(s),
 		//TVdbid, rageid + name
@@ -124,6 +119,7 @@ func Show(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// ShowEpisodes returns all of a shows episodes
 func ShowEpisodes(c *gin.Context) {
 	h := c.MustGet("dbh").(*db.Handle)
 	id := c.Params.ByName("showid")
@@ -147,10 +143,10 @@ func ShowEpisodes(c *gin.Context) {
 	c.JSON(200, resp)
 }
 
-func episodesToResponse(eps []db.Episode) []EpisodeResponse {
-	resp := make([]EpisodeResponse, len(eps))
+func episodesToResponse(eps []db.Episode) []episodeResponse {
+	resp := make([]episodeResponse, len(eps))
 	for i, ep := range eps {
-		resp[i] = EpisodeResponse{
+		resp[i] = episodeResponse{
 			ID:          ep.ID,
 			ShowID:      ep.ShowId,
 			AirDate:     ep.AirDateString(),
@@ -168,7 +164,7 @@ func episodesToResponse(eps []db.Episode) []EpisodeResponse {
 	return resp
 }
 
-type EpisodeResponse struct {
+type episodeResponse struct {
 	ID            int64  `json:"id" form:"id" binding:"required"`
 	ShowID        int64  `json:"showid" form:"showid" binding:"required"`
 	Name          string `json:"name" form:"name" binding:"required"`
@@ -184,12 +180,13 @@ type EpisodeResponse struct {
 	Status        string `json:"status" form:"status"`
 }
 
+// Episode returns just one episode
 func Episode(c *gin.Context) {
 	h := c.MustGet("dbh").(*db.Handle)
 	episodeid, err := strconv.ParseInt(c.Params.ByName("episodeid"), 10, 64)
 
 	if err != nil {
-		c.JSON(http.StatusNotFound, GenericResult{
+		c.JSON(http.StatusNotFound, genericResult{
 			Message: fmt.Sprintf("Invalid episodeid: %v", c.Params.ByName("episodeid")),
 			Result:  "failure",
 		})
@@ -198,13 +195,13 @@ func Episode(c *gin.Context) {
 
 	ep, err := h.GetEpisodeByID(episodeid)
 	if err != nil {
-		c.JSON(http.StatusNotFound, GenericResult{
+		c.JSON(http.StatusNotFound, genericResult{
 			Message: err.Error(),
 			Result:  "failure",
 		})
 		return
 	}
-	resp := EpisodeResponse{
+	resp := episodeResponse{
 		ID:          ep.ID,
 		ShowID:      ep.ShowId,
 		AirDate:     ep.AirDateString(),
@@ -221,9 +218,9 @@ func Episode(c *gin.Context) {
 
 // UpdateEpisode will update the POSTed episode
 func UpdateEpisode(c *gin.Context) {
-	var epUpdate EpisodeResponse
+	var epUpdate episodeResponse
 	if !c.Bind(&epUpdate) {
-		c.JSON(http.StatusBadRequest, GenericResult{
+		c.JSON(http.StatusBadRequest, genericResult{
 			Message: c.Errors.String(),
 			Result:  "failure",
 		})
@@ -233,7 +230,7 @@ func UpdateEpisode(c *gin.Context) {
 	c.JSON(200, episode)
 }
 
-// cmd=show.addnew&tvdbid=73871
+// AddShow adds the current show to the database.
 func AddShow(c *gin.Context) {
 	tvdbid := c.Request.Form.Get("tvdbid")
 	tvrageid := c.Request.Form.Get("tvrageid")
@@ -249,7 +246,7 @@ func AddShow(c *gin.Context) {
 		}
 		s, eps, err := tvdb.GetShowById(tvdbid)
 		if err != nil {
-			c.JSON(500, GenericResult{
+			c.JSON(500, genericResult{
 				Message: err.Error(),
 				Result:  "failure",
 			})
@@ -329,6 +326,7 @@ func Logger() gin.HandlerFunc {
 	}
 }
 
+// CORSMiddleware adds the right headers to make external API requrests happy
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Content-Type", "application/json")
@@ -382,6 +380,7 @@ func createServer(dbh *db.Handle) *gin.Engine {
 	return r
 }
 
+// StartServer does just what it says.
 func StartServer(cfg *config.Config, dbh *db.Handle) {
 	r := createServer(dbh)
 	glog.Fatal(http.ListenAndServe(cfg.WebServer.ListenAddress, r))
