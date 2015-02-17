@@ -1,7 +1,6 @@
 package config
 
 import (
-	//	"github.com/davecgh/go-spew/spew"
 	"testing"
 )
 
@@ -26,15 +25,15 @@ func TestReadConfigFailsOnBadFormat(t *testing.T) {
 
 func TestDefaultsGetOverridden(t *testing.T) {
 	c := NewConfig()
-	if c.Mail.UseSMTP {
-		t.Fatal("Expected UseSMTP to be false")
+	if !c.DB.Verbose {
+		t.Fatal("Expected DB.Verbose to be true")
 	}
-	path := "../testdata/configs/test_config.json"
+	path := "testdata/test_config.json"
 	err := c.ReadConfig(path)
 	if err != nil {
 		t.Fatalf("Expected no errors when parsing: %s, got %s", path, err)
 	}
-	if !c.Mail.UseSMTP {
-		t.Fatal("Expected c.Mail.UseSMTP to be true")
+	if c.DB.Verbose {
+		t.Fatal("Expected DB.Verbose to be false")
 	}
 }

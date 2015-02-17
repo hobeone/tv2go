@@ -17,6 +17,7 @@ import (
 type Config struct {
 	DB        dbConfig
 	WebServer webConfig
+	Storage   storageConfig
 }
 
 type webConfig struct {
@@ -32,6 +33,10 @@ type dbConfig struct {
 	Type          string // file or memory (for testing)
 }
 
+type storageConfig struct {
+	Directories []string
+}
+
 // NewConfig returns a Config struct with reasonable defaults set.
 func NewConfig() *Config {
 	return &Config{
@@ -44,6 +49,9 @@ func NewConfig() *Config {
 			UpdateDb:      true,
 			WatchInterval: 60,
 			Type:          "file",
+		},
+		Storage: storageConfig{
+			Directories: []string{"~/tv2go"},
 		},
 	}
 }
