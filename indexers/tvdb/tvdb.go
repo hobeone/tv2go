@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -53,7 +54,8 @@ func SetClient(c *http.Client) func(*TvdbIndexer) {
 }
 
 // GetShow gets TVDB information for the given ID.
-func (t *TvdbIndexer) GetShow(tvdbid int64) (*db.Show, error) {
+func (t *TvdbIndexer) GetShow(tvdbidstr string) (*db.Show, error) {
+	tvdbid, _ := strconv.ParseInt(tvdbidstr, 10, 64)
 	glog.Infof("Getting showid %d from tvdbid", tvdbid)
 	series, eps, err := t.tvdbClient.SeriesAllByID(int(tvdbid), "en")
 	if err != nil {
@@ -69,9 +71,30 @@ func (t *TvdbIndexer) GetShow(tvdbid int64) (*db.Show, error) {
 }
 
 // Search searches TVDB for all shows matching the given string.
-func (t *TvdbIndexer) Search(term string) ([]tvd.SeriesSummary, error) {
+func (t *TvdbIndexer) Search(term string) ([]db.Show, error) {
 	res, err := t.tvdbClient.SearchSeries(term, "en")
-	return res, err
+	if err != nil {
+		return nil, err
+	}
+	dbshows := tvdbSeriesSummaryToShow(res)
+	return dbshows, nil
+}
+
+func tvdbSeriesSummaryToShow(sums []tvd.SeriesSummary) []db.Show {
+	dbshows := make([]db.Show, len(sums))
+	for i, sum := range sums {
+		dbshows[i] = db.Show{
+			Name:        sum.Name,
+			Indexer:     "tvdb",
+			IndexerID:   int64(sum.ID),
+			Language:    sum.Language,
+			Description: sum.Overview,
+			ImdbID:      sum.IMDBID,
+			Network:     sum.Network,
+		}
+	}
+
+	return dbshows
 }
 
 // tvdbToShow converts the struct returned by Tvdb and creates a new db.Show struct.
@@ -116,18 +139,18 @@ func updateDbEpisodeFromTvdb(dbep *db.Episode, tvep *tvd.Episode) {
 	}
 }
 
-// UpdateDBShow updates the give Database show from TVDB
-func (t *TvdbIndexer) UpdateDBShow(dbshow *db.Show, dbeps []db.Episode) (*db.Show, error) {
+// UpdateShow updates the give Database show from TVDB
+func (t *TvdbIndexer) UpdateShow(dbshow *db.Show) error {
 	ts, eps, err := t.tvdbClient.SeriesAllByID(int(dbshow.IndexerID), "en")
 	if err != nil {
-		return nil, err
+		return err
 	}
 	updateDbShowFromSeries(dbshow, ts)
 
 	for _, episode := range eps {
 		glog.Infof("Updating S:%d, E:%d for '%s (tvdb id: %d)'", episode.SeasonNumber, episode.EpisodeNumber, dbshow.Name, dbshow.IndexerID)
 		epToUpdate := db.Episode{}
-		for _, dbep := range dbeps {
+		for _, dbep := range dbshow.Episodes {
 			if dbep.Season == int64(episode.SeasonNumber) && dbep.Episode == int64(episode.EpisodeNumber) {
 				glog.Infof("Found existing episode for S:%d, E:%d for '%s (tvdb id: %d)'",
 					episode.SeasonNumber, episode.EpisodeNumber, dbshow.Name, dbshow.IndexerID)
@@ -137,12 +160,11 @@ func (t *TvdbIndexer) UpdateDBShow(dbshow *db.Show, dbeps []db.Episode) (*db.Sho
 		updateDbEpisodeFromTvdb(&epToUpdate, &episode)
 
 		if epToUpdate.ID == 0 {
-			dbeps = append(dbeps, epToUpdate)
+			dbshow.Episodes = append(dbshow.Episodes, epToUpdate)
 		}
 	}
 
-	dbshow.Episodes = dbeps
-	return dbshow, nil
+	return nil
 }
 
 // TESTING FUNCTIONS

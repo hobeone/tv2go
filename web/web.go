@@ -285,7 +285,8 @@ func (server *Server) AddShow(c *gin.Context) {
 		return
 	}
 	glog.Infof("Got id to add: %s", indexerID)
-	dbshow, err := server.tvdbIndexer.GetShow(indexerID)
+	// TODO: lame
+	dbshow, err := server.tvdbIndexer.GetShow(strconv.FormatInt(indexerID, 10))
 	if err != nil {
 		c.JSON(500, genericResult{
 			Message: err.Error(),

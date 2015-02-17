@@ -41,7 +41,7 @@ func TestGetShowById(t *testing.T) {
 	defer httpserver.Close()
 
 	client := NewTvdbIndexer("", SetClient(httpclient))
-	show, err := client.GetShow(100)
+	show, err := client.GetShow("100")
 	Expect(err).ToNot(HaveOccurred(), "Error getting show: %s", err)
 	Expect(len(show.Episodes)).Should(Equal(18), "Eps is too long")
 }

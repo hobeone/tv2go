@@ -57,6 +57,7 @@ func init() {
 type Show struct {
 	ID                int64  `gorm:"column:id; primary_key:yes"`
 	Name              string `sql:"not null"`
+	Description       string
 	Indexer           string `sql:"not null"`
 	IndexerID         int64  `gorm:"column:indexer_key"` // id to use when looking up with the indexer
 	Episodes          []Episode

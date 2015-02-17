@@ -4,9 +4,11 @@ import (
 	"flag"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/golang/glog"
 	"github.com/hobeone/tv2go/config"
 	"github.com/hobeone/tv2go/db"
+	"github.com/hobeone/tv2go/indexers"
 	"github.com/hobeone/tv2go/indexers/tvdb"
 	"github.com/hobeone/tv2go/web"
 )
@@ -30,13 +32,13 @@ func ShowUpdater(h *db.Handle) {
 					glog.Errorf("Error getting show episodes from db: %s", err)
 					continue
 				}
-				dbshow, err := tvdb.NewTvdbIndexer("").UpdateDBShow(&s, dbeps)
+				err = tvdb.NewTvdbIndexer("").UpdateShow(&s)
 				if err != nil {
 					glog.Errorf("Error updating show: %s", err.Error())
 					continue
 				}
 				glog.Infof("Saving %d episodes", len(dbeps))
-				h.DB().Save(&dbshow)
+				h.DB().Save(&s)
 			}
 		}
 		glog.Info("Updated shows, sleeping.")
@@ -98,6 +100,11 @@ func main() {
 	flag.Parse()
 
 	cfg := loadConfig(*cfgfile)
+
+	idxReg := indexers.IndexerRegistry{
+		"tvdb": tvdb.NewTvdbIndexer(""),
+	}
+	spew.Dump(idxReg)
 
 	runDaemon(cfg)
 }

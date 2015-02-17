@@ -254,6 +254,7 @@ func TestAddShow(t *testing.T) {
 
 	eng.Handler.ServeHTTP(response, req)
 	if response.Code != 200 {
+		spew.Dump(response.Body)
 		t.Fatalf("Expected 200 response code, got %d", response.Code)
 	}
 }
