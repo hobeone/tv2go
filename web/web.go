@@ -285,7 +285,7 @@ func (server *Server) AddShow(c *gin.Context) {
 		return
 	}
 	glog.Infof("Got id to add: %s", indexerID)
-	s, eps, err := server.tvdbIndexer.GetShowByID(indexerID)
+	dbshow, err := server.tvdbIndexer.GetShow(indexerID)
 	if err != nil {
 		c.JSON(500, genericResult{
 			Message: err.Error(),
@@ -293,19 +293,6 @@ func (server *Server) AddShow(c *gin.Context) {
 		})
 		return
 	}
-	dbshow := tvdb.TVDBToShow(s)
-	dbeps := []db.Episode{}
-	for _, ep := range eps {
-		dbep := tvdb.TVDBToEpisode(&ep)
-		dbep.ShowId = dbshow.ID
-		validationErr := dbep.BeforeSave()
-		if validationErr != nil {
-			glog.Errorf("Got invalid episode for %s: %s: %+v", dbshow.Name, validationErr, dbep)
-		} else {
-			dbeps = append(dbeps, *dbep)
-		}
-	}
-	dbshow.Episodes = dbeps
 	err = h.AddShow(dbshow)
 	if err != nil {
 		c.JSON(500, err.Error())

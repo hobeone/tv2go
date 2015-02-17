@@ -18,6 +18,7 @@ import (
 // Trying out funcitonal api config as described here:
 // http://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis
 
+//APIKEY is used in all calls to TVDB
 var APIKEY = ""
 
 // TvdbIndexer implements the Indexer interface
@@ -51,15 +52,20 @@ func SetClient(c *http.Client) func(*TvdbIndexer) {
 	}
 }
 
-// GetShowByID gets TVDB information for the given ID.
-func (t *TvdbIndexer) GetShowByID(tvdbid int64) (*tvd.Series, []tvd.Episode, error) {
+// GetShow gets TVDB information for the given ID.
+func (t *TvdbIndexer) GetShow(tvdbid int64) (*db.Show, error) {
 	glog.Infof("Getting showid %d from tvdbid", tvdbid)
 	series, eps, err := t.tvdbClient.SeriesAllByID(int(tvdbid), "en")
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
-
-	return series, eps, nil
+	dbshow := tvdbToShow(series)
+	dbeps := make([]db.Episode, len(eps))
+	for i, ep := range eps {
+		dbeps[i] = tvdbToEpisode(&ep)
+	}
+	dbshow.Episodes = dbeps
+	return dbshow, nil
 }
 
 // Search searches TVDB for all shows matching the given string.
@@ -68,8 +74,8 @@ func (t *TvdbIndexer) Search(term string) ([]tvd.SeriesSummary, error) {
 	return res, err
 }
 
-// TVDBToShow converts the struct returned by Tvdb and creates a new db.Show struct.
-func TVDBToShow(ts *tvd.Series) *db.Show {
+// tvdbToShow converts the struct returned by Tvdb and creates a new db.Show struct.
+func tvdbToShow(ts *tvd.Series) *db.Show {
 	s := &db.Show{}
 	updateDbShowFromSeries(s, ts)
 	return s
@@ -93,9 +99,9 @@ func updateDbShowFromSeries(dbshow *db.Show, ts *tvd.Series) {
 }
 
 // TVDBToEpisode converts a TVDB episode record to a tv2go database episode
-func TVDBToEpisode(episode *tvd.Episode) *db.Episode {
-	dbep := &db.Episode{}
-	updateDbEpisodeFromTvdb(dbep, episode)
+func tvdbToEpisode(episode *tvd.Episode) db.Episode {
+	dbep := db.Episode{}
+	updateDbEpisodeFromTvdb(&dbep, episode)
 	return dbep
 }
 
@@ -111,10 +117,10 @@ func updateDbEpisodeFromTvdb(dbep *db.Episode, tvep *tvd.Episode) {
 }
 
 // UpdateDBShow updates the give Database show from TVDB
-func (t *TvdbIndexer) UpdateDBShow(dbshow *db.Show, dbeps []db.Episode) (*db.Show, []db.Episode, error) {
-	ts, eps, err := t.GetShowByID(dbshow.IndexerID)
+func (t *TvdbIndexer) UpdateDBShow(dbshow *db.Show, dbeps []db.Episode) (*db.Show, error) {
+	ts, eps, err := t.tvdbClient.SeriesAllByID(int(dbshow.IndexerID), "en")
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	updateDbShowFromSeries(dbshow, ts)
 
@@ -136,7 +142,7 @@ func (t *TvdbIndexer) UpdateDBShow(dbshow *db.Show, dbeps []db.Episode) (*db.Sho
 	}
 
 	dbshow.Episodes = dbeps
-	return dbshow, dbeps, nil
+	return dbshow, nil
 }
 
 // TESTING FUNCTIONS
