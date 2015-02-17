@@ -1,103 +1,135 @@
 package tvdb
 
 import (
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
+	"os"
 	"strings"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/golang/glog"
 	"github.com/hobeone/tv2go/db"
-	tvd "github.com/nemith/tvdb"
+	tvd "github.com/hobeone/tvdb"
 )
 
-func ConvertTvdbEpisodeToDbEpisode(episode tvd.Episode) db.Episode {
-	var dbep db.Episode
-	dbep.Name = episode.EpisodeName
-	dbep.AirDate = episode.FirstAired.UTC()
-	dbep.Description = episode.Overview
-	dbep.Season = int64(episode.SeasonNumber)
-	dbep.Episode = int64(episode.EpisodeNumber)
-	if episode.AbsoluteNumber.Valid {
-		dbep.AbsoluteNumber = int64(episode.AbsoluteNumber.Value)
-	}
-	return dbep
+// Trying out funcitonal api config as described here:
+// http://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis
+
+var APIKEY = ""
+
+// TvdbIndexer implements the Indexer interface
+type TvdbIndexer struct {
+	tvdbClient *tvd.Client
 }
 
-func GetShowById(tvdbid int64) (*tvd.Series, []tvd.Episode, error) {
+// NewTvdbIndexer returns a new configured indexer
+func NewTvdbIndexer(apiKey string, options ...func(*TvdbIndexer)) *TvdbIndexer {
+	t := &TvdbIndexer{
+		tvdbClient: tvd.NewClient(apiKey),
+	}
+	for _, option := range options {
+		option(t)
+	}
+	return t
+}
+
+func (t *TvdbIndexer) setClient(c *http.Client) error {
+	t.tvdbClient.HTTPClient = c
+	return nil
+}
+
+// SetClient set's the httpclient the Indexer will use.
+//
+// Example:
+//  NewTvdbIndexer(apikey, SetClient(httpclient))
+func SetClient(c *http.Client) func(*TvdbIndexer) {
+	return func(t *TvdbIndexer) {
+		t.setClient(c)
+	}
+}
+
+// GetShowByID gets TVDB information for the given ID.
+func (t *TvdbIndexer) GetShowByID(tvdbid int64) (*tvd.Series, []tvd.Episode, error) {
 	glog.Infof("Getting showid %d from tvdbid", tvdbid)
-	t := tvd.NewClient("90D7DF3AE9E4841E")
-	series, eps, err := t.SeriesAllByID(int(tvdbid), "en")
+	series, eps, err := t.tvdbClient.SeriesAllByID(int(tvdbid), "en")
 	if err != nil {
-		return series, eps, err
+		return nil, nil, err
 	}
 
 	return series, eps, nil
 }
 
-func Search(term string) ([]tvd.SeriesSummary, error) {
-	t := tvd.NewClient("90D7DF3AE9E4841E")
-	res, err := t.SearchSeries(term, "en")
+// Search searches TVDB for all shows matching the given string.
+func (t *TvdbIndexer) Search(term string) ([]tvd.SeriesSummary, error) {
+	res, err := t.tvdbClient.SearchSeries(term, "en")
 	return res, err
 }
 
-func parseYear(s string) int {
-	parseddate := 0
-	t, err := time.Parse("1999-03-28", s)
-	if err == nil {
-		parseddate = t.Year()
-	}
-	return parseddate
-}
-func parseDate(s string) *time.Time {
-	parsed, err := time.Parse("1999-03-28", s)
-	if err == nil {
-		return &time.Time{}
-	}
-	return &parsed
-}
-func TVDBToShow(ts *tvd.Series) db.Show {
-	s := db.Show{
-		Name:  ts.Name,
-		Genre: strings.Join(ts.Genre, "|"),
-		//Classification: ts.Status,
-		Status:    ts.Status,
-		StartYear: ts.FirstAired.Year(),
-		IndexerID: int64(ts.ID),
-		Network:   ts.Network,
-		Language:  ts.Language,
-	}
+// TVDBToShow converts the struct returned by Tvdb and creates a new db.Show struct.
+func TVDBToShow(ts *tvd.Series) *db.Show {
+	s := &db.Show{}
+	updateDbShowFromSeries(s, ts)
 	return s
 }
 
-func UpdateDBShow(dbshow db.Show, dbeps []db.Episode) (db.Show, []db.Episode, error) {
-	ts, eps, err := GetShowById(dbshow.IndexerID)
-	if err != nil {
-		return dbshow, dbeps, err
-	}
-
+func updateDbShowFromSeries(dbshow *db.Show, ts *tvd.Series) {
 	dbshow.Name = ts.Name
 	dbshow.Genre = strings.Join(ts.Genre, "|")
 	dbshow.Status = ts.Status
 	dbshow.StartYear = ts.FirstAired.Year()
+	dbshow.Indexer = "tvdb"
+	dbshow.IndexerID = int64(ts.ID)
 	dbshow.Network = ts.Network
+	dbshow.Language = ts.Language
+	dbshow.Airs = ts.AirsTime
+	dbshow.ImdbID = ts.IMDBID
 	dbshow.LastIndexerUpdate = time.Now()
+	if ts.Runtime.Valid {
+		dbshow.Runtime = int64(ts.Runtime.Value)
+	}
+}
+
+// TVDBToEpisode converts a TVDB episode record to a tv2go database episode
+func TVDBToEpisode(episode *tvd.Episode) *db.Episode {
+	dbep := &db.Episode{}
+	updateDbEpisodeFromTvdb(dbep, episode)
+	return dbep
+}
+
+func updateDbEpisodeFromTvdb(dbep *db.Episode, tvep *tvd.Episode) {
+	dbep.Name = tvep.EpisodeName
+	dbep.AirDate = tvep.FirstAired.UTC()
+	dbep.Description = tvep.Overview
+	dbep.Season = int64(tvep.SeasonNumber)
+	dbep.Episode = int64(tvep.EpisodeNumber)
+	if tvep.AbsoluteNumber.Valid {
+		dbep.AbsoluteNumber = int64(tvep.AbsoluteNumber.Value)
+	}
+}
+
+// UpdateDBShow updates the give Database show from TVDB
+func (t *TvdbIndexer) UpdateDBShow(dbshow *db.Show, dbeps []db.Episode) (*db.Show, []db.Episode, error) {
+	ts, eps, err := t.GetShowByID(dbshow.IndexerID)
+	if err != nil {
+		return nil, nil, err
+	}
+	updateDbShowFromSeries(dbshow, ts)
 
 	for _, episode := range eps {
-		glog.Infof("Updating Season %d, Episode %d for '%s (tvdb id: %d)'", episode.SeasonNumber, episode.EpisodeNumber, dbshow.Name, dbshow.IndexerID)
+		glog.Infof("Updating S:%d, E:%d for '%s (tvdb id: %d)'", episode.SeasonNumber, episode.EpisodeNumber, dbshow.Name, dbshow.IndexerID)
 		epToUpdate := db.Episode{}
 		for _, dbep := range dbeps {
 			if dbep.Season == int64(episode.SeasonNumber) && dbep.Episode == int64(episode.EpisodeNumber) {
-				glog.Infof("Found existing episode for Season %d, Episode %d for '%s (tvdb id: %d)'", episode.SeasonNumber, episode.EpisodeNumber, dbshow.Name, dbshow.IndexerID)
+				glog.Infof("Found existing episode for S:%d, E:%d for '%s (tvdb id: %d)'",
+					episode.SeasonNumber, episode.EpisodeNumber, dbshow.Name, dbshow.IndexerID)
 				epToUpdate = dbep
 			}
 		}
-		epToUpdate.Name = episode.EpisodeName
-		epToUpdate.AirDate = episode.FirstAired.UTC()
-		epToUpdate.Description = episode.Overview
-		epToUpdate.Season = int64(episode.SeasonNumber)
-		epToUpdate.Episode = int64(episode.EpisodeNumber)
-		if episode.AbsoluteNumber.Valid {
-			epToUpdate.AbsoluteNumber = int64(episode.AbsoluteNumber.Value)
-		}
+		updateDbEpisodeFromTvdb(&epToUpdate, &episode)
+
 		if epToUpdate.ID == 0 {
 			dbeps = append(dbeps, epToUpdate)
 		}
@@ -105,4 +137,47 @@ func UpdateDBShow(dbshow db.Show, dbeps []db.Episode) (db.Show, []db.Episode, er
 
 	dbshow.Episodes = dbeps
 	return dbshow, dbeps, nil
+}
+
+// TESTING FUNCTIONS
+
+// NewTestTvdbIndexer returns a new configured indexer
+func NewTestTvdbIndexer(options ...func(*TvdbIndexer)) (*TvdbIndexer, *httptest.Server) {
+	r := gin.Default()
+	r.GET("/api//series/71256/all/en.xml",
+		newFileHandler("../indexers/tvdb/testdata/daily_show_all.xml").ServeXMLFile)
+	r.GET("/api//series/78874/all/en.xml",
+		newFileHandler("../indexers/tvdb/testdata/firefly_all.xml").ServeXMLFile)
+
+	testTvdbServer := httptest.NewServer(r)
+
+	transport := &http.Transport{
+		Proxy: func(req *http.Request) (*url.URL, error) {
+			return url.Parse(testTvdbServer.URL)
+		},
+	}
+
+	testTvdbClient := &http.Client{Transport: transport}
+
+	testTvdb := NewTvdbIndexer("", SetClient(testTvdbClient))
+
+	return testTvdb, testTvdbServer
+}
+
+type fileHandler struct {
+	io.ReadCloser
+}
+
+func newFileHandler(filename string) *fileHandler {
+	f, err := os.Open(filename)
+	if err != nil {
+		panic(err)
+	}
+	return &fileHandler{
+		ReadCloser: f,
+	}
+}
+func (h *fileHandler) ServeXMLFile(c *gin.Context) {
+	c.Set("Content-Type", "text/xml; charset=utf-8")
+	io.Copy(c.Writer, h)
 }

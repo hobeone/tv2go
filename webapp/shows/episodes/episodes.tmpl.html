@@ -1,10 +1,16 @@
 <h1>{{episodesListCtrl.show.name}}</h1>
-<div ng-repeat="ep in episodesListCtrl.episodes | orderBy:['season','episode']">
-  <button type="button" ng-click="episodesListCtrl.deleteEpisode(ep)" class="close">&times;</button>
-  <button type="button" class="btn btn-link" ui-sref="tv2go.shows.episodes.edit({episodeId:ep.id})">
-    <span class="glyphicon glyphicon-pencil"></span>
-  </button>
-  {{ep.season}} - {{ep.episode}} - {{ep.airdate}} - {{ep.name}}
+<div ui-view="showdetail"></div>
+<div ng-repeat="epSeason in episodesListCtrl.episodes | orderBy:['-season'] | groupBy:'season':'epsBySeason' ">
+  <h2>Season: {{epSeason.season}}</h2>
+  <div ng-repeat="ep in epSeason.items">
+    <button type="button" class="btn btn-link" ui-sref="tv2go.shows.episodes.edit({episodeId:ep.id})">
+      <span class="glyphicon glyphicon-pencil"></span>
+    </button>
+    {{ep.episode}} - {{ep.airdate}} - {{ep.name}}
+    <pre>
+    {{ep}}
+    </pre>
+  </div>
 </div>
 <hr/>
 <!-- create -->

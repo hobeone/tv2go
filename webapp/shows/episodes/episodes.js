@@ -7,10 +7,14 @@ angular.module('shows.episodes',[
 .config(function($stateProvider){
   $stateProvider
     .state('tv2go.shows.episodes', {
-      url: ":show",
+      url: '/:show',
       views: {
         'detail@tv2go': {
           templateUrl: 'shows/episodes/episodes.tmpl.html',
+          controller: 'EpisodesListCtrl as episodesListCtrl',
+        },
+        'showdetail@tv2go.shows.episodes': {
+          templateUrl: 'shows/showdetail.tmpl.html',
           controller: 'EpisodesListCtrl as episodesListCtrl',
         }
       },

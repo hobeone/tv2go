@@ -53,25 +53,20 @@ func init() {
      default_ep_status   NUMERIC
 */
 
-type Indexer struct {
-	ID   int64 `gorm:"column:id; primary_key:yes"`
-	Name string
-}
-
 // Show is a TV Show
 type Show struct {
 	ID                int64  `gorm:"column:id; primary_key:yes"`
 	Name              string `sql:"not null"`
-	Indexer           Indexer
-	IndexerID         int64 `gorm:"column:indexer_key"` // id to use when looking up with the indexer
+	Indexer           string `sql:"not null"`
+	IndexerID         int64  `gorm:"column:indexer_key"` // id to use when looking up with the indexer
 	Episodes          []Episode
-	Location          string
+	Location          string // Location of Show on disk
 	Network           string
-	Genre             string
+	Genre             string // pipe seperated
 	Classification    string
-	Runtime           int64
-	Quality           int64 // convert to foreign key
-	Airs              string
+	Runtime           int64  // in minutes
+	Quality           int64  // convert to foreign key
+	Airs              string // Hour of the day
 	Status            string
 	FlattenFolders    bool
 	Paused            bool
@@ -183,9 +178,6 @@ func (e *Episode) BeforeSave() error {
 	//	}
 	if e.Episode == 0 {
 		return errors.New("Episode must be set")
-	}
-	if e.ShowId == 0 {
-		return errors.New("ShowId can not be unset")
 	}
 	return nil
 }

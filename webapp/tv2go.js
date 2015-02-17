@@ -1,6 +1,7 @@
 angular.module('tv2go', [
   'ngAnimate',
   'ui.router',
+  'ng.group',
   'shows',
   'shows.episodes',
 ])

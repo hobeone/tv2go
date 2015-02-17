@@ -30,7 +30,7 @@ func ShowUpdater(h *db.Handle) {
 					glog.Errorf("Error getting show episodes from db: %s", err)
 					continue
 				}
-				dbshow, dbeps, err := tvdb.UpdateDBShow(s, dbeps)
+				dbshow, dbeps, err := tvdb.NewTvdbIndexer("").UpdateDBShow(&s, dbeps)
 				if err != nil {
 					glog.Errorf("Error updating show: %s", err.Error())
 					continue

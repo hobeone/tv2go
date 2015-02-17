@@ -4,45 +4,67 @@ import (
 	"flag"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
+	"strings"
 	"testing"
 
+	"github.com/davecgh/go-spew/spew"
 	. "github.com/onsi/gomega"
 
 	"github.com/gin-gonic/gin"
+	"github.com/hobeone/tv2go/config"
 	"github.com/hobeone/tv2go/db"
+	"github.com/hobeone/tv2go/indexers/tvdb"
 )
 
-func setupTest(t *testing.T) (*db.Handle, *gin.Engine) {
-	flag.Set("logtostderr", "false")
+func setupTest(t *testing.T) (*db.Handle, *Server) {
+	flag.Set("logtostderr", "true")
 	gin.SetMode("test")
 
 	dbh := db.NewMemoryDBHandle(false, true)
-	e := createServer(dbh)
-	return dbh, e
+	s := NewServer(config.NewTestConfig(), dbh)
+	return dbh, s
+}
+
+func setupTestServer(mux http.Handler) (*httptest.Server, *http.Client) {
+	server := httptest.NewServer(mux)
+
+	transport := &http.Transport{
+		Proxy: func(req *http.Request) (*url.URL, error) {
+			spew.Dump(req.URL)
+			return url.Parse(server.URL)
+		},
+	}
+
+	httpClient := &http.Client{Transport: transport}
+
+	return server, httpClient
 }
 
 const GoldenShowResponse = `{
-	"id":1,
-		"air_by_date":0,
-		"cache":{
-			"Banner":0,
-			"Poster":0
-		},
-		"anime":0,
-		"indexerid":1,
-		"language":"",
-		"network":"",
-		"next_ep_airdate":"",
-		"paused":0,
-		"quality":"0",
-		"name":"show1",
-		"sports":0,
-		"status":"",
-		"subtitles":0,
-		"tvdbid":1,
-		"tvrage_id":0,
-		"tvrage_name":"",
-		"season_list":[1]
+	"id": 1,
+	"air_by_date": false,
+	"cache": {
+		"Banner": 0,
+		"Poster": 0
+	},
+	"anime": false,
+	"indexerid": 1,
+	"language": "",
+	"network": "",
+	"next_ep_airdate": "",
+	"paused": false,
+	"quality": "0",
+	"name": "show1",
+	"sports": false,
+	"status": "",
+	"subtitles": false,
+	"tvdbid": 1,
+	"tvrage_id": 0,
+	"tvrage_name": "",
+	"season_list": [
+	1
+	]
 }`
 
 func TestShow(t *testing.T) {
@@ -55,7 +77,7 @@ func TestShow(t *testing.T) {
 	req, err := http.NewRequest("GET", "/api/1/shows/NOTFOUND", nil)
 	Expect(err).ToNot(HaveOccurred(), "Error creating request: %s", err)
 
-	eng.ServeHTTP(response, req)
+	eng.Handler.ServeHTTP(response, req)
 	if response.Code != 500 {
 		t.Fatalf("Expected 500 response code, got %d", response.Code)
 	}
@@ -65,7 +87,7 @@ func TestShow(t *testing.T) {
 	req, err = http.NewRequest("GET", "/api/1/shows/0", nil)
 	Expect(err).ToNot(HaveOccurred(), "Error creating request: %s", err)
 
-	eng.ServeHTTP(response, req)
+	eng.Handler.ServeHTTP(response, req)
 	if response.Code != 404 {
 		t.Fatalf("Expected 404 response code, got %d", response.Code)
 	}
@@ -75,7 +97,7 @@ func TestShow(t *testing.T) {
 	req, err = http.NewRequest("GET", "/api/1/shows/1", nil)
 	Expect(err).ToNot(HaveOccurred(), "Error creating request: %s", err)
 
-	eng.ServeHTTP(response, req)
+	eng.Handler.ServeHTTP(response, req)
 	if response.Code != 200 {
 		t.Fatalf("Expected 200 response code, got %d", response.Code)
 	}
@@ -83,53 +105,53 @@ func TestShow(t *testing.T) {
 }
 
 const ShowsGoldenResp = `[
-		{
-			"id": 1,
-			"air_by_date":0,
-			"cache":{
-				"Banner":0,
-				"Poster":0
-			},
-			"anime":0,
-			"indexerid":1,
-			"language":"",
-			"network":"",
-			"next_ep_airdate":"",
-			"paused":0,
-			"quality":"0",
-			"name":"show1",
-			"sports":0,
-			"status":"",
-			"subtitles":0,
-			"tvdbid":1,
-			"tvrage_id":0,
-			"tvrage_name":"",
-			"season_list":null
-		},
-		{
-			"id": 2,
-			"air_by_date":0,
-			"cache":{
-				"Banner":0,
-				"Poster":0
-			},
-			"anime":0,
-			"indexerid":2,
-			"language":"",
-			"network":"",
-			"next_ep_airdate":"",
-			"paused":0,
-			"quality":"0",
-			"name":"show2",
-			"sports":0,
-			"status":"",
-			"subtitles":0,
-			"tvdbid":2,
-			"tvrage_id":0,
-			"tvrage_name":"",
-			"season_list":null
-		}
-	]`
+{
+	"id": 1,
+	"air_by_date": false,
+	"cache": {
+		"Banner": 0,
+		"Poster": 0
+	},
+	"anime": false,
+	"indexerid": 1,
+	"language": "",
+	"network": "",
+	"next_ep_airdate": "",
+	"paused": false,
+	"quality": "0",
+	"name": "show1",
+	"sports": false,
+	"status": "",
+	"subtitles": false,
+	"tvdbid": 1,
+	"tvrage_id": 0,
+	"tvrage_name": "",
+	"season_list": null
+},
+{
+	"id": 2,
+	"air_by_date": false,
+	"cache": {
+		"Banner": 0,
+		"Poster": 0
+	},
+	"anime": false,
+	"indexerid": 2,
+	"language": "",
+	"network": "",
+	"next_ep_airdate": "",
+	"paused": false,
+	"quality": "0",
+	"name": "show2",
+	"sports": false,
+	"status": "",
+	"subtitles": false,
+	"tvdbid": 2,
+	"tvrage_id": 0,
+	"tvrage_name": "",
+	"season_list": null
+}
+]`
 
 func TestShows(t *testing.T) {
 	dbh, eng := setupTest(t)
@@ -140,7 +162,7 @@ func TestShows(t *testing.T) {
 	req, err := http.NewRequest("GET", "/api/1/shows", nil)
 	Expect(err).ToNot(HaveOccurred(), "Error creating request: %s", err)
 
-	eng.ServeHTTP(response, req)
+	eng.Handler.ServeHTTP(response, req)
 	if response.Code != 200 {
 		t.Fatalf("Expected 200 response code, got %d", response.Code)
 	}
@@ -173,7 +195,7 @@ func TestEpisode(t *testing.T) {
 	req, err := http.NewRequest("GET", "/api/1/shows/1/episodes/1", nil)
 	Expect(err).ToNot(HaveOccurred(), "Error creating request: %s", err)
 
-	eng.ServeHTTP(response, req)
+	eng.Handler.ServeHTTP(response, req)
 	if response.Code != 200 {
 		t.Fatalf("Expected 200 response code, got %d", response.Code)
 	}
@@ -184,7 +206,7 @@ func TestEpisode(t *testing.T) {
 	req, err = http.NewRequest("GET", "/api/1/shows/episodes/1", nil)
 	Expect(err).ToNot(HaveOccurred(), "Error creating request: %s", err)
 
-	eng.ServeHTTP(response, req)
+	eng.Handler.ServeHTTP(response, req)
 	if response.Code != 405 {
 		t.Fatalf("Expected 405 response code, got %d", response.Code)
 	}
@@ -195,7 +217,7 @@ func TestEpisode(t *testing.T) {
 	req, err = http.NewRequest("GET", "/api/1/shows/XX/episodes/1", nil)
 	Expect(err).ToNot(HaveOccurred(), "Error creating request: %s", err)
 
-	eng.ServeHTTP(response, req)
+	eng.Handler.ServeHTTP(response, req)
 	if response.Code != 200 {
 		t.Fatalf("Expected 200 response code, got %d", response.Code)
 	}
@@ -206,12 +228,32 @@ func TestEpisode(t *testing.T) {
 	req, err = http.NewRequest("GET", "/api/1/shows/1/episodes/100000", nil)
 	Expect(err).ToNot(HaveOccurred(), "Error creating request: %s", err)
 
-	eng.ServeHTTP(response, req)
+	eng.Handler.ServeHTTP(response, req)
 	if response.Code != 404 {
 		t.Fatalf("Expected 404 response code, got %d", response.Code)
 	}
 	Expect(response.Body.String()).Should(MatchJSON(`{
-		"message": "Record Not Found",
+		"message": "record not found",
 		"result": "failure"
 	}`))
+}
+
+func TestAddShow(t *testing.T) {
+	dbh, eng := setupTest(t)
+	db.LoadFixtures(t, dbh)
+	RegisterTestingT(t)
+	tvdbIndexer, server := tvdb.NewTestTvdbIndexer()
+	eng.tvdbIndexer = tvdbIndexer
+	defer server.Close()
+
+	//Success
+	response := httptest.NewRecorder()
+	req, err := http.NewRequest("POST", "/api/1/shows", strings.NewReader(`{"indexer_name":"tvdb","indexer_id":"78874"}\n`))
+	req.Header.Add("content-type", "application/json;charset=UTF-8")
+	Expect(err).ToNot(HaveOccurred(), "Error creating request: %s", err)
+
+	eng.Handler.ServeHTTP(response, req)
+	if response.Code != 200 {
+		t.Fatalf("Expected 200 response code, got %d", response.Code)
+	}
 }

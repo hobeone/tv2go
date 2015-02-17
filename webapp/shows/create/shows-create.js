@@ -31,7 +31,6 @@ angular.module('shows.create', ['tv2go.models.shows','tv2go.indexerSearchService
 
 
     createShowsCtrl.newShow = new Show();
-    console.log(createShowsCtrl.newShow);
   }
 
   function cancelCreating() {
@@ -43,6 +42,7 @@ angular.module('shows.create', ['tv2go.models.shows','tv2go.indexerSearchService
   }
 
   function searchShow(show) {
+    console.log(show);
     createShowsCtrl.showSearchResult = IndexerSearch.query(show, function(){
       createShowsCtrl.newShow.indexer_name = show.indexer_name;
       $state.go('tv2go.shows.create.steptwo');

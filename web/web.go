@@ -51,8 +51,8 @@ type jsonShow struct {
 }
 
 // Shows returns all the shows
-func Shows(c *gin.Context) {
-	h := c.MustGet("dbh").(*db.Handle)
+func (server *Server) Shows(c *gin.Context) {
+	h := server.dbHandle
 	shows, err := h.GetAllShows()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, "")
@@ -82,8 +82,8 @@ func Shows(c *gin.Context) {
 }
 
 // Show returns just one show
-func Show(c *gin.Context) {
-	h := c.MustGet("dbh").(*db.Handle)
+func (server *Server) Show(c *gin.Context) {
+	h := server.dbHandle
 	id := c.Params.ByName("showid")
 	tvdbid, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
@@ -119,8 +119,8 @@ func Show(c *gin.Context) {
 }
 
 // ShowEpisodes returns all of a shows episodes
-func ShowEpisodes(c *gin.Context) {
-	h := c.MustGet("dbh").(*db.Handle)
+func (server *Server) ShowEpisodes(c *gin.Context) {
+	h := server.dbHandle
 	id := c.Params.ByName("showid")
 	showid, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
@@ -180,8 +180,8 @@ type episodeResponse struct {
 }
 
 // Episode returns just one episode
-func Episode(c *gin.Context) {
-	h := c.MustGet("dbh").(*db.Handle)
+func (server *Server) Episode(c *gin.Context) {
+	h := server.dbHandle
 	episodeid, err := strconv.ParseInt(c.Params.ByName("episodeid"), 10, 64)
 
 	if err != nil {
@@ -216,7 +216,7 @@ func Episode(c *gin.Context) {
 }
 
 // UpdateEpisode will update the POSTed episode
-func UpdateEpisode(c *gin.Context) {
+func (server *Server) UpdateEpisode(c *gin.Context) {
 	var epUpdate episodeResponse
 	if !c.Bind(&epUpdate) {
 		c.JSON(http.StatusBadRequest, genericResult{
@@ -235,9 +235,7 @@ type searchShowRequest struct {
 }
 
 // ShowSearch searches for the search term on the given indexer
-func ShowSearch(c *gin.Context) {
-	//	h := c.MustGet("dbh").(*db.Handle)
-
+func (server *Server) ShowSearch(c *gin.Context) {
 	var reqJSON searchShowRequest
 
 	if !c.Bind(&reqJSON) {
@@ -247,7 +245,7 @@ func ShowSearch(c *gin.Context) {
 		})
 		return
 	}
-	series, err := tvdb.Search(reqJSON.SearchTerm)
+	series, err := server.tvdbIndexer.Search(reqJSON.SearchTerm)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, genericResult{
 			Message: err.Error(),
@@ -259,13 +257,13 @@ func ShowSearch(c *gin.Context) {
 }
 
 type addShowRequest struct {
-	IndexerName string `form:"indexer_name" binding:"required"`
-	IndexerID   string `form:"indexer_id" binding:"required"`
+	IndexerName string `json:"indexer_name" form:"indexer_name" binding:"required"`
+	IndexerID   string `json:"indexer_id" form:"indexer_id" binding:"required"`
 }
 
 // AddShow adds the current show to the database.
-func AddShow(c *gin.Context) {
-	h := c.MustGet("dbh").(*db.Handle)
+func (server *Server) AddShow(c *gin.Context) {
+	h := server.dbHandle
 
 	var reqJSON addShowRequest
 
@@ -287,7 +285,7 @@ func AddShow(c *gin.Context) {
 		return
 	}
 	glog.Infof("Got id to add: %s", indexerID)
-	s, eps, err := tvdb.GetShowById(indexerID)
+	s, eps, err := server.tvdbIndexer.GetShowByID(indexerID)
 	if err != nil {
 		c.JSON(500, genericResult{
 			Message: err.Error(),
@@ -296,10 +294,19 @@ func AddShow(c *gin.Context) {
 		return
 	}
 	dbshow := tvdb.TVDBToShow(s)
+	dbeps := []db.Episode{}
 	for _, ep := range eps {
-		dbshow.Episodes = append(dbshow.Episodes, tvdb.ConvertTvdbEpisodeToDbEpisode(ep))
+		dbep := tvdb.TVDBToEpisode(&ep)
+		dbep.ShowId = dbshow.ID
+		validationErr := dbep.BeforeSave()
+		if validationErr != nil {
+			glog.Errorf("Got invalid episode for %s: %s: %+v", dbshow.Name, validationErr, dbep)
+		} else {
+			dbeps = append(dbeps, *dbep)
+		}
 	}
-	err = h.AddShow(&dbshow)
+	dbshow.Episodes = dbeps
+	err = h.AddShow(dbshow)
 	if err != nil {
 		c.JSON(500, err.Error())
 	}
@@ -319,7 +326,7 @@ func AddShow(c *gin.Context) {
 		Status:     dbshow.Status,
 		Subtitles:  dbshow.Subtitles,
 		TVDBID:     dbshow.IndexerID,
-		SeasonList: h.ShowSeasons(&dbshow),
+		SeasonList: h.ShowSeasons(dbshow),
 		//TVdbid, rageid + name
 	}
 
@@ -389,32 +396,58 @@ func CORSMiddleware() gin.HandlerFunc {
 * TODO: settings, indexers, providers
  */
 
-func createServer(dbh *db.Handle) *gin.Engine {
+// StartServer does just what it says.
+func StartServer(cfg *config.Config, dbh *db.Handle) {
+	s := NewServer(cfg, dbh)
+	glog.Fatal(http.ListenAndServe(cfg.WebServer.ListenAddress, s.Handler))
+}
+
+// Server contains all the information for the tv2go web server
+type Server struct {
+	Handler     http.Handler
+	config      *config.Config
+	tvdbIndexer *tvdb.TvdbIndexer
+	dbHandle    *db.Handle
+}
+
+func configGinEngine(s *Server) {
 	r := gin.New()
 	r.Use(Logger())
 	r.Use(CORSMiddleware())
 
-	r.Use(DBHandler(dbh))
-
 	api := r.Group("/api/:apistring")
 	{
 		api.OPTIONS("/*cors", func(c *gin.Context) {})
-		api.GET("shows", Shows)
-		api.GET("shows/:showid", Show)
-		api.POST("shows", AddShow)
+		api.GET("shows", s.Shows)
+		api.GET("shows/:showid", s.Show)
+		api.POST("shows", s.AddShow)
 
-		api.GET("shows/:showid/episodes", ShowEpisodes)
-		api.GET("shows/:showid/episodes/:episodeid", Episode)
-		api.PUT("shows/:showid/episodes", UpdateEpisode)
+		api.GET("shows/:showid/episodes", s.ShowEpisodes)
+		api.GET("shows/:showid/episodes/:episodeid", s.Episode)
+		api.PUT("shows/:showid/episodes", s.UpdateEpisode)
 
-		api.GET("indexers/search", ShowSearch)
+		api.GET("indexers/search", s.ShowSearch)
 	}
 
-	return r
+	s.Handler = r
 }
 
-// StartServer does just what it says.
-func StartServer(cfg *config.Config, dbh *db.Handle) {
-	r := createServer(dbh)
-	glog.Fatal(http.ListenAndServe(cfg.WebServer.ListenAddress, r))
+// SetTvdbIndexer sets the tvdb index the server should use
+func SetTvdbIndexer(t *tvdb.TvdbIndexer) func(*Server) {
+	return func(s *Server) {
+		s.tvdbIndexer = t
+	}
+}
+
+// NewServer creates a new server
+func NewServer(cfg *config.Config, dbh *db.Handle, options ...func(*Server)) *Server {
+	t := &Server{
+		dbHandle: dbh,
+		config:   cfg,
+	}
+	configGinEngine(t)
+	for _, option := range options {
+		option(t)
+	}
+	return t
 }
