@@ -70,7 +70,14 @@ func runDaemon(cfg *config.Config) {
 	d := NewDaemon(cfg)
 	//go ShowUpdater(d.DBH)
 
-	web.StartServer(cfg, d.DBH)
+	idxReg := indexers.IndexerRegistry{
+		"tvdb": tvdb.NewTvdbIndexer("90D7DF3AE9E4841E"),
+	}
+	spew.Dump(idxReg)
+
+	webserver := web.NewServer(cfg, d.DBH, web.SetIndexers(idxReg))
+
+	webserver.StartServing()
 }
 
 const defaultConfig = "~/.config/tv2go/config.json"
@@ -100,11 +107,6 @@ func main() {
 	flag.Parse()
 
 	cfg := loadConfig(*cfgfile)
-
-	idxReg := indexers.IndexerRegistry{
-		"tvdb": tvdb.NewTvdbIndexer(""),
-	}
-	spew.Dump(idxReg)
 
 	runDaemon(cfg)
 }

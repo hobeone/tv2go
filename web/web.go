@@ -10,7 +10,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/hobeone/tv2go/config"
 	"github.com/hobeone/tv2go/db"
-	"github.com/hobeone/tv2go/indexers/tvdb"
+	"github.com/hobeone/tv2go/indexers"
 )
 
 type genericResult struct {
@@ -47,7 +47,27 @@ type jsonShow struct {
 	TVDBID        int64         `json:"tvdbid"`
 	TVRageID      int64         `json:"tvrage_id"`
 	TVRageName    string        `json:"tvrage_name"`
-	SeasonList    []int64       `json:"season_list"`
+}
+
+func showToResponse(dbshow *db.Show) jsonShow {
+	return jsonShow{
+		ID:        dbshow.ID,
+		AirByDate: dbshow.AirByDate,
+		//Cache
+		Anime:     dbshow.Anime,
+		IndexerID: dbshow.IndexerID,
+		Language:  dbshow.Language,
+		Network:   dbshow.Network,
+		//NextEpAirdate: dbshow.NextEpAirdate(),
+		Paused:    dbshow.Paused,
+		Quality:   strconv.FormatInt(dbshow.Quality, 10),
+		Name:      dbshow.Name,
+		Sports:    dbshow.Sports,
+		Status:    dbshow.Status,
+		Subtitles: dbshow.Subtitles,
+		TVDBID:    dbshow.IndexerID,
+		//TVdbid, rageid + name
+	}
 }
 
 // Shows returns all the shows
@@ -59,24 +79,7 @@ func (server *Server) Shows(c *gin.Context) {
 	}
 	jsonshows := make([]jsonShow, len(shows))
 	for i, s := range shows {
-		jsonshows[i] = jsonShow{
-			ID:        s.ID,
-			AirByDate: s.AirByDate,
-			//Cache
-			Anime:     s.Anime,
-			IndexerID: s.IndexerID,
-			Language:  s.Language,
-			Network:   s.Network,
-			//NextEpAirdate: s.NextEpAirdate(),
-			Paused:    s.Paused,
-			Quality:   strconv.FormatInt(s.Quality, 10),
-			Name:      s.Name,
-			Sports:    s.Sports,
-			Status:    s.Status,
-			Subtitles: s.Subtitles,
-			TVDBID:    s.IndexerID,
-			//TVdbid, rageid + name
-		}
+		jsonshows[i] = showToResponse(&s)
 	}
 	c.JSON(200, jsonshows)
 }
@@ -95,26 +98,7 @@ func (server *Server) Show(c *gin.Context) {
 		genError(c, http.StatusNotFound, "Show not found")
 		return
 	}
-	response := jsonShow{
-		ID:        s.ID,
-		AirByDate: s.AirByDate,
-		//Cache
-		Anime:     s.Anime,
-		IndexerID: s.IndexerID,
-		Language:  s.Language,
-		Network:   s.Network,
-		//NextEpAirdate: s.NextEpAirdate(),
-		Paused:     s.Paused,
-		Quality:    strconv.FormatInt(s.Quality, 10),
-		Name:       s.Name,
-		Sports:     s.Sports,
-		Status:     s.Status,
-		Subtitles:  s.Subtitles,
-		TVDBID:     s.IndexerID,
-		SeasonList: h.ShowSeasons(s),
-		//TVdbid, rageid + name
-	}
-
+	response := showToResponse(s)
 	c.JSON(http.StatusOK, response)
 }
 
@@ -245,7 +229,7 @@ func (server *Server) ShowSearch(c *gin.Context) {
 		})
 		return
 	}
-	series, err := server.tvdbIndexer.Search(reqJSON.SearchTerm)
+	series, err := server.indexers["tvdb"].Search(reqJSON.SearchTerm)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, genericResult{
 			Message: err.Error(),
@@ -253,12 +237,16 @@ func (server *Server) ShowSearch(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(http.StatusOK, series)
+	resp := make([]jsonShow, len(series))
+	for i, s := range series {
+		resp[i] = showToResponse(&s)
+	}
+	c.JSON(http.StatusOK, resp)
 }
 
 type addShowRequest struct {
 	IndexerName string `json:"indexer_name" form:"indexer_name" binding:"required"`
-	IndexerID   string `json:"indexer_id" form:"indexer_id" binding:"required"`
+	IndexerID   string `json:"indexerid" form:"indexerid" binding:"required"`
 }
 
 // AddShow adds the current show to the database.
@@ -286,7 +274,7 @@ func (server *Server) AddShow(c *gin.Context) {
 	}
 	glog.Infof("Got id to add: %s", indexerID)
 	// TODO: lame
-	dbshow, err := server.tvdbIndexer.GetShow(strconv.FormatInt(indexerID, 10))
+	dbshow, err := server.indexers["tvdb"].GetShow(strconv.FormatInt(indexerID, 10))
 	if err != nil {
 		c.JSON(500, genericResult{
 			Message: err.Error(),
@@ -307,14 +295,13 @@ func (server *Server) AddShow(c *gin.Context) {
 		Language:  dbshow.Language,
 		Network:   dbshow.Network,
 		//NextEpAirdate: dbshow.NextEpAirdate(),
-		Paused:     dbshow.Paused,
-		Quality:    strconv.FormatInt(dbshow.Quality, 10),
-		Name:       dbshow.Name,
-		Sports:     dbshow.Sports,
-		Status:     dbshow.Status,
-		Subtitles:  dbshow.Subtitles,
-		TVDBID:     dbshow.IndexerID,
-		SeasonList: h.ShowSeasons(dbshow),
+		Paused:    dbshow.Paused,
+		Quality:   strconv.FormatInt(dbshow.Quality, 10),
+		Name:      dbshow.Name,
+		Sports:    dbshow.Sports,
+		Status:    dbshow.Status,
+		Subtitles: dbshow.Subtitles,
+		TVDBID:    dbshow.IndexerID,
 		//TVdbid, rageid + name
 	}
 
@@ -384,18 +371,21 @@ func CORSMiddleware() gin.HandlerFunc {
 * TODO: settings, indexers, providers
  */
 
-// StartServer does just what it says.
-func StartServer(cfg *config.Config, dbh *db.Handle) {
-	s := NewServer(cfg, dbh)
-	glog.Fatal(http.ListenAndServe(cfg.WebServer.ListenAddress, s.Handler))
+// StartServing does just what it says.
+func (server *Server) StartServing() {
+	glog.Fatal(
+		http.ListenAndServe(
+			server.config.WebServer.ListenAddress, server.Handler,
+		),
+	)
 }
 
 // Server contains all the information for the tv2go web server
 type Server struct {
-	Handler     http.Handler
-	config      *config.Config
-	tvdbIndexer *tvdb.TvdbIndexer
-	dbHandle    *db.Handle
+	Handler  http.Handler
+	config   *config.Config
+	indexers indexers.IndexerRegistry
+	dbHandle *db.Handle
 }
 
 func configGinEngine(s *Server) {
@@ -420,10 +410,10 @@ func configGinEngine(s *Server) {
 	s.Handler = r
 }
 
-// SetTvdbIndexer sets the tvdb index the server should use
-func SetTvdbIndexer(t *tvdb.TvdbIndexer) func(*Server) {
+// SetIndexers sets the tvdb index the server should use
+func SetIndexers(idxs indexers.IndexerRegistry) func(*Server) {
 	return func(s *Server) {
-		s.tvdbIndexer = t
+		s.indexers = idxs
 	}
 }
 

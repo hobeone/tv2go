@@ -14,6 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hobeone/tv2go/config"
 	"github.com/hobeone/tv2go/db"
+	"github.com/hobeone/tv2go/indexers"
 	"github.com/hobeone/tv2go/indexers/tvdb"
 )
 
@@ -61,10 +62,7 @@ const GoldenShowResponse = `{
 	"subtitles": false,
 	"tvdbid": 1,
 	"tvrage_id": 0,
-	"tvrage_name": "",
-	"season_list": [
-	1
-	]
+	"tvrage_name": ""
 }`
 
 func TestShow(t *testing.T) {
@@ -125,8 +123,7 @@ const ShowsGoldenResp = `[
 	"subtitles": false,
 	"tvdbid": 1,
 	"tvrage_id": 0,
-	"tvrage_name": "",
-	"season_list": null
+	"tvrage_name": ""
 },
 {
 	"id": 2,
@@ -148,8 +145,7 @@ const ShowsGoldenResp = `[
 	"subtitles": false,
 	"tvdbid": 2,
 	"tvrage_id": 0,
-	"tvrage_name": "",
-	"season_list": null
+	"tvrage_name": ""
 }
 ]`
 
@@ -243,18 +239,19 @@ func TestAddShow(t *testing.T) {
 	db.LoadFixtures(t, dbh)
 	RegisterTestingT(t)
 	tvdbIndexer, server := tvdb.NewTestTvdbIndexer()
-	eng.tvdbIndexer = tvdbIndexer
+	eng.indexers = indexers.IndexerRegistry{
+		"tvdb": tvdbIndexer,
+	}
 	defer server.Close()
 
 	//Success
 	response := httptest.NewRecorder()
-	req, err := http.NewRequest("POST", "/api/1/shows", strings.NewReader(`{"indexer_name":"tvdb","indexer_id":"78874"}\n`))
+	req, err := http.NewRequest("POST", "/api/1/shows", strings.NewReader(`{"indexer_name":"tvdb","indexerid":"78874"}\n`))
 	req.Header.Add("content-type", "application/json;charset=UTF-8")
 	Expect(err).ToNot(HaveOccurred(), "Error creating request: %s", err)
 
 	eng.Handler.ServeHTTP(response, req)
 	if response.Code != 200 {
-		spew.Dump(response.Body)
 		t.Fatalf("Expected 200 response code, got %d", response.Code)
 	}
 }

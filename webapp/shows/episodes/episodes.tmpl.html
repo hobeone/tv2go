@@ -2,14 +2,11 @@
 <div ui-view="showdetail"></div>
 <div ng-repeat="epSeason in episodesListCtrl.episodes | orderBy:['-season'] | groupBy:'season':'epsBySeason' ">
   <h2>Season: {{epSeason.season}}</h2>
-  <div ng-repeat="ep in epSeason.items">
+  <div ng-repeat="ep in epSeason.items | orderBy:['-episode'] ">
     <button type="button" class="btn btn-link" ui-sref="tv2go.shows.episodes.edit({episodeId:ep.id})">
       <span class="glyphicon glyphicon-pencil"></span>
     </button>
     {{ep.episode}} - {{ep.airdate}} - {{ep.name}}
-    <pre>
-    {{ep}}
-    </pre>
   </div>
 </div>
 <hr/>
