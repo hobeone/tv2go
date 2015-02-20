@@ -1,7 +1,7 @@
 package db
 
-import "testing"
+import (
+	"testing"
+)
 
-func TestDBValidations(t *testing.T) {
-	NewMemoryDBHandle(true, true)
-}
+func TestMe(t *testing.T) {}

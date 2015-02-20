@@ -9,5 +9,11 @@
   "WebServer": {
     "ListenAddress": "localhost:9000",
     "EnableAPI": false
+  },
+  "Storage": {
+    "Directories": [
+      "/tmp/tv2go",
+      "/tmp/tv2go2"
+    ]
   }
 }

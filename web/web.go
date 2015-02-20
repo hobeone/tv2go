@@ -1,16 +1,21 @@
 package web
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/glog"
 	"github.com/hobeone/tv2go/config"
 	"github.com/hobeone/tv2go/db"
 	"github.com/hobeone/tv2go/indexers"
+	"github.com/hobeone/tv2go/types"
 )
 
 type genericResult struct {
@@ -60,7 +65,7 @@ func showToResponse(dbshow *db.Show) jsonShow {
 		Network:   dbshow.Network,
 		//NextEpAirdate: dbshow.NextEpAirdate(),
 		Paused:    dbshow.Paused,
-		Quality:   strconv.FormatInt(dbshow.Quality, 10),
+		Quality:   dbshow.Quality.String(),
 		Name:      dbshow.Name,
 		Sports:    dbshow.Sports,
 		Status:    dbshow.Status,
@@ -126,23 +131,27 @@ func (server *Server) ShowEpisodes(c *gin.Context) {
 	c.JSON(200, resp)
 }
 
+func episodeToResponse(ep *db.Episode) episodeResponse {
+	return episodeResponse{
+		ID:          ep.ID,
+		ShowID:      ep.ShowId,
+		AirDate:     ep.AirDateString(),
+		Description: ep.Description,
+		FileSize:    ep.FileSize,
+		Location:    ep.Location,
+		Name:        ep.Name,
+		Quality:     ep.Quality.String(),
+		ReleaseName: ep.ReleaseName,
+		Status:      ep.Status.String(),
+		Season:      ep.Season,
+		Episode:     ep.Episode,
+	}
+}
+
 func episodesToResponse(eps []db.Episode) []episodeResponse {
 	resp := make([]episodeResponse, len(eps))
 	for i, ep := range eps {
-		resp[i] = episodeResponse{
-			ID:          ep.ID,
-			ShowID:      ep.ShowId,
-			AirDate:     ep.AirDateString(),
-			Description: ep.Description,
-			FileSize:    ep.FileSize,
-			Location:    ep.Location,
-			Name:        ep.Name,
-			Quality:     ep.Quality,
-			ReleaseName: ep.ReleaseName,
-			Status:      ep.Status,
-			Season:      ep.Season,
-			Episode:     ep.Episode,
-		}
+		resp[i] = episodeToResponse(&ep)
 	}
 	return resp
 }
@@ -184,18 +193,7 @@ func (server *Server) Episode(c *gin.Context) {
 		})
 		return
 	}
-	resp := episodeResponse{
-		ID:          ep.ID,
-		ShowID:      ep.ShowId,
-		AirDate:     ep.AirDateString(),
-		Description: ep.Description,
-		FileSize:    ep.FileSize,
-		Location:    ep.Location,
-		Name:        ep.Name,
-		Quality:     ep.Quality,
-		ReleaseName: ep.ReleaseName,
-		Status:      ep.Status,
-	}
+	resp := episodeToResponse(ep)
 	c.JSON(200, resp)
 }
 
@@ -245,8 +243,10 @@ func (server *Server) ShowSearch(c *gin.Context) {
 }
 
 type addShowRequest struct {
-	IndexerName string `json:"indexer_name" form:"indexer_name" binding:"required"`
-	IndexerID   string `json:"indexerid" form:"indexerid" binding:"required"`
+	IndexerName   string `json:"indexer_name" form:"indexer_name" binding:"required"`
+	IndexerID     string `json:"indexerid" form:"indexerid" binding:"required"`
+	ShowQuality   string `json:"show_quality"`
+	EpisodeStatus string `json:"episode_status"`
 }
 
 // AddShow adds the current show to the database.
@@ -261,6 +261,29 @@ func (server *Server) AddShow(c *gin.Context) {
 			Result:  "failure",
 		})
 		return
+	}
+	epStatus := server.config.MediaDefaults.EpisodeStatus
+	var err error
+	if reqJSON.EpisodeStatus != "" {
+		epStatus, err = types.EpisodeStatusFromString(reqJSON.EpisodeStatus)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, genericResult{
+				Message: fmt.Sprintf("Unknown EpisodeStatus string: %s", c.Errors.String()),
+				Result:  "failure",
+			})
+			return
+		}
+	}
+	showQuality := server.config.MediaDefaults.ShowQuality
+	if reqJSON.ShowQuality != "" {
+		showQuality, err = types.QualityFromString(reqJSON.ShowQuality)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, genericResult{
+				Message: fmt.Sprintf("Unknown Quality string: %s", c.Errors.String()),
+				Result:  "failure",
+			})
+			return
+		}
 	}
 
 	// Assume TVDB only for now
@@ -282,30 +305,80 @@ func (server *Server) AddShow(c *gin.Context) {
 		})
 		return
 	}
+	dbshow.Quality = showQuality
+	for i := range dbshow.Episodes {
+		dbshow.Episodes[i].Status = epStatus
+		dbshow.Episodes[i].Quality = types.NONE
+	}
 	err = h.AddShow(dbshow)
 	if err != nil {
 		c.JSON(500, err.Error())
-	}
-	response := jsonShow{
-		ID:        dbshow.ID,
-		AirByDate: dbshow.AirByDate,
-		//Cache
-		Anime:     dbshow.Anime,
-		IndexerID: dbshow.IndexerID,
-		Language:  dbshow.Language,
-		Network:   dbshow.Network,
-		//NextEpAirdate: dbshow.NextEpAirdate(),
-		Paused:    dbshow.Paused,
-		Quality:   strconv.FormatInt(dbshow.Quality, 10),
-		Name:      dbshow.Name,
-		Sports:    dbshow.Sports,
-		Status:    dbshow.Status,
-		Subtitles: dbshow.Subtitles,
-		TVDBID:    dbshow.IndexerID,
-		//TVdbid, rageid + name
+		return
 	}
 
-	c.JSON(200, response)
+	err = createShowDirectory(dbshow)
+	if err != nil {
+		c.JSON(500, fmt.Sprintf("Error creating show directory: %s", err.Error()))
+		return
+	}
+
+	c.JSON(200, showToResponse(dbshow))
+}
+
+func createShowDirectory(dbshow *db.Show) error {
+	if dbshow.Location == "" {
+		return errors.New("Show location not set")
+	}
+
+	err := os.MkdirAll(dbshow.Location, 0755)
+	if err != nil {
+		fmt.Errorf("Error creating show directory: %s", err.Error())
+	}
+	return nil
+}
+
+func rescanShowFromDisk(dbshow *db.Show) error {
+	if dbshow.Location == "" {
+		return errors.New("Show location not set")
+	}
+
+	_, err := os.Stat(dbshow.Location)
+	if os.IsNotExist(err) {
+		err = createShowDirectory(dbshow)
+		if err != nil {
+			return fmt.Errorf("Show directory didn't exist and got error trying to create it: %s", err.Error())
+		}
+		return nil
+	}
+	if err != nil {
+		return fmt.Errorf("Error stating show directory: %s", err.Error())
+	}
+
+	walkfunc := func(path string, f os.FileInfo, err error) error {
+		if err != nil {
+			glog.Errorf("Got error when walking path %s: %s", path, err.Error())
+		}
+		if f.IsDir() {
+			return nil
+		}
+		/*
+		* Assumed File Structure:
+		* ShowName/Season 01/ShowName - S01E01 - Episode Name.mkv
+		*
+		* OR
+		*
+		* ShowName/Episode 01-Name.mkv
+		 */
+		p, err := filepath.Rel(dbshow.Location, path)
+		spew.Dump(p)
+		spew.Dump(err)
+		//parseFileNameToEpisode(path)
+		return nil
+	}
+
+	filepath.Walk(dbshow.Location, walkfunc)
+
+	return nil
 }
 
 // DBHandler makes a database connection available to other handlers

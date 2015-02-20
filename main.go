@@ -4,7 +4,6 @@ import (
 	"flag"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/golang/glog"
 	"github.com/hobeone/tv2go/config"
 	"github.com/hobeone/tv2go/db"
@@ -73,7 +72,6 @@ func runDaemon(cfg *config.Config) {
 	idxReg := indexers.IndexerRegistry{
 		"tvdb": tvdb.NewTvdbIndexer("90D7DF3AE9E4841E"),
 	}
-	spew.Dump(idxReg)
 
 	webserver := web.NewServer(cfg, d.DBH, web.SetIndexers(idxReg))
 

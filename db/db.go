@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/golang/glog"
+	"github.com/hobeone/tv2go/types"
 	"github.com/jinzhu/gorm"
 
 	//import sqlite3 driver
@@ -65,8 +66,8 @@ type Show struct {
 	Network           string
 	Genre             string // pipe seperated
 	Classification    string
-	Runtime           int64  // in minutes
-	Quality           int64  // convert to foreign key
+	Runtime           int64 // in minutes
+	Quality           types.Quality
 	Airs              string // Hour of the day
 	Status            string
 	FlattenFolders    bool
@@ -101,18 +102,6 @@ func (s *Show) AfterFind() error {
 	s.CreatedAt = s.CreatedAt.UTC()
 	s.UpdatedAt = s.UpdatedAt.UTC()
 	return nil
-}
-
-func (h *Handle) ShowSeasons(s *Show) []int64 {
-	var seas []int64
-	rows, _ := h.db.Table("episode").Select("season").Group("show_id,season").Where("show_id = ?", s.ID).Rows()
-	defer rows.Close()
-	for rows.Next() {
-		var i int64
-		rows.Scan(&i)
-		seas = append(seas, i)
-	}
-	return seas
 }
 
 /* Sickrage
@@ -156,8 +145,8 @@ type Episode struct {
 	AirDate             time.Time
 	HasNFO              bool `gorm:"column:has_nfo"`
 	HasTBN              bool `gorm:"column:has_tbn"`
-	Status              string
-	Quality             string
+	Status              types.EpisodeStatus
+	Quality             types.Quality
 	Location            string
 	FileSize            int64
 	ReleaseName         string
@@ -179,6 +168,14 @@ func (e *Episode) BeforeSave() error {
 	//	}
 	if e.Episode == 0 {
 		return errors.New("Episode must be set")
+	}
+
+	if e.Status == types.UNKNOWN {
+		return errors.New("Status must be set")
+	}
+
+	if e.Quality == 0 {
+		return errors.New("Quality must be set")
 	}
 	return nil
 }
@@ -347,11 +344,15 @@ func LoadFixtures(t TestReporter, d *Handle) []Show {
 					Season:  1,
 					Episode: 1,
 					AirDate: time.Date(2006, time.January, 1, 0, 0, 0, 0, time.UTC),
+					Status:  types.WANTED,
+					Quality: types.NONE,
 				},
 				{
 					Name:    "show1episode2",
 					Season:  1,
 					Episode: 2,
+					Status:  types.WANTED,
+					Quality: types.NONE,
 				},
 			},
 		},
@@ -364,12 +365,16 @@ func LoadFixtures(t TestReporter, d *Handle) []Show {
 					Season:  1,
 					Episode: 1,
 					AirDate: time.Date(2001, time.January, 1, 0, 0, 0, 0, time.UTC),
+					Status:  types.WANTED,
+					Quality: types.NONE,
 				},
 				{
 					Name:    "show2episode2",
 					Season:  2,
 					Episode: 1,
 					AirDate: time.Date(2002, time.February, 1, 0, 0, 0, 0, time.UTC),
+					Status:  types.WANTED,
+					Quality: types.NONE,
 				},
 			},
 		},

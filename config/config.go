@@ -11,13 +11,16 @@ import (
 	"os/user"
 	"path/filepath"
 	"strings"
+
+	"github.com/hobeone/tv2go/types"
 )
 
 //Config is the base struct for Tv2Go configuration information.
 type Config struct {
-	DB        dbConfig
-	WebServer webConfig
-	Storage   storageConfig
+	DB            dbConfig
+	WebServer     webConfig
+	Storage       storageConfig
+	MediaDefaults mediaDefaults
 }
 
 type webConfig struct {
@@ -31,6 +34,11 @@ type dbConfig struct {
 	UpdateDb      bool   // if we should update db items
 	WatchInterval int64  // how often to check for shows to update
 	Type          string // file or memory (for testing)
+}
+
+type mediaDefaults struct {
+	ShowQuality   types.Quality
+	EpisodeStatus types.EpisodeStatus
 }
 
 type storageConfig struct {
@@ -52,6 +60,10 @@ func NewConfig() *Config {
 		},
 		Storage: storageConfig{
 			Directories: []string{"~/tv2go"},
+		},
+		MediaDefaults: mediaDefaults{
+			ShowQuality:   types.HDTV,
+			EpisodeStatus: types.SKIPPED,
 		},
 	}
 }

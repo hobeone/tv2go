@@ -55,7 +55,7 @@ const GoldenShowResponse = `{
 	"network": "",
 	"next_ep_airdate": "",
 	"paused": false,
-	"quality": "0",
+	"quality": "",
 	"name": "show1",
 	"sports": false,
 	"status": "",
@@ -116,7 +116,7 @@ const ShowsGoldenResp = `[
 	"network": "",
 	"next_ep_airdate": "",
 	"paused": false,
-	"quality": "0",
+	"quality": "",
 	"name": "show1",
 	"sports": false,
 	"status": "",
@@ -138,7 +138,7 @@ const ShowsGoldenResp = `[
 	"network": "",
 	"next_ep_airdate": "",
 	"paused": false,
-	"quality": "0",
+	"quality": "",
 	"name": "show2",
 	"sports": false,
 	"status": "",
@@ -169,16 +169,16 @@ const EpisodeGolden = `{
 	"id": 1,
 	"showid": 1,
 	"name": "show1episode1",
-	"season": 0,
-	"episode": 0,
+	"season": 1,
+	"episode": 1,
 	"airdate": "2006-01-01",
 	"description": "",
 	"file_size": 0,
 	"file_size_human": "",
 	"location": "",
-	"quality": "",
+	"quality": "NONE",
 	"release_name": "",
-	"status": ""
+	"status": "WANTED"
 }`
 
 func TestEpisode(t *testing.T) {
@@ -252,6 +252,18 @@ func TestAddShow(t *testing.T) {
 
 	eng.Handler.ServeHTTP(response, req)
 	if response.Code != 200 {
+		spew.Dump(response.Body)
 		t.Fatalf("Expected 200 response code, got %d", response.Code)
 	}
+}
+
+func TestWalker(t *testing.T) {
+	dbh, _ := setupTest(t)
+	db.LoadFixtures(t, dbh)
+	RegisterTestingT(t)
+
+	dbshow, _ := dbh.GetShowById(1)
+	dbshow.Location = "testdata"
+	err := rescanShowFromDisk(dbshow)
+	Expect(err).ToNot(HaveOccurred(), "Error scanning disk: %s", err)
 }
