@@ -62,7 +62,8 @@ const GoldenShowResponse = `{
 	"subtitles": false,
 	"tvdbid": 1,
 	"tvrage_id": 0,
-	"tvrage_name": ""
+	"tvrage_name": "",
+	"location": ""
 }`
 
 func TestShow(t *testing.T) {
@@ -123,7 +124,8 @@ const ShowsGoldenResp = `[
 	"subtitles": false,
 	"tvdbid": 1,
 	"tvrage_id": 0,
-	"tvrage_name": ""
+	"tvrage_name": "",
+	"location": ""
 },
 {
 	"id": 2,
@@ -145,7 +147,8 @@ const ShowsGoldenResp = `[
 	"subtitles": false,
 	"tvdbid": 2,
 	"tvrage_id": 0,
-	"tvrage_name": ""
+	"tvrage_name": "",
+	"location": ""
 }
 ]`
 
@@ -275,8 +278,7 @@ func TestNameCleaner(t *testing.T) {
 	Expect(teststr).To(Equal("/a.b"))
 
 	teststr = showToLocation(dir, ".a.b (YEAR)")
-	Expect(teststr).To(Equal("/a.b"))
-
+	Expect(teststr).To(Equal("/a.b _YEAR_"))
 }
 
 func TestWalker(t *testing.T) {

@@ -14,6 +14,7 @@
     "bootstrap": "3.3.x",
     "components-font-awesome": "4.3",
     "html5-boilerplate": "~4.3.0",
-    "ng-group": "~0.9.0"
+    "ng-group": "~0.9.0",
+    "angular-xeditable": "~0.1.8"
   }
 }

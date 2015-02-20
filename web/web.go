@@ -112,6 +112,28 @@ func (server *Server) Show(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// UpdateShow will update the POSTed show's information
+func (server *Server) UpdateShow(c *gin.Context) {
+	var showUpdate jsonShow
+	if !c.Bind(&showUpdate) {
+		genError(c, http.StatusBadRequest, c.Errors.String())
+		return
+	}
+	dbshow, err := server.dbHandle.GetShowById(showUpdate.ID)
+	if err != nil {
+		genError(c, http.StatusBadRequest, fmt.Sprintf("Couldn't find Show %d: %s", showUpdate.ID, err.Error()))
+		return
+	}
+
+	dbshow.Location = showUpdate.Location
+	dbshow.Anime = showUpdate.Anime
+	dbshow.Paused = showUpdate.Paused
+	dbshow.AirByDate = showUpdate.AirByDate
+	server.dbHandle.SaveShow(dbshow)
+
+	c.JSON(200, showToResponse(dbshow))
+}
+
 // ShowUpdateFromIndexer updates show information from the indexer
 func (server *Server) ShowUpdateFromIndexer(c *gin.Context) {
 	h := server.dbHandle
@@ -552,6 +574,7 @@ func configGinEngine(s *Server) {
 		api.OPTIONS("/*cors", func(c *gin.Context) {})
 		api.GET("shows", s.Shows)
 		api.GET("shows/:showid", s.Show)
+		api.PUT("shows/:showid", s.UpdateShow)
 		api.GET("shows/:showid/update", s.ShowUpdateFromIndexer)
 		api.POST("shows", s.AddShow)
 

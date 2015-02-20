@@ -2,6 +2,7 @@ angular.module('tv2go', [
   'ngAnimate',
   'ui.router',
   'ng.group',
+  'xeditable',
   'shows',
   'shows.episodes',
 ])
@@ -15,5 +16,8 @@ angular.module('tv2go', [
     controller: 'IndexCtrl as indexCtrl',
     abstract: true,
   });
+})
+.run(function(editableOptions) {
+  editableOptions.theme = 'bs3';
 })
 .controller('IndexCtrl', function(){});

@@ -36,12 +36,15 @@ angular.module('shows.episodes',[
   EpisodesListCtrl.statuses = ['WANTED', 'SKIPPED'];
 
   EpisodesListCtrl.updateStatus = function(ep) {
-    EpisodesModel.updateFromIndexer(ep);
+    EpisodesModel.updateEpisode(ep);
   };
 
   EpisodesListCtrl.updateShow = function(show) {
     console.log(show);
     show.$updateFromIndexer({id:show.id});
+  };
+  EpisodesListCtrl.saveShow = function(show) {
+    show.$update({showid:show.id});
   };
 })
 ;

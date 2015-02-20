@@ -1,10 +1,6 @@
 <div class="nav nav-sidebar">
   <div ng-repeat="show in showsListCtrl.shows | orderBy:'name'">
-    <button type="button" class="btn btn-link" ui-sref="tv2go.shows.edit({showid:show.id})">
-      <span ui-sref="tv2go.shows.episodes.edit({episodeId:ep.id})" class="glyphicon glyphicon-pencil"></span>
-    </button>
       <a href="#" ui-sref="tv2go.shows.episodes({show:show.id})">{{show.name}}</a>
-
   </div>
 </div>
 

@@ -7,6 +7,7 @@ import (
 )
 
 func TestQualityEnum(t *testing.T) {
+	RegisterTestingT(t)
 	d := Quality(2)
 	Expect(d).To(Equal(NONE))
 
@@ -16,6 +17,7 @@ func TestQualityEnum(t *testing.T) {
 }
 
 func TestStatusEnum(t *testing.T) {
+	RegisterTestingT(t)
 	d := EpisodeStatus(1)
 	Expect(d).To(Equal(UNAIRED))
 }

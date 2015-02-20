@@ -31,6 +31,8 @@ gin-bin
 test.db
 tv2go.db
 
+config.json
+
 # webapp stuff
 webapp/logs/*
 webapp/node_modules/
