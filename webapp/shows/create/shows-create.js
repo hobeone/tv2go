@@ -53,8 +53,9 @@ angular.module('shows.create', ['tv2go.models.shows','tv2go.indexerSearchService
   }
 
   function createShow(show) {
-    ShowsModel.createShow(show);
-    returnToShows();
+    ShowsModel.createShow(show).then(function() {
+      $state.go('tv2go.shows.episodes', {show: show.id});
+    });
   }
 
   createShowsCtrl.searchShow = searchShow;

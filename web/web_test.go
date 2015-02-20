@@ -257,6 +257,28 @@ func TestAddShow(t *testing.T) {
 	}
 }
 
+func TestNameCleaner(t *testing.T) {
+	RegisterTestingT(t)
+
+	dir := "/"
+
+	teststr := showToLocation(dir, "a/b/c")
+	Expect(teststr).To(Equal("/a-b-c"))
+
+	teststr = showToLocation(dir, "abc")
+	Expect(teststr).To(Equal("/abc"))
+
+	teststr = showToLocation(dir, "a\"c")
+	Expect(teststr).To(Equal("/ac"))
+
+	teststr = showToLocation(dir, ".a.b..")
+	Expect(teststr).To(Equal("/a.b"))
+
+	teststr = showToLocation(dir, ".a.b (YEAR)")
+	Expect(teststr).To(Equal("/a.b"))
+
+}
+
 func TestWalker(t *testing.T) {
 	dbh, _ := setupTest(t)
 	db.LoadFixtures(t, dbh)

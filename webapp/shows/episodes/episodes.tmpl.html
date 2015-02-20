@@ -1,21 +1,22 @@
-<h1>{{episodesListCtrl.show.name}}</h1>
 <div ui-view="showdetail"></div>
 <div ng-repeat="epSeason in episodesListCtrl.episodes | orderBy:['-season'] | groupBy:'season':'epsBySeason' ">
   <h2>Season: {{epSeason.season}}</h2>
-  <div ng-repeat="ep in epSeason.items | orderBy:['-episode'] ">
-    <button type="button" class="btn btn-link" ui-sref="tv2go.shows.episodes.edit({episodeId:ep.id})">
-      <span class="glyphicon glyphicon-pencil"></span>
-    </button>
-    {{ep.episode}} - {{ep.airdate}} - {{ep.name}}
-  </div>
+    <table class="table table-striped table-condensed">
+      <tr>
+        <th>Episdode</th>
+        <th>Airdate</th>
+        <th>Name</th>
+        <th>Status</th>
+      </tr>
+
+      <tr ng-repeat="ep in epSeason.items | orderBy:['-episode'] ">
+        <td>{{ep.episode}}</td>
+        <td>{{ep.airdate}}</td>
+        <td>{{ep.name}}</td>
+        <td>
+          <select ng-model="ep.status" ng-options="status for status in episodesListCtrl.statuses" ng-change="episodesListCtrl.updateStatus(ep)"></select>
+        </td>
+
+      </tr>
+    </table>
 </div>
-<hr/>
-<!-- create -->
-<ui-view> 
-<div ng-if="episodesListCtrl.getCurrentShow()">
-  <button type="button" class="btn btn-link" ui-sref="tv2go.shows.episodes.create">
-    <span class="glyphicon glyphicon-plus"></span>
-    CreateEpisode
-  </button>
-</div>
-</ui-view>

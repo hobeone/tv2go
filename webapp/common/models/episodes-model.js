@@ -9,7 +9,7 @@ episodeService.factory('Episode', ['$cacheFactory','$resource',
         isArray: true,
       },
       update: {
-        method: "PUT"
+        method: 'PUT',
       },
     });
   }]);
@@ -43,7 +43,6 @@ angular.module('tv2go.models.episodes',['tv2go.episodesService'])
   };
 
   model.updateEpisode = function(episode) {
-    console.log(episode);
     episode.$update({
       showid: episode.showid,
     });

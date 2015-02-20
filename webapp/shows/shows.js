@@ -22,6 +22,8 @@ angular.module('shows', [
 .controller('ShowsListCtrl', function ShowsListCtrl($scope, ShowsModel){
   'use strict';
   var showsListCtrl = this;
+
+
   ShowsModel.getShows()
   .then(function(result){
     showsListCtrl.shows = result;

@@ -323,6 +323,13 @@ func (h *Handle) SaveShow(s *Show) error {
 	return nil
 }
 
+func (h *Handle) SaveEpisode(e *Episode) error {
+	if h.writeUpdates {
+		return h.db.Save(e).Error
+	}
+	return nil
+}
+
 // Testing functionality
 //
 // TestReporter is a shim interface so we don't need to include the testing

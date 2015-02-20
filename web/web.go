@@ -6,7 +6,9 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
@@ -24,6 +26,7 @@ type genericResult struct {
 }
 
 func genError(c *gin.Context, status int, msg string) {
+	glog.Errorf("Error serving %s: %s", c.Request.URL.String(), msg)
 	c.JSON(status, genericResult{
 		Message: msg,
 		Result:  "failure",
@@ -52,6 +55,7 @@ type jsonShow struct {
 	TVDBID        int64         `json:"tvdbid"`
 	TVRageID      int64         `json:"tvrage_id"`
 	TVRageName    string        `json:"tvrage_name"`
+	Location      string        `json:"location"`
 }
 
 func showToResponse(dbshow *db.Show) jsonShow {
@@ -71,6 +75,7 @@ func showToResponse(dbshow *db.Show) jsonShow {
 		Status:    dbshow.Status,
 		Subtitles: dbshow.Subtitles,
 		TVDBID:    dbshow.IndexerID,
+		Location:  dbshow.Location,
 		//TVdbid, rageid + name
 	}
 }
@@ -105,6 +110,38 @@ func (server *Server) Show(c *gin.Context) {
 	}
 	response := showToResponse(s)
 	c.JSON(http.StatusOK, response)
+}
+
+// ShowUpdateFromIndexer updates show information from the indexer
+func (server *Server) ShowUpdateFromIndexer(c *gin.Context) {
+	h := server.dbHandle
+	id := c.Params.ByName("showid")
+	tvdbid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		genError(c, http.StatusInternalServerError, "invalid show id")
+		return
+	}
+	dbshow, err := h.GetShowById(tvdbid)
+	if err != nil {
+		genError(c, http.StatusNotFound, "Show not found")
+		return
+	}
+
+	err = server.indexers["tvdb"].UpdateShow(dbshow)
+	if err != nil {
+		genError(c, http.StatusInternalServerError, fmt.Sprintf("Error updating show: %s", err.Error()))
+		return
+	}
+
+	h.SaveShow(dbshow)
+
+	err = createShowDirectory(dbshow)
+	if err != nil {
+		c.JSON(500, fmt.Sprintf("Error creating show directory: %s", err.Error()))
+		return
+	}
+
+	c.JSON(200, showToResponse(dbshow))
 }
 
 // ShowEpisodes returns all of a shows episodes
@@ -197,7 +234,7 @@ func (server *Server) Episode(c *gin.Context) {
 	c.JSON(200, resp)
 }
 
-// UpdateEpisode will update the POSTed episode
+// UpdateEpisode will update the POSTed episode's status
 func (server *Server) UpdateEpisode(c *gin.Context) {
 	var epUpdate episodeResponse
 	if !c.Bind(&epUpdate) {
@@ -207,8 +244,22 @@ func (server *Server) UpdateEpisode(c *gin.Context) {
 		})
 		return
 	}
-	episode := epUpdate
-	c.JSON(200, episode)
+	dbep, err := server.dbHandle.GetEpisodeByID(epUpdate.ID)
+	if err != nil {
+		genError(c, http.StatusBadRequest, fmt.Sprintf("Couldn't find Episode %d", epUpdate.ID))
+		return
+	}
+
+	stat, err := types.EpisodeStatusFromString(epUpdate.Status)
+	if err != nil {
+		genError(c, http.StatusBadRequest, fmt.Sprintf("Invalid Status %s", epUpdate.Status))
+		return
+	}
+
+	dbep.Status = stat
+	server.dbHandle.SaveEpisode(dbep)
+
+	c.JSON(200, episodeToResponse(dbep))
 }
 
 type searchShowRequest struct {
@@ -247,6 +298,7 @@ type addShowRequest struct {
 	IndexerID     string `json:"indexerid" form:"indexerid" binding:"required"`
 	ShowQuality   string `json:"show_quality"`
 	EpisodeStatus string `json:"episode_status"`
+	Location      string `json:"location"`
 }
 
 // AddShow adds the current show to the database.
@@ -310,6 +362,11 @@ func (server *Server) AddShow(c *gin.Context) {
 		dbshow.Episodes[i].Status = epStatus
 		dbshow.Episodes[i].Quality = types.NONE
 	}
+
+	if dbshow.Location == "" {
+		dbshow.Location = showToLocation(server.config.Storage.Directories[0], dbshow.Name)
+	}
+
 	err = h.AddShow(dbshow)
 	if err != nil {
 		c.JSON(500, err.Error())
@@ -323,6 +380,28 @@ func (server *Server) AddShow(c *gin.Context) {
 	}
 
 	c.JSON(200, showToResponse(dbshow))
+}
+
+func showToLocation(path, name string) string {
+
+	name = strings.Trim(name, " ")
+	name = strings.Trim(name, ".")
+
+	// Replace certain joining characters with a dash
+	seps := regexp.MustCompile(`[\\/\*]`)
+	name = seps.ReplaceAllString(name, "-")
+	seps = regexp.MustCompile(`[:"<>|?]`)
+	name = seps.ReplaceAllString(name, "")
+
+	// Remove all other unrecognised characters - NB we do allow any printable characters
+	legal := regexp.MustCompile(`[^[:alnum:]-. ]`)
+	name = legal.ReplaceAllString(name, "_")
+
+	// Remove any double dashes caused by existing - in name
+	name = strings.Replace(name, "--", "-", -1)
+
+	newpath := filepath.Join(path, name)
+	return newpath
 }
 
 func createShowDirectory(dbshow *db.Show) error {
@@ -464,13 +543,16 @@ type Server struct {
 func configGinEngine(s *Server) {
 	r := gin.New()
 	r.Use(Logger())
-	r.Use(CORSMiddleware())
+
+	r.Static("/a", "./webapp")
 
 	api := r.Group("/api/:apistring")
 	{
+		api.Use(CORSMiddleware())
 		api.OPTIONS("/*cors", func(c *gin.Context) {})
 		api.GET("shows", s.Shows)
 		api.GET("shows/:showid", s.Show)
+		api.GET("shows/:showid/update", s.ShowUpdateFromIndexer)
 		api.POST("shows", s.AddShow)
 
 		api.GET("shows/:showid/episodes", s.ShowEpisodes)

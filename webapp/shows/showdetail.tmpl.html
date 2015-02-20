@@ -1,5 +1,13 @@
-Name: {{episodesListCtrl.show.name}}
-<br>
-Status: {{episodesListCtrl.show.status}}
-<br>
-Air-By-Date?: {{episodesListCtrl.show.air_by_date}}
+<h1>{{episodesListCtrl.show.name}}</h1><span class="badge" ng-click="episodesListCtrl.updateShow(episodesListCtrl.show)">Refresh</span>
+<ul class="list-group">
+  <li class="list-group-item">Name: <span class="badge">{{episodesListCtrl.show.name}}</span></li>
+  <li class="list-group-item">Status: <span class="badge">{{episodesListCtrl.show.status}}</span></li>
+  <li class="list-group-item">Air-By-Date?: <span class="badge">{{episodesListCtrl.show.air_by_date}}</span></li>
+  <li class="list-group-item">Anime: <span class="badge">{{episodesListCtrl.show.anime}}</span></li>
+  <li class="list-group-item">Language: <span class="badge">{{episodesListCtrl.show.language}}</span></li>
+  <li class="list-group-item">Quality: <span class="badge">{{episodesListCtrl.show.quality}}</span></li>
+  <li class="list-group-item">Network: <span class="badge">{{episodesListCtrl.show.network}}</span></li>
+  <li class="list-group-item">Paused: <span class="badge">{{episodesListCtrl.show.paused}}</span></li>
+  <li class="list-group-item">Next Airdate: <span class="badge">{{episodesListCtrl.show.next_ep_airdate}}</span></li>
+  <li class="list-group-item">Location: <span class="badge">{{episodesListCtrl.show.location}}</span></li>
+</ul>

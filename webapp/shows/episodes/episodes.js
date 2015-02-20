@@ -28,10 +28,20 @@ angular.module('shows.episodes',[
       },
     });
 })
-.controller('EpisodesListCtrl', function ($stateParams, show, eps) {
+.controller('EpisodesListCtrl', function ($stateParams, show, eps, EpisodesModel, ShowsModel) {
   var EpisodesListCtrl = this;
   
   EpisodesListCtrl.episodes = eps;
   EpisodesListCtrl.show = show;
+  EpisodesListCtrl.statuses = ['WANTED', 'SKIPPED'];
+
+  EpisodesListCtrl.updateStatus = function(ep) {
+    EpisodesModel.updateFromIndexer(ep);
+  };
+
+  EpisodesListCtrl.updateShow = function(show) {
+    console.log(show);
+    show.$updateFromIndexer({id:show.id});
+  };
 })
 ;

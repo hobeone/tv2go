@@ -10,6 +10,10 @@ showService.factory('Show', function($cacheFactory, $resource) {
     update: {
       method: "PUT"
     },
+    updateFromIndexer: {
+      method: "GET",
+      url: "http://localhost:9001/api/1/shows/:id/update",
+    },
   });
 });
 
@@ -68,7 +72,19 @@ angular.module('tv2go.models.shows',['tv2go.showsService'])
   };
 
   model.createShow = function(show) {
-    show.$save();
+    var deferred = $q.defer();
+    show.$save().then(function(result) {
+      shows.push(show);
+      deferred.resolve(show);
+    },function(resp){
+      console.log(resp);
+      window.alert(resp.statusText);
+    }
+    );
+    return deferred.promise;
+  };
+  model.updateFromIndexer = function(show) {
+    show.updateFromIndexer();
     shows.push(show);
   };
 })
