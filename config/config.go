@@ -59,7 +59,9 @@ func NewConfig() *Config {
 			Type:          "file",
 		},
 		Storage: storageConfig{
-			Directories: []string{"~/tv2go"},
+			Directories: []string{
+				replaceTildeInPath("~/tv2go"),
+			},
 		},
 		MediaDefaults: mediaDefaults{
 			ShowQuality:   types.HDTV,
@@ -110,6 +112,12 @@ func (c *Config) ReadConfig(configPath string) error {
 		return fmt.Errorf("error parsing JSON object in config file %s%s\n%v",
 			f.Name(), extra, err)
 	}
+
+	c.DB.Path = replaceTildeInPath(c.DB.Path)
+	for i, p := range c.Storage.Directories {
+		c.Storage.Directories[i] = replaceTildeInPath(p)
+	}
+
 	return nil
 }
 

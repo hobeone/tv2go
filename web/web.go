@@ -1,6 +1,7 @@
 package web
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -585,7 +586,18 @@ func configGinEngine(s *Server) {
 		api.GET("indexers/search", s.ShowSearch)
 	}
 
+	r.GET("/statusz", s.Statusz)
+
 	s.Handler = r
+}
+
+func (s *Server) Statusz(c *gin.Context) {
+	marsh, err := json.MarshalIndent(s.config, "", "  ")
+	if err != nil {
+		genError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.Writer.Write(marsh)
 }
 
 // SetIndexers sets the tvdb index the server should use
