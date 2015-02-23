@@ -13,10 +13,10 @@
         <td>{{ep.episode}}</td>
         <td>{{ep.airdate || "Unaired"}}</td>
         <td>{{ep.name}}</td>
+        <td>{{ep.location}}</td>
         <td>
           <a href="#" editable-select="ep.status" e-ng-options="status for status in episodesListCtrl.statuses" onbeforesave="episodesListCtrl.updateStatus(ep)" >{{ep.status}}</a>
         </td>
-
       </tr>
     </table>
 </div>

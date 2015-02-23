@@ -14,6 +14,11 @@ showService.factory('Show', function($cacheFactory, $resource) {
       method: "GET",
       url: "http://localhost:9001/api/1/shows/:id/update",
     },
+    updateFromDisk: {
+      method: "GET",
+      url: "http://localhost:9001/api/1/shows/:id/rescan",
+    },
+
   });
 });
 

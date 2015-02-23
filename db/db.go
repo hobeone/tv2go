@@ -292,6 +292,18 @@ func (h *Handle) GetEpisodeByID(episodeid int64) (*Episode, error) {
 	return &ep, err
 }
 
+func (h *Handle) GetEpisodeByShowSeasonAndNumber(showid, season, number int64) (*Episode, error) {
+	var eps []Episode
+
+	err := h.db.Where("show_id = ? and season = ? and episode = ?", showid, season, number).Find(&eps).Error
+
+	if err != nil || len(eps) == 0 {
+		return nil, err
+	}
+
+	return &eps[0], nil
+}
+
 func (h *Handle) GetShowSeason(showid, season int64) ([]Episode, error) {
 	var episodes []Episode
 	show, err := h.GetShowById(showid)
@@ -330,8 +342,20 @@ func (h *Handle) SaveEpisode(e *Episode) error {
 	return nil
 }
 
+func (h *Handle) SaveEpisodes(eps []*Episode) error {
+	if h.writeUpdates {
+		tx := h.db.Begin()
+		for _, e := range eps {
+			defer tx.Rollback()
+			return tx.Save(e).Error
+		}
+		tx.Commit()
+	}
+	return nil
+}
+
 // Testing functionality
-//
+
 // TestReporter is a shim interface so we don't need to include the testing
 // package in the compiled binary
 type TestReporter interface {
@@ -345,6 +369,7 @@ func LoadFixtures(t TestReporter, d *Handle) []Show {
 		{
 			Name:      "show1",
 			IndexerID: 1,
+			Location:  "testdata",
 			Episodes: []Episode{
 				{
 					Name:    "show1episode1",
@@ -366,6 +391,7 @@ func LoadFixtures(t TestReporter, d *Handle) []Show {
 		{
 			Name:      "show2",
 			IndexerID: 2,
+			Location:  "testdata",
 			Episodes: []Episode{
 				{
 					Name:    "show2episode1",

@@ -10,14 +10,150 @@ import (
 	"strings"
 	"time"
 
+	"github.com/kyoh86/go-pcre"
+
 	"github.com/gholt/brimtime"
 	"github.com/golang/glog"
 )
 
+type NameRegex struct {
+	Name  string
+	Regex pcre.Regexp
+}
+
 // NameRegexes is a list of Regular Expressions to try in order when trying to
 // extract information from a filename.
-var NameRegexes = []*regexp.Regexp{
-	regexp.MustCompile(`^(?i)((?P<series_name>.+?)[. _-]+)?(\()?s(?P<season_num>\d+)[. _-]*e(?P<ep_num>\d+)(\))?(([. _-]*e|-)(?P<extra_ep_num>\d+)(\))?)*[. _-]*((?P<extra_info>.+?)(-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$`),
+var NameRegexes = []NameRegex{
+
+	{
+		Name: "standard_repeat",
+		Regex: pcre.MustCompile(`(?i)^(?P<series_name>.+?)[. _-]+`+ //  Show_Name and separator
+			`s(?P<season_num>\d+)[. _-]*`+ //  S01 and optional separator
+			`e(?P<ep_num>\d+)`+ //  E02 and separator
+			`([. _-]+s(?P=season_num)[. _-]*`+ //  S01 and optional separator
+			`e(?P<extra_ep_num>\d+))+`+ //  E03/etc and separator
+			`[. _-]*((?P<extra_info>.+?)`+ //  Source_Quality_Etc-
+			`((?<![. _-])(?<!WEB)`+ //  Make sure this is really the release group
+			`-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$`, pcre.CASELESS), //  Group
+	},
+	{
+		Name: "fov_repeat",
+		Regex: pcre.MustCompile(`(?i)^(?P<series_name>.+?)[. _-]+`+ //  Show_Name and separator
+			`(?P<season_num>\d+)x`+ //  1x
+			`(?P<ep_num>\d+)`+ //  02 and separator
+			`([. _-]+(?P=season_num)x`+ //  1x
+			`(?P<extra_ep_num>\d+))+`+ //  03/etc and separator
+			`[. _-]*((?P<extra_info>.+?)`+ //  Source_Quality_Etc-
+			`((?<![. _-])(?<!WEB)`+ //  Make sure this is really the release group
+			`-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$`, pcre.CASELESS), //  Group
+	},
+	{
+		Name: "standard",
+		Regex: pcre.MustCompile(`(?i)^((?P<series_name>.+?)[. _-]+)?`+ //  Show_Name and separator
+			`(\()?s(?P<season_num>\d+)[. _-]*`+ //  S01 and optional separator
+			`e(?P<ep_num>\d+)(\))?`+ //  E02 and separator
+			`(([. _-]*e|-)`+ //  linking e/- char
+			`(?P<extra_ep_num>(?!(1080|720|480)[pi])\d+)(\))?)*`+ //  additional E03/etc
+			`[. _-]*((?P<extra_info>.+?)`+ //  Source_Quality_Etc-
+			`((?<![. _-])(?<!WEB)`+ //  Make sure this is really the release group
+			`-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$`, pcre.CASELESS), //  Group
+	},
+	{
+		Name: "fov",
+		Regex: pcre.MustCompile(`(?i)^((?P<series_name>.+?)[\[. _-]+)?`+ //  Show_Name and separator
+			`(?P<season_num>\d+)x`+ //  1x
+			`(?P<ep_num>\d+)`+ //  02 and separator
+			`(([. _-]*x|-)`+ //  linking x/- char
+			`(?P<extra_ep_num>`+
+			`(?!(1080|720|480)[pi])(?!(?<=x)264)`+ //  ignore obviously wrong multi-eps
+			`\d+))*`+ //  additional x03/etc
+			`[\]. _-]*((?P<extra_info>.+?)`+ //  Source_Quality_Etc-
+			`((?<![. _-])(?<!WEB)`+ //  Make sure this is really the release group
+			`-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$`, pcre.CASELESS), //  Group
+	},
+	{
+		Name: "scene_date_format",
+		Regex: pcre.MustCompile(`(?i)^((?P<series_name>.+?)[. _-]+)?`+ //  Show_Name and separator
+			`(?P<air_date>(\d+[. _-]\d+[. _-]\d+)|(\d+\w+[. _-]\w+[. _-]\d+))`+
+			`[. _-]*((?P<extra_info>.+?)`+ //  Source_Quality_Etc-
+			`((?<![. _-])(?<!WEB)`+ //  Make sure this is really the release group
+			`-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$`, pcre.CASELESS), //  Group
+	},
+	{
+		Name: "scene_sports_format",
+		Regex: pcre.MustCompile(`^(?P<series_name>.*?(UEFA|MLB|ESPN|WWE|MMA|UFC|TNA|EPL|NASCAR|NBA|NFL|NHL|NRL|PGA|SUPER LEAGUE|FORMULA|FIFA|NETBALL|MOTOGP).*?)[. _-]+`+
+			`((?P<series_num>\d{1,3})[. _-]+)?`+
+			`(?P<air_date>(\d+[. _-]\d+[. _-]\d+)|(\d+\w+[. _-]\w+[. _-]\d+))[. _-]+`+
+			`((?P<extra_info>.+?)((?<![. _-])`+
+			`(?<!WEB)-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$`, pcre.CASELESS),
+	},
+	{
+		Name: "stupid",
+		Regex: pcre.MustCompile(`(?i)(?P<release_group>.+?)-\w+?[\. ]?`+ //  tpz-abc
+			`(?!264)`+ //  don't count x264
+			`(?P<season_num>\d{1,2})`+ //  1
+			`(?P<ep_num>\d{2})$`, pcre.CASELESS), //  02
+	},
+	{
+		Name: "verbose",
+		Regex: pcre.MustCompile(`(?i)^(?P<series_name>.+?)[. _-]+`+ //  Show Name and separator
+			`season[. _-]+`+ //  season and separator
+			`(?P<season_num>\d+)[. _-]+`+ //  1
+			`episode[. _-]+`+ //  episode and separator
+			`(?P<ep_num>\d+)[. _-]+`+ //  02 and separator
+			`(?P<extra_info>.+)$`, pcre.CASELESS), //  Source_Quality_Etc-
+	},
+	{
+		Name: "season_only",
+		Regex: pcre.MustCompile(`(?i)^((?P<series_name>.+?)[. _-]+)?`+ //  Show_Name and separator
+			`s(eason[. _-])?`+ //  S01/Season 01
+			`(?P<season_num>\d+)[. _-]*`+ //  S01 and optional separator
+			`[. _-]*((?P<extra_info>.+?)`+ //  Source_Quality_Etc-
+			`((?<![. _-])(?<!WEB)`+ //  Make sure this is really the release group
+			`-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$`, pcre.CASELESS), //  Group
+	},
+	{
+		Name: "no_season_multi_ep",
+		Regex: pcre.MustCompile(`(?i)^((?P<series_name>.+?)[. _-]+)?`+ //  Show_Name and separator
+			`(e(p(isode)?)?|part|pt)[. _-]?`+ //  e, ep, episode, or part
+			`(?P<ep_num>(\d+|[ivx]+))`+ //  first ep num
+			`((([. _-]+(and|&|to)[. _-]+)|-)`+ //  and/&/to joiner
+			`(?P<extra_ep_num>(?!(1080|720|480)[pi])(\d+|[ivx]+))[. _-])`+ //  second ep num
+			`([. _-]*(?P<extra_info>.+?)`+ //  Source_Quality_Etc-
+			`((?<![. _-])(?<!WEB)`+ //  Make sure this is really the release group
+			`-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$`, pcre.CASELESS), //  Group
+	},
+	{
+		Name: "no_season_general",
+		Regex: pcre.MustCompile(`(?i)^((?P<series_name>.+?)[. _-]+)?`+ //  Show_Name and separator
+			`(e(p(isode)?)?|part|pt)[. _-]?`+ //  e, ep, episode, or part
+			`(?P<ep_num>(\d+|([ivx]+(?=[. _-]))))`+ //  first ep num
+			`([. _-]+((and|&|to)[. _-]+)?`+ //  and/&/to joiner
+			`((e(p(isode)?)?|part|pt)[. _-]?)`+ //  e, ep, episode, or part
+			`(?P<extra_ep_num>(?!(1080|720|480)[pi])`+
+			`(\d+|([ivx]+(?=[. _-]))))[. _-])*`+ //  second ep num
+			`([. _-]*(?P<extra_info>.+?)`+ //  Source_Quality_Etc-
+			`((?<![. _-])(?<!WEB)`+ //  Make sure this is really the release group
+			`-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$`, pcre.CASELESS), //  Group
+	},
+	{
+		Name: "no_season",
+		Regex: pcre.MustCompile(`(?i)^((?P<series_name>.+?)(?:[. _-]{2,}|[. _]))?`+ //  Show_Name and separator
+			`(?P<ep_num>\d{1,3})`+ //  02
+			`(?:-(?P<extra_ep_num>\d{1,3}))*`+ //  -03-04-05 etc
+			`\s?of?\s?\d{1,3}?`+ //  of joiner (with or without spaces) and series total ep
+			`[. _-]+((?P<extra_info>.+?)`+ //  Source_Quality_Etc-
+			`((?<![. _-])(?<!WEB)`+ //  Make sure this is really the release group
+			`-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$`, pcre.CASELESS), //  Group
+	},
+	{
+		Name: "bare",
+		Regex: pcre.MustCompile(`(?i)^(?P<series_name>.+?)[. _-]+`+ //  Show_Name and separator
+			`(?P<season_num>\d{1,2})`+ //  1
+			`(?P<ep_num>\d{2})`+ //  02 and separator
+			`([. _-]+(?P<extra_info>(?!\d{3}[. _-]+)[^-]+)`+ //  Source_Quality_Etc-
+			`(-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$`, pcre.CASELESS), //  Group
+	},
 }
 
 var (
@@ -109,30 +245,44 @@ func NewNameParser(filename string) *NameParser {
 	}
 }
 
+var knownMatches = []string{
+	"series_name",
+	"season_num",
+	"ep_num",
+	"ep_ab_num",
+	"extra_ep_num",
+	"extra_info",
+	"release_group",
+	"air_date",
+	"series_num",
+}
+
 // Return named matches in a map
-func regexNamedMatch(re *regexp.Regexp, str string) (map[string]string, bool) {
-	res := re.FindStringSubmatch(str)
-	if res == nil {
+func regexNamedMatch(re *pcre.Regexp, str string) (map[string]string, bool) {
+	m := re.MatcherString(str, 0)
+	if !m.Matches() {
 		return nil, false
 	}
 
-	result := make(map[string]string, len(re.SubexpNames()))
-	for i, name := range re.SubexpNames() {
-		if res[i] != "" {
-			result[name] = res[i]
+	result := make(map[string]string, len(knownMatches))
+	for _, name := range knownMatches {
+		extract, err := m.NamedString(name)
+		if err == nil && extract != "" {
+			result[name] = extract
 		}
 	}
-
 	return result, true
 }
 
 func (np *NameParser) parseString(name string) (*ParseResult, error) {
 	var matchResults []ParseResult
 	for i, r := range NameRegexes {
-		if matches, ok := regexNamedMatch(r, name); ok {
+		glog.Infof("Trying to match %s with regex %s", name, r.Name)
+		if matches, ok := regexNamedMatch(&r.Regex, name); ok {
+			glog.Infof("Matched %s with regex %s", name, r.Name)
 			pr := ParseResult{
 				OriginalName: name,
-				RegexUsed:    r.String(),
+				RegexUsed:    r.Name,
 				Score:        0 - i,
 			}
 
@@ -145,25 +295,29 @@ func (np *NameParser) parseString(name string) (*ParseResult, error) {
 				pr.Score++
 			}
 			if m, ok := matches["season_num"]; ok {
+				m = strings.TrimLeft(m, "0")
+				glog.Infof("Converting Season '%s' to int", m)
 				sn, err := strconv.ParseInt(m, 10, 64)
 				if err != nil {
-					glog.Errorf("Error converting %s to int from string: %s", m, pr.OriginalName)
+					glog.Errorf("Error converting season_num '%s' to int from string: %s", m, pr.OriginalName)
 					continue
 				}
 				pr.SeasonNumber = sn
 				pr.Score++
 			}
 			if m, ok := matches["ep_num"]; ok {
+				m = strings.TrimLeft(m, "0")
 				// Maybe handle Roman numberals like SickRage?
 				en, err := strconv.ParseInt(m, 10, 64)
 				if err != nil {
-					glog.Errorf("Error converting %s to int from string: %s", m, pr.OriginalName)
+					glog.Errorf("Error converting ep_num '%s' to int from string: %s", m, pr.OriginalName)
 					continue
 				}
 				if extraEp, ok := matches["extra_ep_num"]; ok {
+					m = strings.TrimLeft(m, "0")
 					extraEpCvt, err := strconv.ParseInt(extraEp, 10, 64)
 					if err != nil {
-						glog.Errorf("Error converting %s to int from string: %s", extraEp, pr.OriginalName)
+						glog.Errorf("Error converting extra_ep_num '%s' to int from string: %s", extraEp, pr.OriginalName)
 					} else {
 						pr.EpisodeNumbers = []int64{en, extraEpCvt}
 					}
@@ -174,7 +328,7 @@ func (np *NameParser) parseString(name string) (*ParseResult, error) {
 			if m, ok := matches["ep_ab_num"]; ok {
 				en, err := strconv.ParseInt(m, 10, 64)
 				if err != nil {
-					glog.Errorf("Error converting %s to int from string: %s", m, pr.OriginalName)
+					glog.Errorf("Error converting ep_ab_num '%s' to int from string: %s", m, pr.OriginalName)
 					continue
 				}
 				// Handle extra ab number
@@ -205,10 +359,13 @@ func (np *NameParser) parseString(name string) (*ParseResult, error) {
 
 	// There's a whole mess of other logic that goes on in Sickbeard, but it's
 	// super gross and we'll skip it for now:
-	sort.Sort(byScore(matchResults))
+	sort.Sort(sort.Reverse(byScore(matchResults)))
 	if len(matchResults) > 0 {
+		best := &matchResults[0]
+		glog.Infof("Chose best match with regex %s, score %d", best.RegexUsed, best.Score)
 		return &matchResults[0], nil
 	}
+	glog.Warningf("Couldn't match %s with any regex", name)
 	return &ParseResult{}, fmt.Errorf("Couldn't parse string %s", name)
 }
 

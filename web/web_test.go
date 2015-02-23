@@ -22,7 +22,7 @@ func setupTest(t *testing.T) (*db.Handle, *Server) {
 	flag.Set("logtostderr", "true")
 	gin.SetMode("test")
 
-	dbh := db.NewMemoryDBHandle(false, true)
+	dbh := db.NewMemoryDBHandle(true, true)
 	s := NewServer(config.NewTestConfig(), dbh)
 	return dbh, s
 }
@@ -258,6 +258,23 @@ func TestAddShow(t *testing.T) {
 		spew.Dump(response.Body)
 		t.Fatalf("Expected 200 response code, got %d", response.Code)
 	}
+}
+
+func TestShowUpdateFromDisk(t *testing.T) {
+	dbh, eng := setupTest(t)
+	db.LoadFixtures(t, dbh)
+	RegisterTestingT(t)
+
+	//Success
+	response := httptest.NewRecorder()
+	req, err := http.NewRequest("GET", "/api/1/shows/1/rescan", nil)
+	Expect(err).ToNot(HaveOccurred(), "Error creating request: %s", err)
+
+	eng.Handler.ServeHTTP(response, req)
+	if response.Code != 200 {
+		t.Fatalf("Expected 200 response code, got %d", response.Code)
+	}
+	Expect(response.Body.String()).Should(MatchJSON(EpisodeGolden))
 }
 
 func TestNameCleaner(t *testing.T) {

@@ -43,6 +43,11 @@ angular.module('shows.episodes',[
     console.log(show);
     show.$updateFromIndexer({id:show.id});
   };
+  EpisodesListCtrl.updateShowFromDisk = function(show) {
+    console.log(show);
+    show.$updateFromDisk({id:show.id});
+  };
+
   EpisodesListCtrl.saveShow = function(show) {
     show.$update({showid:show.id});
   };

@@ -18,6 +18,7 @@ import (
 	"github.com/hobeone/tv2go/config"
 	"github.com/hobeone/tv2go/db"
 	"github.com/hobeone/tv2go/indexers"
+	"github.com/hobeone/tv2go/storage"
 	"github.com/hobeone/tv2go/types"
 )
 
@@ -132,6 +133,45 @@ func (server *Server) UpdateShow(c *gin.Context) {
 	dbshow.AirByDate = showUpdate.AirByDate
 	server.dbHandle.SaveShow(dbshow)
 
+	c.JSON(200, showToResponse(dbshow))
+}
+
+// ShowUpdateFromDisk scans the show's location to find the episodes that exist.  It then tries to match these to the episodes in the database.
+func (server *Server) ShowUpdateFromDisk(c *gin.Context) {
+	id := c.Params.ByName("showid")
+	showid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		genError(c, http.StatusInternalServerError, "invalid show id")
+		return
+	}
+
+	dbshow, err := server.dbHandle.GetShowById(showid)
+	if err != nil {
+		genError(c, http.StatusNotFound, "Show not found")
+		return
+	}
+	parseRes, err := storage.LoadEpisodesFromDisk(dbshow.Location)
+	if err != nil {
+		genError(c, http.StatusInternalServerError, fmt.Sprintf("Error loading information from disk: %s", err))
+		return
+	}
+
+	dbeps := []*db.Episode{}
+	for _, pr := range parseRes {
+		spew.Dump(pr)
+		if len(pr.EpisodeNumbers) == 0 {
+			glog.Errorf("Didn't get episode number from parse result for %s", pr.OriginalName)
+			continue
+		}
+		dbep, err := server.dbHandle.GetEpisodeByShowSeasonAndNumber(showid, pr.SeasonNumber, pr.EpisodeNumbers[0])
+		if err != nil {
+			glog.Errorf("Couldn't find episode by show, season, number: %d, %d, %d", showid, pr.SeasonNumber, pr.EpisodeNumbers[0])
+			continue
+		}
+		dbep.Location = pr.OriginalName
+		dbeps = append(dbeps, dbep)
+	}
+	server.dbHandle.SaveEpisodes(dbeps)
 	c.JSON(200, showToResponse(dbshow))
 }
 
@@ -577,6 +617,7 @@ func configGinEngine(s *Server) {
 		api.GET("shows/:showid", s.Show)
 		api.PUT("shows/:showid", s.UpdateShow)
 		api.GET("shows/:showid/update", s.ShowUpdateFromIndexer)
+		api.GET("shows/:showid/rescan", s.ShowUpdateFromDisk)
 		api.POST("shows", s.AddShow)
 
 		api.GET("shows/:showid/episodes", s.ShowEpisodes)

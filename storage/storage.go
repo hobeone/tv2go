@@ -1,6 +1,8 @@
 package storage
 
 import (
+	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -28,18 +30,25 @@ func MediaFilesInDir(directory string) ([]string, error) {
 	return mediaFiles, nil
 }
 
-/*
-func LoadEpisodesFromDisk() error {
+func LoadEpisodesFromDisk(location string) ([]naming.ParseResult, error) {
+	if location == "" {
+		return nil, errors.New("Empty location given.")
+	}
+	mediaFiles, err := MediaFilesInDir(location)
+	res := make([]naming.ParseResult, len(mediaFiles))
 
-	mediaFiles, err := MediaFilesInDir(dbshow.Location)
+	if _, ok := err.(*os.PathError); ok {
+		fmt.Printf("No path %s\n", location)
+	}
+
 	if err != nil {
-		return err
+		return res, err
 	}
 
-	for _, f := range mediaFiles {
-		np := name_parser.New(f)
+	np := naming.NewNameParser(location)
+	for i, f := range mediaFiles {
+		res[i] = np.Parse(f)
 	}
 
-	return nil
+	return res, nil
 }
-*/
