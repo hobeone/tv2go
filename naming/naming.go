@@ -10,12 +10,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hobeone/go-pcre"
+	"github.com/kyoh86/go-pcre"
 
 	"github.com/gholt/brimtime"
 	"github.com/golang/glog"
 )
 
+// NameRegex contains a compiled Regex and Name
 type NameRegex struct {
 	Name  string
 	Regex pcre.Regexp
@@ -24,7 +25,7 @@ type NameRegex struct {
 // NameRegexes is a list of Regular Expressions to try in order when trying to
 // extract information from a filename.
 var NameRegexes = []NameRegex{
-
+	// Lifted from SickRage
 	{
 		Name: "standard_repeat",
 		Regex: pcre.MustCompile(`(?i)^(?P<series_name>.+?)[. _-]+`+ //  Show_Name and separator
@@ -213,6 +214,7 @@ func IsMediaFile(filename string) bool {
 * Name Parser
  */
 
+// ParseResult represents the result of parsing a filepath with a Regex.
 type ParseResult struct {
 	OriginalName           string
 	SeriesName             string
