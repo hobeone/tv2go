@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"time"
 
 	"github.com/golang/glog"
@@ -9,6 +10,7 @@ import (
 	"github.com/hobeone/tv2go/db"
 	"github.com/hobeone/tv2go/indexers"
 	"github.com/hobeone/tv2go/indexers/tvdb"
+	"github.com/hobeone/tv2go/storage"
 	"github.com/hobeone/tv2go/web"
 )
 
@@ -73,7 +75,12 @@ func runDaemon(cfg *config.Config) {
 		"tvdb": tvdb.NewTvdbIndexer("90D7DF3AE9E4841E"),
 	}
 
-	webserver := web.NewServer(cfg, d.DBH, web.SetIndexers(idxReg))
+	broker, err := storage.NewBroker(cfg.Storage.Directories...)
+	if err != nil {
+		panic(fmt.Sprintf("Error creating storage broker: %s", err))
+	}
+
+	webserver := web.NewServer(cfg, d.DBH, broker, web.SetIndexers(idxReg))
 
 	webserver.StartServing()
 }

@@ -195,14 +195,14 @@ func (server *Server) ShowUpdateFromIndexer(c *gin.Context) {
 		genError(c, http.StatusInternalServerError, fmt.Sprintf("Error updating show: %s", err.Error()))
 		return
 	}
-
-	h.SaveShow(dbshow)
-
-	err = createShowDirectory(dbshow)
+	showDir, err := server.createShowDirectory(dbshow)
 	if err != nil {
 		c.JSON(500, fmt.Sprintf("Error creating show directory: %s", err.Error()))
 		return
 	}
+	dbshow.Location = showDir
+
+	h.SaveShow(dbshow)
 
 	c.JSON(200, showToResponse(dbshow))
 }
@@ -436,7 +436,7 @@ func (server *Server) AddShow(c *gin.Context) {
 		return
 	}
 
-	err = createShowDirectory(dbshow)
+	_, err = server.createShowDirectory(dbshow)
 	if err != nil {
 		c.JSON(500, fmt.Sprintf("Error creating show directory: %s", err.Error()))
 		return
@@ -467,26 +467,26 @@ func showToLocation(path, name string) string {
 	return newpath
 }
 
-func createShowDirectory(dbshow *db.Show) error {
+func (server *Server) createShowDirectory(dbshow *db.Show) (string, error) {
 	if dbshow.Location == "" {
-		return errors.New("Show location not set")
+		return "", errors.New("Show location not set")
 	}
 
-	err := os.MkdirAll(dbshow.Location, 0755)
+	createdDir, err := server.Broker.CreateDir(dbshow.Location)
 	if err != nil {
-		fmt.Errorf("Error creating show directory: %s", err.Error())
+		return "", fmt.Errorf("Error creating show directory: %s", err.Error())
 	}
-	return nil
+	return createdDir, nil
 }
 
-func rescanShowFromDisk(dbshow *db.Show) error {
+func (server *Server) rescanShowFromDisk(dbshow *db.Show) error {
 	if dbshow.Location == "" {
 		return errors.New("Show location not set")
 	}
 
 	_, err := os.Stat(dbshow.Location)
 	if os.IsNotExist(err) {
-		err = createShowDirectory(dbshow)
+		_, err = server.createShowDirectory(dbshow)
 		if err != nil {
 			return fmt.Errorf("Show directory didn't exist and got error trying to create it: %s", err.Error())
 		}
@@ -599,6 +599,7 @@ func (server *Server) StartServing() {
 type Server struct {
 	Handler  http.Handler
 	config   *config.Config
+	Broker   storage.Broker
 	indexers indexers.IndexerRegistry
 	dbHandle *db.Handle
 }
@@ -649,7 +650,7 @@ func SetIndexers(idxs indexers.IndexerRegistry) func(*Server) {
 }
 
 // NewServer creates a new server
-func NewServer(cfg *config.Config, dbh *db.Handle, options ...func(*Server)) *Server {
+func NewServer(cfg *config.Config, dbh *db.Handle, broker *storage.Broker, options ...func(*Server)) *Server {
 	t := &Server{
 		dbHandle: dbh,
 		config:   cfg,

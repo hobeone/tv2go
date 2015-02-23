@@ -20,6 +20,9 @@ type Broker struct {
 //
 // Directories are turned into absolute paths if they are not already.
 func NewBroker(dirs ...string) (*Broker, error) {
+	if len(dirs) < 1 {
+		return nil, fmt.Errorf("No directories given")
+	}
 	glog.Infof("Creating new Broker with dirs: %v", dirs)
 	b := &Broker{
 		RootDirs: make([]string, len(dirs)),
@@ -28,6 +31,9 @@ func NewBroker(dirs ...string) (*Broker, error) {
 		abspath, err := filepath.Abs(dirs[i])
 		if err != nil {
 			return b, fmt.Errorf("Couldn't make path '%s' an absolute path: %s", dirs[i], err.Error())
+		}
+		if abspath != dirs[i] {
+			glog.Infof("Turned path '%s' into absolute path '%s'", dirs[i], abspath)
 		}
 		b.RootDirs[i] = abspath
 	}

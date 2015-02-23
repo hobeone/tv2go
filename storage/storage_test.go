@@ -37,6 +37,11 @@ func TestNewBroker(t *testing.T) {
 	}
 
 	Expect(b.RootDirs[0]).To(Equal(abstestdir))
+
+	b, err = NewBroker("")
+	Expect(err).ToNot(HaveOccurred())
+	absofempty, _ := filepath.Abs("")
+	Expect(b.RootDirs[0]).To(Equal(absofempty))
 }
 
 func TestCreateShowDir(t *testing.T) {
