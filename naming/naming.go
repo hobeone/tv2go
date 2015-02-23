@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kyoh86/go-pcre"
+	"github.com/hobeone/go-pcre"
 
 	"github.com/gholt/brimtime"
 	"github.com/golang/glog"
