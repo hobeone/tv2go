@@ -206,13 +206,16 @@ type Handle struct {
 func setupDB(db gorm.DB) error {
 	tx := db.Begin()
 	err := tx.AutoMigrate(&Show{}, &Episode{}).Error
-	tx.Model(&Episode{}).AddIndex(
-		"idx_show_season_ep", "show_id", "season", "episode",
-	)
 	if err != nil {
 		tx.Rollback()
 		return err
 	}
+
+	// Don't check errors on these because they'll usually already exist
+	tx.Model(&Episode{}).AddIndex(
+		"idx_show_season_ep", "show_id", "season", "episode",
+	)
+	tx.Model(&Show{}).AddUniqueIndex("idx_show_name", "name")
 	tx.Commit()
 	return nil
 }

@@ -150,6 +150,19 @@ func (server *Server) ShowUpdateFromDisk(c *gin.Context) {
 		genError(c, http.StatusNotFound, "Show not found")
 		return
 	}
+
+	_, err = os.Stat(dbshow.Location)
+	if os.IsNotExist(err) {
+		_, err = server.Broker.CreateDir(dbshow.Location)
+		if err != nil {
+			genError(c, http.StatusInternalServerError, fmt.Sprintf("Show directory didn't exist and got error trying to create it: %s", err.Error()))
+			return
+		}
+	}
+	if err != nil {
+		genError(c, http.StatusInternalServerError, fmt.Sprintf("Error stating show directory: %s", err.Error()))
+	}
+
 	parseRes, err := storage.LoadEpisodesFromDisk(dbshow.Location)
 	if err != nil {
 		genError(c, http.StatusInternalServerError, fmt.Sprintf("Error loading information from disk: %s", err))
@@ -479,50 +492,6 @@ func (server *Server) createShowDirectory(dbshow *db.Show) (string, error) {
 	return createdDir, nil
 }
 
-func (server *Server) rescanShowFromDisk(dbshow *db.Show) error {
-	if dbshow.Location == "" {
-		return errors.New("Show location not set")
-	}
-
-	_, err := os.Stat(dbshow.Location)
-	if os.IsNotExist(err) {
-		_, err = server.createShowDirectory(dbshow)
-		if err != nil {
-			return fmt.Errorf("Show directory didn't exist and got error trying to create it: %s", err.Error())
-		}
-		return nil
-	}
-	if err != nil {
-		return fmt.Errorf("Error stating show directory: %s", err.Error())
-	}
-
-	walkfunc := func(path string, f os.FileInfo, err error) error {
-		if err != nil {
-			glog.Errorf("Got error when walking path %s: %s", path, err.Error())
-		}
-		if f.IsDir() {
-			return nil
-		}
-		/*
-		* Assumed File Structure:
-		* ShowName/Season 01/ShowName - S01E01 - Episode Name.mkv
-		*
-		* OR
-		*
-		* ShowName/Episode 01-Name.mkv
-		 */
-		p, err := filepath.Rel(dbshow.Location, path)
-		spew.Dump(p)
-		spew.Dump(err)
-		//parseFileNameToEpisode(path)
-		return nil
-	}
-
-	filepath.Walk(dbshow.Location, walkfunc)
-
-	return nil
-}
-
 // DBHandler makes a database connection available to other handlers
 func DBHandler(dbh *db.Handle) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -599,7 +568,7 @@ func (server *Server) StartServing() {
 type Server struct {
 	Handler  http.Handler
 	config   *config.Config
-	Broker   storage.Broker
+	Broker   *storage.Broker
 	indexers indexers.IndexerRegistry
 	dbHandle *db.Handle
 }
@@ -654,6 +623,7 @@ func NewServer(cfg *config.Config, dbh *db.Handle, broker *storage.Broker, optio
 	t := &Server{
 		dbHandle: dbh,
 		config:   cfg,
+		Broker:   broker,
 	}
 	configGinEngine(t)
 	for _, option := range options {
