@@ -18,6 +18,7 @@ import (
 	"github.com/hobeone/tv2go/config"
 	"github.com/hobeone/tv2go/db"
 	"github.com/hobeone/tv2go/indexers"
+	"github.com/hobeone/tv2go/providers"
 	"github.com/hobeone/tv2go/storage"
 	"github.com/hobeone/tv2go/types"
 )
@@ -338,6 +339,26 @@ func (server *Server) UpdateEpisode(c *gin.Context) {
 	c.JSON(200, episodeToResponse(dbep))
 }
 
+type episodeSearchReq struct {
+	ShowName     string `form:"show_name" binding:"required"`
+	EpisodeNum   string `form:"episode_number" binding:"required"`
+	SeasonNumber string `form:"season_number" binding:"required"`
+}
+
+func (s *Server) EpisodeSearch(c *gin.Context) {
+	var req episodeSearchReq
+	if !c.Bind(&req) {
+		genError(c, http.StatusBadRequest, c.Errors.String())
+		return
+	}
+
+	res, err := s.Providers["nzbsOrg"].TvSearch(req.ShowName, req.SeasonNumber, req.EpisodeNum)
+	if err != nil {
+		genError(c, http.StatusInternalServerError, fmt.Sprintf("Error Searching for show: %s", err.Error()))
+	}
+	c.JSON(200, res)
+}
+
 type searchShowRequest struct {
 	IndexerName string `form:"indexer_name" binding:"required"`
 	SearchTerm  string `form:"name" binding:"required"`
@@ -348,10 +369,7 @@ func (server *Server) ShowSearch(c *gin.Context) {
 	var reqJSON searchShowRequest
 
 	if !c.Bind(&reqJSON) {
-		c.JSON(http.StatusBadRequest, genericResult{
-			Message: c.Errors.String(),
-			Result:  "failure",
-		})
+		genError(c, http.StatusBadRequest, c.Errors.String())
 		return
 	}
 	series, err := server.indexers["tvdb"].Search(reqJSON.SearchTerm)
@@ -566,11 +584,12 @@ func (server *Server) StartServing() {
 
 // Server contains all the information for the tv2go web server
 type Server struct {
-	Handler  http.Handler
-	config   *config.Config
-	Broker   *storage.Broker
-	indexers indexers.IndexerRegistry
-	dbHandle *db.Handle
+	Handler   http.Handler
+	config    *config.Config
+	Broker    *storage.Broker
+	Providers providers.ProviderRegistry
+	indexers  indexers.IndexerRegistry
+	dbHandle  *db.Handle
 }
 
 func configGinEngine(s *Server) {
@@ -592,6 +611,7 @@ func configGinEngine(s *Server) {
 
 		api.GET("shows/:showid/episodes", s.ShowEpisodes)
 		api.GET("shows/:showid/episodes/:episodeid", s.Episode)
+		api.GET("shows/:showid/episodes/:episodeid/search", s.EpisodeSearch)
 		api.PUT("shows/:showid/episodes", s.UpdateEpisode)
 
 		api.GET("indexers/search", s.ShowSearch)
@@ -619,11 +639,12 @@ func SetIndexers(idxs indexers.IndexerRegistry) func(*Server) {
 }
 
 // NewServer creates a new server
-func NewServer(cfg *config.Config, dbh *db.Handle, broker *storage.Broker, options ...func(*Server)) *Server {
+func NewServer(cfg *config.Config, dbh *db.Handle, broker *storage.Broker, provReg providers.ProviderRegistry, options ...func(*Server)) *Server {
 	t := &Server{
-		dbHandle: dbh,
-		config:   cfg,
-		Broker:   broker,
+		dbHandle:  dbh,
+		config:    cfg,
+		Broker:    broker,
+		Providers: provReg,
 	}
 	configGinEngine(t)
 	for _, option := range options {

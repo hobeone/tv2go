@@ -2,6 +2,8 @@ package config
 
 import (
 	"testing"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 func TestReadConfigFailsOnNonExistingPath(t *testing.T) {
@@ -36,4 +38,5 @@ func TestDefaultsGetOverridden(t *testing.T) {
 	if c.DB.Verbose {
 		t.Fatal("Expected DB.Verbose to be false")
 	}
+	spew.Dump(c)
 }

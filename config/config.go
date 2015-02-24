@@ -21,6 +21,12 @@ type Config struct {
 	WebServer     webConfig
 	Storage       storageConfig
 	MediaDefaults mediaDefaults
+	Providers     []providerConfig
+}
+
+type providerConfig struct {
+	Name string
+	API  string
 }
 
 type webConfig struct {

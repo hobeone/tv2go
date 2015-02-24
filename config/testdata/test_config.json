@@ -9,5 +9,17 @@
   "WebServer": {
     "ListenAddress": "localhost:9000",
     "EnableAPI": false
-  }
+  },
+  "Storage": {
+    "Directories": [
+      "~/tv2go/media",
+      "~/tv2go/media2"
+    ]
+  },
+  "Providers": [
+    {
+      "Name": "nzbsOrg",
+      "API": "123"
+    }
+  ]
 }

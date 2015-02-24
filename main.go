@@ -10,6 +10,7 @@ import (
 	"github.com/hobeone/tv2go/db"
 	"github.com/hobeone/tv2go/indexers"
 	"github.com/hobeone/tv2go/indexers/tvdb"
+	"github.com/hobeone/tv2go/providers"
 	"github.com/hobeone/tv2go/storage"
 	"github.com/hobeone/tv2go/web"
 )
@@ -75,12 +76,27 @@ func runDaemon(cfg *config.Config) {
 		"tvdb": tvdb.NewTvdbIndexer("90D7DF3AE9E4841E"),
 	}
 
+	//Ghetto until real provider setup done
+	nzborgKey := ""
+	for _, p := range cfg.Providers {
+		if p.Name == "nzbsOrg" {
+			nzborgKey = p.API
+		}
+	}
+	if nzborgKey == "" {
+		panic("No Nzbs.org API key set in config")
+	}
+	provReg := providers.ProviderRegistry{
+		// get key from cfg
+		"nzbsOrg": providers.NewNzbsOrg(nzborgKey),
+	}
+
 	broker, err := storage.NewBroker(cfg.Storage.Directories...)
 	if err != nil {
 		panic(fmt.Sprintf("Error creating storage broker: %s", err))
 	}
 
-	webserver := web.NewServer(cfg, d.DBH, broker, web.SetIndexers(idxReg))
+	webserver := web.NewServer(cfg, d.DBH, broker, provReg, web.SetIndexers(idxReg))
 
 	webserver.StartServing()
 }
