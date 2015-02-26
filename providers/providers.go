@@ -5,10 +5,11 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
+	"time"
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/hobeone/rss2go/feed"
-	"github.com/hobeone/tv2go/naming"
 )
 
 type SearchResult struct {
@@ -20,8 +21,18 @@ type SearchResult struct {
 
 type ProviderRegistry map[string]Provider
 
+type ProviderResult struct {
+	Type        string `json:"type"`
+	Age         int64  `json:"age"` //hours
+	Name        string `json:"name"`
+	Size        int64  `json:"size"`
+	Quality     string `json:"quality"`
+	IndexerName string `json:"indexer"`
+	URL         string `json:"url"`
+}
+
 type Provider interface {
-	TvSearch(string, string, string) ([]naming.ParseResult, error)
+	TvSearch(string, int64, int64) ([]ProviderResult, error)
 }
 
 type NzbsOrg struct {
@@ -55,13 +66,13 @@ func SetClient(c *http.Client) func(*NzbsOrg) {
 //
 // API: t=tvsearch&q=beverly%20hillbillies&season=3&ep=1
 //  ?t=tvsearch&rid=5615&cat=5030,5070. Include &extended=1 to return extended information in the search results.
-func (n *NzbsOrg) TvSearch(showName, season, ep string) ([]naming.ParseResult, error) {
+func (n *NzbsOrg) TvSearch(showName string, season, ep int64) ([]ProviderResult, error) {
 	u := url.Values{}
 	u.Add("apikey", n.APIKEY)
 	u.Add("t", "tvsearch")
 	u.Add("q", showName)
-	u.Add("season", season)
-	u.Add("ep", ep)
+	u.Add("season", strconv.FormatInt(season, 10))
+	u.Add("ep", strconv.FormatInt(ep, 10))
 	urlStr := u.Encode()
 	spew.Dump(urlStr)
 
@@ -85,10 +96,16 @@ func (n *NzbsOrg) TvSearch(showName, season, ep string) ([]naming.ParseResult, e
 	if err != nil {
 		return nil, fmt.Errorf("Error parsing feed: %s", err)
 	}
-	np := naming.NewNameParser("")
-	parsedRes := make([]naming.ParseResult, len(stories))
+
+	parsedRes := make([]ProviderResult, len(stories))
 	for i, story := range stories {
-		parsedRes[i] = np.Parse(story.Title)
+		parsedRes[i] = ProviderResult{
+			Type:        "NZB",
+			Age:         int64(time.Since(story.Published).Hours()),
+			Name:        story.Title,
+			IndexerName: "nzbsOrg",
+			URL:         story.Link,
+		}
 	}
 	return parsedRes, nil
 }

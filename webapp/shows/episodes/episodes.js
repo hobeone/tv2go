@@ -28,7 +28,7 @@ angular.module('shows.episodes',[
       },
     });
 })
-.controller('EpisodesListCtrl', function ($stateParams, show, eps, EpisodesModel, ShowsModel) {
+.controller('EpisodesListCtrl', function ($stateParams, show, eps, EpisodesModel, ShowsModel, ModalService) {
   var EpisodesListCtrl = this;
   
   EpisodesListCtrl.episodes = eps;
@@ -51,5 +51,42 @@ angular.module('shows.episodes',[
   EpisodesListCtrl.saveShow = function(show) {
     show.$update({showid:show.id});
   };
+  EpisodesListCtrl.searchEpisode = function(ep) {
+    ModalService.showModal({
+      templateUrl: 'shows/episodes/modal.tmpl.html',
+      controller: "EpisodeSearchCtrl",
+      controllerAs: "episodeSearchCtrl",
+      inputs: {
+        ep: ep,
+        show: show,
+      },
+    }).then(function(modal) {
+      modal.element.modal();
+      modal.close.then(function(result) {
+      });
+    }).catch(function(error) {
+      console.log(error);
+    });
+  };
 })
-;
+.controller('EpisodeSearchCtrl', function($scope, $element, ep, show, EpisodesModel, close) {
+  var episodeSearchCtrl = this;
+  episodeSearchCtrl.searching = "searching";
+  episodeSearchCtrl.ep = ep;
+  episodeSearchCtrl.show = show;
+
+  EpisodesModel.searchEpisode(show, ep).then(function(result){
+    episodeSearchCtrl.searchResults = result;
+  });
+
+  episodeSearchCtrl.downloadResult = function(res) {
+    console.log("Sending for download");
+    console.log(res);
+    EpisodesModel.downloadEpisode(show, ep)
+    close();
+  }
+
+  episodeSearchCtrl.close = function(result) {
+    close(result, 500);
+  }
+});

@@ -6,6 +6,7 @@
         <th style="width:20%">Episdode</th>
         <th style="width:20%">Airdate</th>
         <th style="width:35%">Name</th>
+        <th style="width:25%">Location</th>
         <th style="width:25%">Status</th>
       </tr>
 
@@ -17,6 +18,8 @@
         <td>
           <a href="#" editable-select="ep.status" e-ng-options="status for status in episodesListCtrl.statuses" onbeforesave="episodesListCtrl.updateStatus(ep)" >{{ep.status}}</a>
         </td>
+
+        <td><button class="fa fa-search" ng-click="episodesListCtrl.searchEpisode(ep)"></button></td>
       </tr>
     </table>
 </div>

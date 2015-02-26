@@ -290,8 +290,7 @@ func (h *Handle) GetShowEpisodes(s *Show) ([]Episode, error) {
 
 func (h *Handle) GetEpisodeByID(episodeid int64) (*Episode, error) {
 	var ep Episode
-
-	err := h.db.Find(&ep, episodeid).Error
+	err := h.db.Preload("Show").Find(&ep, episodeid).Error
 	return &ep, err
 }
 

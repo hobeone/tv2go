@@ -345,18 +345,54 @@ type episodeSearchReq struct {
 	SeasonNumber string `form:"season_number" binding:"required"`
 }
 
+type episodeSearchResp struct {
+	SourceType  string `json:"source_type"`
+	Age         string `json:"age"`
+	Title       string `json:"title"`
+	IndexerName string `json:"indexer_name"`
+	Size        int64  `json:"size"`
+	Peers       string `json:"peers"`
+	Quality     string `json:"quality"`
+}
+
 func (s *Server) EpisodeSearch(c *gin.Context) {
-	var req episodeSearchReq
-	if !c.Bind(&req) {
-		genError(c, http.StatusBadRequest, c.Errors.String())
+	h := s.dbHandle
+	episodeid, err := strconv.ParseInt(c.Params.ByName("episodeid"), 10, 64)
+
+	if err != nil {
+		genError(c, http.StatusNotFound, fmt.Sprintf("Invalid episodeid: %v", c.Params.ByName("episodeid")))
 		return
 	}
 
-	res, err := s.Providers["nzbsOrg"].TvSearch(req.ShowName, req.SeasonNumber, req.EpisodeNum)
+	ep, err := h.GetEpisodeByID(episodeid)
+	if err != nil {
+		genError(c, http.StatusNotFound, err.Error())
+		return
+	}
+
+	res, err := s.Providers["nzbsOrg"].TvSearch(ep.Show.Name, ep.Season, ep.Episode)
 	if err != nil {
 		genError(c, http.StatusInternalServerError, fmt.Sprintf("Error Searching for show: %s", err.Error()))
+		return
 	}
 	c.JSON(200, res)
+}
+
+func (server *Server) DownloadEpisode(c *gin.Context) {
+	episodeid, err := strconv.ParseInt(c.Params.ByName("episodeid"), 10, 64)
+
+	if err != nil {
+		genError(c, http.StatusNotFound, fmt.Sprintf("Invalid episodeid: %v", c.Params.ByName("episodeid")))
+		return
+	}
+
+	ep, err := server.dbHandle.GetEpisodeByID(episodeid)
+	if err != nil {
+		genError(c, http.StatusNotFound, err.Error())
+		return
+	}
+
+	c.JSON(200, ep)
 }
 
 type searchShowRequest struct {
@@ -477,7 +513,6 @@ func (server *Server) AddShow(c *gin.Context) {
 }
 
 func showToLocation(path, name string) string {
-
 	name = strings.Trim(name, " ")
 	name = strings.Trim(name, ".")
 
@@ -612,6 +647,7 @@ func configGinEngine(s *Server) {
 		api.GET("shows/:showid/episodes", s.ShowEpisodes)
 		api.GET("shows/:showid/episodes/:episodeid", s.Episode)
 		api.GET("shows/:showid/episodes/:episodeid/search", s.EpisodeSearch)
+		api.GET("shows/:showid/episodes/:episodeid/download", s.DownloadEpisode)
 		api.PUT("shows/:showid/episodes", s.UpdateEpisode)
 
 		api.GET("indexers/search", s.ShowSearch)

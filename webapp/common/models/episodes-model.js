@@ -11,6 +11,11 @@ episodeService.factory('Episode', ['$cacheFactory','$resource',
       update: {
         method: 'PUT',
       },
+      providerSearch: {
+        method: 'GET',
+        isArray: true,
+        url: '/api/1/shows/:showid/episodes/:episodeid/search'
+      }
     });
   }]);
 
@@ -74,11 +79,35 @@ angular.module('tv2go.models.episodes',['tv2go.episodesService'])
   };
 
 
-  model.deleteEpisode = function(episode) {
-    episode.$delete({episodeId: episode.id});
-    _.remove(episodes, function(e) {
-      return e.id == episode.id;
+  model.searchEpisode = function(show, episode) {
+    var deferred = $q.defer();
+
+    Episode.providerSearch(
+        {
+          episodeid: episode.id,
+          showid: show.id
+        }
+    ).$promise.then(function(results){
+      deferred.resolve(results);
     });
+    return deferred.promise;
   };
+
+  model.downloadEpisode = function(show, episode) {
+    var deferred = $q.defer();
+    Episode.download(
+        {
+          episodeid: episode.id,
+          showid: show.id
+        }
+    ).$promise.then(function(result){
+      deferred.resolve(result);
+      var index = _.findIndex(episodes, function(e){
+        return e.id == result.id;
+      });
+      episodes[index] = result;
+    });
+    return deferred.promise;
+  }
 })
 ;

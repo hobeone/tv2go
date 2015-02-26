@@ -1,0 +1,39 @@
+<div class="modal fade">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" ng-click="episodeSearchCtrl.close()" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Search Results for: {{episodeSearchCtrl.show.name}} - {{episodeSearchCtrl.ep.SeasonNumber}} - Episode NUm</h4>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          <table class="table-striped table-condensed">
+            <tr>
+              <th>Source</th>
+              <th>Age</th>
+              <th>Title</th>
+              <th>Indexer</th>
+              <th>Size</th>
+              <th>Peers</th>
+              <th>Quality</th>
+              <th></th>
+            </tr>
+            <tr ng-repeat="r in episodeSearchCtrl.searchResults">
+              <td>{{r.type}}</td>
+              <td>{{r.age | humanizeTime}}</td>
+              <td>{{r.name}}</td>
+              <td>{{r.indexer}}</td>
+              <td>{{r.size | humanize}}</td>
+              <td>{{r.peers}}</td>
+              <td>{{r.quality}}</td>
+              <td><i ng-click="episodeSearchCtrl.downloadResult(r)" class="fa fa-download"></i></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" ng-click="episodeSearchCtrl.close()" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
