@@ -40,7 +40,7 @@ func ShowUpdater(h *db.Handle) {
 					continue
 				}
 				glog.Infof("Saving %d episodes", len(dbeps))
-				h.DB().Save(&s)
+				h.SaveShow(&s)
 			}
 		}
 		glog.Info("Updated shows, sleeping.")

@@ -21,40 +21,6 @@ func init() {
 	}
 }
 
-/* From SickRage
-*CREATE TABLE tv_shows
-  (
-     show_id             INTEGER PRIMARY KEY,
-     indexer_id          NUMERIC,
-     indexer             NUMERIC,
-     show_name           TEXT,
-     location            TEXT,
-     network             TEXT,
-     genre               TEXT,
-     classification      TEXT,
-     runtime             NUMERIC,
-     quality             NUMERIC,
-     airs                TEXT,
-     status              TEXT,
-     flatten_folders     NUMERIC,
-     paused              NUMERIC,
-     startyear           NUMERIC,
-     air_by_date         NUMERIC,
-     lang                TEXT,
-     subtitles           NUMERIC,
-     notify_list         TEXT,
-     imdb_id             TEXT,
-     last_update_indexer NUMERIC,
-     dvdorder            NUMERIC,
-     archive_firstmatch  NUMERIC,
-     rls_require_words   TEXT,
-     rls_ignore_words    TEXT,
-     sports              NUMERIC,
-     anime               NUMERIC,
-     scene               NUMERIC,
-     default_ep_status   NUMERIC
-*/
-
 // Show is a TV Show
 type Show struct {
 	ID                int64  `gorm:"column:id; primary_key:yes"`
@@ -87,6 +53,7 @@ type Show struct {
 	UpdatedAt         time.Time
 }
 
+// BeforeSave validates a show before writing it to the database
 func (s *Show) BeforeSave() error {
 	if s.Name == "" {
 		return fmt.Errorf("Name can not be empty")
@@ -97,7 +64,7 @@ func (s *Show) BeforeSave() error {
 	return nil
 }
 
-// SQLite driver sets everything to local
+// AfterFind updates all times to UTC because SQLite driver sets everything to local
 func (s *Show) AfterFind() error {
 	s.LastIndexerUpdate = s.LastIndexerUpdate.UTC()
 	s.CreatedAt = s.CreatedAt.UTC()
@@ -105,36 +72,7 @@ func (s *Show) AfterFind() error {
 	return nil
 }
 
-/* Sickrage
-CREATE TABLE tv_episodes
-  (
-     episode_id            INTEGER PRIMARY KEY,
-     showid                NUMERIC,
-     indexerid             NUMERIC,
-     indexer               TEXT,
-     name                  TEXT,
-     season                NUMERIC,
-     episode               NUMERIC,
-     description           TEXT,
-     airdate               NUMERIC,
-     hasnfo                NUMERIC,
-     hastbn                NUMERIC,
-     status                NUMERIC,
-     location              TEXT,
-     file_size             NUMERIC,
-     release_name          TEXT,
-     subtitles             TEXT,
-     subtitles_searchcount NUMERIC,
-     subtitles_lastsearch  TIMESTAMP,
-     is_proper             NUMERIC,
-     scene_season          NUMERIC,
-     scene_episode         NUMERIC,
-     absolute_number       NUMERIC,
-     scene_absolute_number NUMERIC,
-     version               NUMERIC,
-     release_group         TEXT
-  );
-*/
+// Episode represents an individual episode of a Show
 type Episode struct {
 	ID                  int64 `gorm:"column:id; primary_key:yes"`
 	Show                Show
@@ -164,6 +102,7 @@ func (e *Episode) BeforeSave() error {
 	if e.Name == "" {
 		return errors.New("Name can not be empty")
 	}
+	// Season 0 is used for Specials
 	//	if e.Season == 0 {
 	//		return errors.New("Season must be set")
 	//	}
@@ -269,32 +208,34 @@ func NewMemoryDBHandle(verbose bool, writeUpdates bool) *Handle {
 	return d
 }
 
+// AddShow adds the given show to the Database
 func (h *Handle) AddShow(s *Show) error {
 	return h.db.Create(s).Error
 }
 
-func (h *Handle) DB() *gorm.DB {
-	return &h.db
-}
-
+// GetAllShows returns all shows in the database.
 func (h *Handle) GetAllShows() ([]Show, error) {
 	var shows []Show
 	err := h.db.Find(&shows).Error
 	return shows, err
 }
 
+// GetShowEpisodes returns all of the given show's episodes
 func (h *Handle) GetShowEpisodes(s *Show) ([]Episode, error) {
 	var episodes []Episode
 	err := h.db.Model(s).Related(&episodes).Error
 	return episodes, err
 }
 
+// GetEpisodeByID returns an episode with the given ID or an error if it
+// doesn't exist.
 func (h *Handle) GetEpisodeByID(episodeid int64) (*Episode, error) {
 	var ep Episode
 	err := h.db.Preload("Show").Find(&ep, episodeid).Error
 	return &ep, err
 }
 
+// GetEpisodeByShowSeasonAndNumber does exactly what it says.
 func (h *Handle) GetEpisodeByShowSeasonAndNumber(showid, season, number int64) (*Episode, error) {
 	var eps []Episode
 
@@ -307,17 +248,9 @@ func (h *Handle) GetEpisodeByShowSeasonAndNumber(showid, season, number int64) (
 	return &eps[0], nil
 }
 
-func (h *Handle) GetShowSeason(showid, season int64) ([]Episode, error) {
-	var episodes []Episode
-	show, err := h.GetShowById(showid)
-	if err != nil {
-		return episodes, err
-	}
-	err = h.db.Where("show_id = ? AND season = ?", show.ID, season).Find(&episodes).Error
-	return episodes, err
-}
-
-func (h *Handle) GetShowById(showID int64) (*Show, error) {
+// GetShowByID returs the show with the given ID or an error if it doesn't
+// exist.
+func (h *Handle) GetShowByID(showID int64) (*Show, error) {
 	var show Show
 
 	err := h.db.Find(&show, showID).Error
@@ -331,6 +264,7 @@ func (h *Handle) GetShowById(showID int64) (*Show, error) {
 	return &show, err
 }
 
+// SaveShow saves the show (and any episodes) to the database
 func (h *Handle) SaveShow(s *Show) error {
 	if h.writeUpdates {
 		return h.db.Save(s).Error
@@ -338,6 +272,7 @@ func (h *Handle) SaveShow(s *Show) error {
 	return nil
 }
 
+// SaveEpisode saves the given episode to the database
 func (h *Handle) SaveEpisode(e *Episode) error {
 	if h.writeUpdates {
 		return h.db.Save(e).Error
@@ -345,6 +280,8 @@ func (h *Handle) SaveEpisode(e *Episode) error {
 	return nil
 }
 
+// SaveEpisodes save the list of episodes to the database.  This is done in a
+// transaction which will be much faster if the number of episodes is large.
 func (h *Handle) SaveEpisodes(eps []*Episode) error {
 	if h.writeUpdates {
 		tx := h.db.Begin()
