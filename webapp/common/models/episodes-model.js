@@ -15,7 +15,11 @@ episodeService.factory('Episode', ['$cacheFactory','$resource',
         method: 'GET',
         isArray: true,
         url: '/api/1/shows/:showid/episodes/:episodeid/search'
-      }
+      },
+      download: {
+        method: 'POST',
+        url: '/api/1/shows/:showid/episodes/:episodeid/download'
+      },
     });
   }]);
 
@@ -32,10 +36,10 @@ angular.module('tv2go.models.episodes',['tv2go.episodesService'])
   model.getEpisodes = function(showid) {
     var deferred = $q.defer();
 
-      Episode.all(
-        {
-          showid: showid,
-        }
+    Episode.all(
+      {
+        showid: showid,
+      }
       ).$promise.then(function(episodes){
         deferred.resolve(cacheEpisodes(episodes));
       });
@@ -93,12 +97,16 @@ angular.module('tv2go.models.episodes',['tv2go.episodesService'])
     return deferred.promise;
   };
 
-  model.downloadEpisode = function(show, episode) {
+  model.downloadEpisode = function(show, episode, resp) {
     var deferred = $q.defer();
     Episode.download(
         {
           episodeid: episode.id,
           showid: show.id
+        },
+        {
+          indexer: resp.indexer,
+          url: resp.url,
         }
     ).$promise.then(function(result){
       deferred.resolve(result);

@@ -1,10 +1,11 @@
 package web
 
 import (
-	"flag"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -16,14 +17,25 @@ import (
 	"github.com/hobeone/tv2go/db"
 	"github.com/hobeone/tv2go/indexers"
 	"github.com/hobeone/tv2go/indexers/tvdb"
+	"github.com/hobeone/tv2go/providers"
+	"github.com/hobeone/tv2go/storage"
 )
 
+var basedir, _ = filepath.Abs("")
+
 func setupTest(t *testing.T) (*db.Handle, *Server) {
-	flag.Set("logtostderr", "true")
+	//flag.Set("logtostderr", "true")
 	gin.SetMode("test")
 
-	dbh := db.NewMemoryDBHandle(true, true)
-	s := NewServer(config.NewTestConfig(), dbh)
+	dbh := db.NewMemoryDBHandle(false, true)
+
+	broker, err := storage.NewBroker("testdata")
+	if err != nil {
+		t.Fatalf("Error creating storage broker: %s", err.Error())
+	}
+	providers := providers.ProviderRegistry{}
+
+	s := NewServer(config.NewTestConfig(), dbh, broker, providers)
 	return dbh, s
 }
 
@@ -42,7 +54,7 @@ func setupTestServer(mux http.Handler) (*httptest.Server, *http.Client) {
 	return server, httpClient
 }
 
-const GoldenShowResponse = `{
+var GoldenShowResponse = fmt.Sprintf(`{
 	"id": 1,
 	"air_by_date": false,
 	"cache": {
@@ -63,8 +75,8 @@ const GoldenShowResponse = `{
 	"tvdbid": 1,
 	"tvrage_id": 0,
 	"tvrage_name": "",
-	"location": ""
-}`
+	"location": "%s/testdata/show1"
+}`, basedir)
 
 func TestShow(t *testing.T) {
 	dbh, eng := setupTest(t)
@@ -103,7 +115,7 @@ func TestShow(t *testing.T) {
 	Expect(response.Body.String()).Should(MatchJSON(GoldenShowResponse))
 }
 
-const ShowsGoldenResp = `[
+var ShowsGoldenResp = fmt.Sprintf(`[
 {
 	"id": 1,
 	"air_by_date": false,
@@ -125,7 +137,7 @@ const ShowsGoldenResp = `[
 	"tvdbid": 1,
 	"tvrage_id": 0,
 	"tvrage_name": "",
-	"location": ""
+	"location": "%s/testdata/show1"
 },
 {
 	"id": 2,
@@ -148,9 +160,9 @@ const ShowsGoldenResp = `[
 	"tvdbid": 2,
 	"tvrage_id": 0,
 	"tvrage_name": "",
-	"location": ""
+	"location": "%s/testdata/show2"
 }
-]`
+]`, basedir, basedir)
 
 func TestShows(t *testing.T) {
 	dbh, eng := setupTest(t)
@@ -274,7 +286,7 @@ func TestShowUpdateFromDisk(t *testing.T) {
 	if response.Code != 200 {
 		t.Fatalf("Expected 200 response code, got %d", response.Code)
 	}
-	Expect(response.Body.String()).Should(MatchJSON(EpisodeGolden))
+	Expect(response.Body.String()).Should(MatchJSON(GoldenShowResponse))
 }
 
 func TestNameCleaner(t *testing.T) {
@@ -296,15 +308,4 @@ func TestNameCleaner(t *testing.T) {
 
 	teststr = showToLocation(dir, ".a.b (YEAR)")
 	Expect(teststr).To(Equal("/a.b _YEAR_"))
-}
-
-func TestWalker(t *testing.T) {
-	dbh, _ := setupTest(t)
-	db.LoadFixtures(t, dbh)
-	RegisterTestingT(t)
-
-	dbshow, _ := dbh.GetShowById(1)
-	dbshow.Location = "testdata"
-	err := rescanShowFromDisk(dbshow)
-	Expect(err).ToNot(HaveOccurred(), "Error scanning disk: %s", err)
 }

@@ -12,7 +12,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/glog"
 	"github.com/hobeone/tv2go/config"
@@ -162,6 +161,7 @@ func (server *Server) ShowUpdateFromDisk(c *gin.Context) {
 	}
 	if err != nil {
 		genError(c, http.StatusInternalServerError, fmt.Sprintf("Error stating show directory: %s", err.Error()))
+		return
 	}
 
 	parseRes, err := storage.LoadEpisodesFromDisk(dbshow.Location)
@@ -172,7 +172,6 @@ func (server *Server) ShowUpdateFromDisk(c *gin.Context) {
 
 	dbeps := []*db.Episode{}
 	for _, pr := range parseRes {
-		spew.Dump(pr)
 		if len(pr.EpisodeNumbers) == 0 {
 			glog.Errorf("Didn't get episode number from parse result for %s", pr.OriginalName)
 			continue
@@ -183,9 +182,14 @@ func (server *Server) ShowUpdateFromDisk(c *gin.Context) {
 			continue
 		}
 		dbep.Location = pr.OriginalName
+		dbep.Status = types.DOWNLOADED
 		dbeps = append(dbeps, dbep)
 	}
-	server.dbHandle.SaveEpisodes(dbeps)
+	err = server.dbHandle.SaveEpisodes(dbeps)
+	if err != nil {
+		genError(c, http.StatusInternalServerError, fmt.Sprintf("Error saving episodes: %s", err))
+		return
+	}
 	c.JSON(200, showToResponse(dbshow))
 }
 
@@ -355,31 +359,49 @@ type episodeSearchResp struct {
 	Quality     string `json:"quality"`
 }
 
-func (s *Server) EpisodeSearch(c *gin.Context) {
-	h := s.dbHandle
-	episodeid, err := strconv.ParseInt(c.Params.ByName("episodeid"), 10, 64)
+// EpisodeSearch searches configured Providers for episode files.
+func (server *Server) EpisodeSearch(c *gin.Context) {
 
-	if err != nil {
-		genError(c, http.StatusNotFound, fmt.Sprintf("Invalid episodeid: %v", c.Params.ByName("episodeid")))
-		return
-	}
+	c.String(200, "%s", `[{"type":"NZB","age":"2015-01-31T10:22:44Z","name":"Top.Gear.UK.S22E01.1080p.HDTV.x264-FaiLED","size":4079322730,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/578d3ad92293a82861d48f657de641fa.nzb\u0026i=2952\u0026r=cdbbb9359518a9406fb47f70a50d20fb"},{"type":"NZB","age":"2015-01-31T10:00:36Z","name":"Top.Gear.S22E01.1080i.HDTV.DD2.0.H.264-CtrlHD","size":2359440936,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/f4bbe642ca2387b7e36218a762d02e84.nzb\u0026i=2952\u0026r=cdbbb9359518a9406fb47f70a50d20fb"},{"type":"NZB","age":"2015-01-31T09:36:28Z","name":"top gear.22x01.hdtv x264-fov","size":618547905,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/99cf2fbef2058c089e4d4668ae817d3d.nzb\u0026i=2952\u0026r=cdbbb9359518a9406fb47f70a50d20fb"},{"type":"NZB","age":"2015-01-31T09:36:27Z","name":"top gear.22x01.720p hdtv x264-fov","size":1475201133,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/e8758f9e9dbb0aa3d557afeaa141f1d5.nzb\u0026i=2952\u0026r=cdbbb9359518a9406fb47f70a50d20fb"},{"type":"NZB","age":"2015-01-30T19:34:55Z","name":"Top.Gear.S22E01.720p.HDTV.DD2.0.x264-NTb","size":2323495719,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/e5534286ca2e7ce6aca7b2525cfd8e47.nzb\u0026i=2952\u0026r=cdbbb9359518a9406fb47f70a50d20fb"},{"type":"NZB","age":"2015-01-29T15:56:16Z","name":"Top.Gear.S22E01.720p.HDTV.VFR.x264-CtrlHD","size":2779849763,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/74a9c81cc8e26b3758e32231ba165522.nzb\u0026i=2952\u0026r=cdbbb9359518a9406fb47f70a50d20fb"},{"type":"NZB","age":"2015-01-26T03:03:08Z","name":"Top.Gear.UK.S22E01.1080p.HDTV.x264-FaiLED","size":6028040788,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/643d564f16eb72da49e07be2d9d5df86.nzb\u0026i=2952\u0026r=cdbbb9359518a9406fb47f70a50d20fb"},{"type":"NZB","age":"2015-01-25T21:36:21Z","name":"Top Gear.22x01.720p HDTV x264-FoV","size":2068726335,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/d11ebd3118bc2dae6c0add6159154de2.nzb\u0026i=2952\u0026r=cdbbb9359518a9406fb47f70a50d20fb"},{"type":"NZB","age":"2015-01-25T21:36:20Z","name":"Top Gear.22x01.HDTV x264-FoV","size":746762552,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/b45f8918369e1fe7f11e38dc1c9da9f6.nzb\u0026i=2952\u0026r=cdbbb9359518a9406fb47f70a50d20fb"},{"type":"NZB","age":"2015-01-25T21:11:59Z","name":"Top Gear.22x01.HDTV x264-FoV","size":752991164,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/feb7b4e26303d6137821c8bd209ab487.nzb\u0026i=2952\u0026r=cdbbb9359518a9406fb47f70a50d20fb"}]`)
+	/*
+		h := s.dbHandle
+		episodeid, err := strconv.ParseInt(c.Params.ByName("episodeid"), 10, 64)
 
-	ep, err := h.GetEpisodeByID(episodeid)
-	if err != nil {
-		genError(c, http.StatusNotFound, err.Error())
-		return
-	}
+		if err != nil {
+			genError(c, http.StatusNotFound, fmt.Sprintf("Invalid episodeid: %v", c.Params.ByName("episodeid")))
+			return
+		}
 
-	res, err := s.Providers["nzbsOrg"].TvSearch(ep.Show.Name, ep.Season, ep.Episode)
-	if err != nil {
-		genError(c, http.StatusInternalServerError, fmt.Sprintf("Error Searching for show: %s", err.Error()))
-		return
-	}
-	c.JSON(200, res)
+		ep, err := h.GetEpisodeByID(episodeid)
+		if err != nil {
+			genError(c, http.StatusNotFound, err.Error())
+			return
+		}
+
+		res, err := s.Providers["nzbsOrg"].TvSearch(ep.Show.Name, ep.Season, ep.Episode)
+		if err != nil {
+			genError(c, http.StatusInternalServerError, fmt.Sprintf("Error Searching for show: %s", err.Error()))
+			return
+		}
+		c.JSON(200, res)
+	*/
 }
 
+type downloadReq struct {
+	Indexer string `form:"indexer" binding:"required"`
+	URL     string `form:"url" binding:"required"`
+}
+
+// DownloadEpisode takes a request to download a episode from a provider
 func (server *Server) DownloadEpisode(c *gin.Context) {
 	episodeid, err := strconv.ParseInt(c.Params.ByName("episodeid"), 10, 64)
+
+	var reqJSON downloadReq
+
+	if !c.Bind(&reqJSON) {
+		genError(c, http.StatusBadRequest, c.Errors.String())
+		return
+	}
 
 	if err != nil {
 		genError(c, http.StatusNotFound, fmt.Sprintf("Invalid episodeid: %v", c.Params.ByName("episodeid")))
@@ -391,7 +413,16 @@ func (server *Server) DownloadEpisode(c *gin.Context) {
 		genError(c, http.StatusNotFound, err.Error())
 		return
 	}
+	ep.Status = types.SNATCHED
+	server.dbHandle.SaveEpisode(ep)
+	/*
+		if prov, ok := server.Providers[reqJSON.Indexer]; !ok {
+			genError(c, http.StatusBadRequest, fmt.Sprintf("Unknown indexer: %s", reqJSON.Indexer))
+			return
+		}
 
+		prov.Download(reqJSON.URL)
+	*/
 	c.JSON(200, ep)
 }
 
@@ -492,9 +523,9 @@ func (server *Server) AddShow(c *gin.Context) {
 		dbshow.Episodes[i].Status = epStatus
 		dbshow.Episodes[i].Quality = types.NONE
 	}
-
 	if dbshow.Location == "" {
-		dbshow.Location = showToLocation(server.config.Storage.Directories[0], dbshow.Name)
+		dbshow.Location = showToLocation(server.Broker.RootDirs[0], dbshow.Name)
+		glog.Infof("Location not set on show %s: defaulting to %s", dbshow.Name, dbshow.Location)
 	}
 
 	err = h.AddShow(dbshow)
@@ -647,7 +678,7 @@ func configGinEngine(s *Server) {
 		api.GET("shows/:showid/episodes", s.ShowEpisodes)
 		api.GET("shows/:showid/episodes/:episodeid", s.Episode)
 		api.GET("shows/:showid/episodes/:episodeid/search", s.EpisodeSearch)
-		api.GET("shows/:showid/episodes/:episodeid/download", s.DownloadEpisode)
+		api.POST("shows/:showid/episodes/:episodeid/download", s.DownloadEpisode)
 		api.PUT("shows/:showid/episodes", s.UpdateEpisode)
 
 		api.GET("indexers/search", s.ShowSearch)
@@ -658,8 +689,9 @@ func configGinEngine(s *Server) {
 	s.Handler = r
 }
 
-func (s *Server) Statusz(c *gin.Context) {
-	marsh, err := json.MarshalIndent(s.config, "", "  ")
+// Statusz serves internal server information in JSON format
+func (server *Server) Statusz(c *gin.Context) {
+	marsh, err := json.MarshalIndent(server.config, "", "  ")
 	if err != nil {
 		genError(c, http.StatusInternalServerError, err.Error())
 		return

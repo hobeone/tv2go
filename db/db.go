@@ -3,6 +3,7 @@ package db
 import (
 	"errors"
 	"fmt"
+	"path/filepath"
 	"sync"
 	"time"
 
@@ -348,8 +349,12 @@ func (h *Handle) SaveEpisodes(eps []*Episode) error {
 	if h.writeUpdates {
 		tx := h.db.Begin()
 		for _, e := range eps {
-			defer tx.Rollback()
-			return tx.Save(e).Error
+			err := tx.Save(e).Error
+			if err != nil {
+				glog.Errorf("Error saving episodes to the database: %s", err.Error())
+				tx.Rollback()
+				return err
+			}
 		}
 		tx.Commit()
 	}
@@ -367,11 +372,15 @@ type TestReporter interface {
 
 // LoadFixtures adds a base set of Fixtures to the given database.
 func LoadFixtures(t TestReporter, d *Handle) []Show {
+	basedir, err := filepath.Abs("")
+	if err != nil {
+		t.Fatalf("Error finding base directory: %s", err.Error())
+	}
 	shows := []Show{
 		{
 			Name:      "show1",
 			IndexerID: 1,
-			Location:  "testdata",
+			Location:  basedir + "/testdata/show1",
 			Episodes: []Episode{
 				{
 					Name:    "show1episode1",
@@ -393,15 +402,16 @@ func LoadFixtures(t TestReporter, d *Handle) []Show {
 		{
 			Name:      "show2",
 			IndexerID: 2,
-			Location:  "testdata",
+			Location:  basedir + "/testdata/show2",
 			Episodes: []Episode{
 				{
-					Name:    "show2episode1",
-					Season:  1,
-					Episode: 1,
-					AirDate: time.Date(2001, time.January, 1, 0, 0, 0, 0, time.UTC),
-					Status:  types.WANTED,
-					Quality: types.NONE,
+					Name:     "show2episode1",
+					Season:   1,
+					Episode:  1,
+					AirDate:  time.Date(2001, time.January, 1, 0, 0, 0, 0, time.UTC),
+					Status:   types.WANTED,
+					Quality:  types.NONE,
+					Location: "testdata/show1",
 				},
 				{
 					Name:    "show2episode2",

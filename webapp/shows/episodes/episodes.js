@@ -82,7 +82,7 @@ angular.module('shows.episodes',[
   episodeSearchCtrl.downloadResult = function(res) {
     console.log("Sending for download");
     console.log(res);
-    EpisodesModel.downloadEpisode(show, ep)
+    EpisodesModel.downloadEpisode(show, ep, res)
     close();
   }
 

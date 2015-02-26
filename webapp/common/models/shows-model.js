@@ -92,5 +92,9 @@ angular.module('tv2go.models.shows',['tv2go.showsService'])
     show.updateFromIndexer();
     shows.push(show);
   };
+
+  model.updateFromDisk = function(show) {
+    show.updateFromDisk();
+  }
 })
 ;

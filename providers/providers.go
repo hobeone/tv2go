@@ -1,6 +1,7 @@
 package providers
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -9,26 +10,19 @@ import (
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/hobeone/rss2go/feed"
+	"github.com/golang/glog"
 )
-
-type SearchResult struct {
-	Show    string
-	Episode string
-	Url     string
-	Query   string
-}
 
 type ProviderRegistry map[string]Provider
 
 type ProviderResult struct {
-	Type        string `json:"type"`
-	Age         int64  `json:"age"` //hours
-	Name        string `json:"name"`
-	Size        int64  `json:"size"`
-	Quality     string `json:"quality"`
-	IndexerName string `json:"indexer"`
-	URL         string `json:"url"`
+	Type        string     `json:"type"`
+	Age         *time.Time `json:"age,omitempty"` //hours
+	Name        string     `json:"name"`
+	Size        int64      `json:"size"`
+	Quality     string     `json:"quality"`
+	IndexerName string     `json:"indexer"`
+	URL         string     `json:"url"`
 }
 
 type Provider interface {
@@ -61,6 +55,23 @@ func SetClient(c *http.Client) func(*NzbsOrg) {
 	}
 }
 
+type TvSearchResponse struct {
+	Channel struct {
+		Items []struct {
+			Category  string `json:"category"`
+			Link      string `json:"link"`
+			PubDate   string `json:"pubDate"`
+			Title     string `json:"title"`
+			Enclosure struct {
+				Attributes struct {
+					Length string `json:"length"`
+					URL    string `json:"url"`
+				} `json:"@attributes"`
+			} `json:"enclosure"`
+		} `json:"item"`
+	} `json:"channel"`
+}
+
 // TvSearch searches for a given tv show with optional episode and season
 // constraints.
 //
@@ -73,16 +84,17 @@ func (n *NzbsOrg) TvSearch(showName string, season, ep int64) ([]ProviderResult,
 	u.Add("q", showName)
 	u.Add("season", strconv.FormatInt(season, 10))
 	u.Add("ep", strconv.FormatInt(ep, 10))
+	u.Add("o", "json")
 	urlStr := u.Encode()
 	spew.Dump(urlStr)
 
-	queryUrl, _ := url.Parse(n.URL)
-	queryUrl.RawQuery = urlStr
-	spew.Dump(queryUrl)
-	resp, err := n.Client.Get(queryUrl.String())
+	queryURL, _ := url.Parse(n.URL)
+	queryURL.RawQuery = urlStr
+	spew.Dump(queryURL)
+	resp, err := n.Client.Get(queryURL.String())
 
 	if err != nil {
-		return nil, fmt.Errorf("Error getting url '%s': %s\n", urlStr, err)
+		return nil, fmt.Errorf("Error getting url '%s': %s\n", queryURL, err)
 	}
 
 	defer resp.Body.Close()
@@ -91,21 +103,36 @@ func (n *NzbsOrg) TvSearch(showName string, season, ep int64) ([]ProviderResult,
 	if err != nil {
 		return nil, fmt.Errorf("Error reading response: %s", err)
 	}
-
-	_, stories, err := feed.ParseFeed(queryUrl.String(), respBody)
+	parsedResponse := TvSearchResponse{}
+	err = json.Unmarshal(respBody, &parsedResponse)
 	if err != nil {
+		glog.Infof("Couldn't parse '%s': %s", respBody, err.Error())
 		return nil, fmt.Errorf("Error parsing feed: %s", err)
 	}
 
-	parsedRes := make([]ProviderResult, len(stories))
-	for i, story := range stories {
-		parsedRes[i] = ProviderResult{
+	results := make([]ProviderResult, len(parsedResponse.Channel.Items))
+	for i, story := range parsedResponse.Channel.Items {
+		parsedTime := &time.Time{}
+		pt, err := time.Parse(time.RFC1123Z, story.PubDate)
+		parsedTime = &pt
+		if err != nil {
+			glog.Warningf("Couldn't parse time '%s': %s", story.PubDate, err.Error())
+			parsedTime = nil
+		}
+		size, err := strconv.ParseInt(story.Enclosure.Attributes.Length, 10, 64)
+		if err != nil {
+			glog.Warningf("Couldn't parse size to int: '%s': %s", err.Error())
+			size = 0
+		}
+
+		results[i] = ProviderResult{
 			Type:        "NZB",
-			Age:         int64(time.Since(story.Published).Hours()),
+			Age:         parsedTime,
 			Name:        story.Title,
 			IndexerName: "nzbsOrg",
 			URL:         story.Link,
+			Size:        size,
 		}
 	}
-	return parsedRes, nil
+	return results, nil
 }

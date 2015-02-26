@@ -34,8 +34,9 @@ angular.module('tv2go', [
     };
 })
 .filter('humanizeTime', function() {
-  return function(hours) {
-    return moment.duration(hours, 'hours').humanize();
+  return function(t) {
+    // GO json time format:
+    return moment(t, "YYYY-MM-DDTHH:mm:ssZ").fromNow();
   }
 })
 .controller('IndexCtrl', function(){});

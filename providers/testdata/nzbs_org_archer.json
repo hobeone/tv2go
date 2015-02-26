@@ -1,0 +1,237 @@
+{
+    "@attributes": {
+        "version": "2.0"
+    },
+    "channel": {
+        "title": "NZBs(dot)ORG API TV Search",
+        "description": "NZBs(dot)ORG Feed",
+        "link": "https://nzbs.org/",
+        "language": "en-gb",
+        "webMaster": "admin@nzbs.org (NZBs(dot)ORG)",
+        "category": {},
+        "image": {
+            "url": "https://nzbs.org//templates/default/images/banner.jpg",
+            "title": "NZBs(dot)ORG",
+            "link": "https://nzbs.org/",
+            "description": "Visit NZBs(dot)ORG - Home of the NZB Harvester"
+        },
+        "response": {
+            "@attributes": {
+                "offset": "0",
+                "total": "5"
+            }
+        },
+        "item": [
+            {
+                "title": "Archer.2009.S06E06.Sitting.720p.WEB-DL.DD5.1.H.264-BS",
+                "guid": "3b08a3e3c93799034eee29df1ac0ceb1",
+                "link": "https://nzbs.org/getnzb/3b08a3e3c93799034eee29df1ac0ceb1.nzb&i=2952&r=REDACTED_API_KEY",
+                "comments": "https://nzbs.org/details/3b08a3e3c93799034eee29df1ac0ceb1#comments",
+                "pubDate": "Fri, 13 Feb 2015 23:09:05 +0000",
+                "category": "TV-HD",
+                "description": "Archer.2009.S06E06.Sitting.720p.WEB-DL.DD5.1.H.264-BS",
+                "enclosure": {
+                    "@attributes": {
+                        "url": "https://nzbs.org/getnzb/3b08a3e3c93799034eee29df1ac0ceb1.nzb&i=2952&r=REDACTED_API_KEY",
+                        "length": "770451617",
+                        "type": "application/x-nzb"
+                    }
+                },
+                "attr": [
+                    {
+                        "@attributes": {
+                            "name": "category",
+                            "value": "5000"
+                        }
+                    },
+                    {
+                        "@attributes": {
+                            "name": "category",
+                            "value": "5040"
+                        }
+                    },
+                    {
+                        "@attributes": {
+                            "name": "size",
+                            "value": "770451617"
+                        }
+                    },
+                    {
+                        "@attributes": {
+                            "name": "guid",
+                            "value": "3b08a3e3c93799034eee29df1ac0ceb1"
+                        }
+                    }
+                ]
+            },
+            {
+                "title": "Archer.2009.S06E06.Sitting.1080p.WEB-DL.DD5.1.H.264-BS",
+                "guid": "39a1767869fcb6bd01a0833878c5552f",
+                "link": "https://nzbs.org/getnzb/39a1767869fcb6bd01a0833878c5552f.nzb&i=2952&r=REDACTED_API_KEY",
+                "comments": "https://nzbs.org/details/39a1767869fcb6bd01a0833878c5552f#comments",
+                "pubDate": "Fri, 13 Feb 2015 23:13:21 +0000",
+                "category": "TV-HD",
+                "description": "Archer.2009.S06E06.Sitting.1080p.WEB-DL.DD5.1.H.264-BS",
+                "enclosure": {
+                    "@attributes": {
+                        "url": "https://nzbs.org/getnzb/39a1767869fcb6bd01a0833878c5552f.nzb&i=2952&r=REDACTED_API_KEY",
+                        "length": "975993274",
+                        "type": "application/x-nzb"
+                    }
+                },
+                "attr": [
+                    {
+                        "@attributes": {
+                            "name": "category",
+                            "value": "5000"
+                        }
+                    },
+                    {
+                        "@attributes": {
+                            "name": "category",
+                            "value": "5040"
+                        }
+                    },
+                    {
+                        "@attributes": {
+                            "name": "size",
+                            "value": "975993274"
+                        }
+                    },
+                    {
+                        "@attributes": {
+                            "name": "guid",
+                            "value": "39a1767869fcb6bd01a0833878c5552f"
+                        }
+                    }
+                ]
+            },
+            {
+                "title": "Archer.2009.S06E06.HDTV.x264-KILLERS",
+                "guid": "80941ef09beb43a1a27f75db1f551969",
+                "link": "https://nzbs.org/getnzb/80941ef09beb43a1a27f75db1f551969.nzb&i=2952&r=REDACTED_API_KEY",
+                "comments": "https://nzbs.org/details/80941ef09beb43a1a27f75db1f551969#comments",
+                "pubDate": "Fri, 13 Feb 2015 03:46:31 +0000",
+                "category": "TV-SD",
+                "description": "Archer.2009.S06E06.HDTV.x264-KILLERS",
+                "enclosure": {
+                    "@attributes": {
+                        "url": "https://nzbs.org/getnzb/80941ef09beb43a1a27f75db1f551969.nzb&i=2952&r=REDACTED_API_KEY",
+                        "length": "119909336",
+                        "type": "application/x-nzb"
+                    }
+                },
+                "attr": [
+                    {
+                        "@attributes": {
+                            "name": "category",
+                            "value": "5000"
+                        }
+                    },
+                    {
+                        "@attributes": {
+                            "name": "category",
+                            "value": "5030"
+                        }
+                    },
+                    {
+                        "@attributes": {
+                            "name": "size",
+                            "value": "119909336"
+                        }
+                    },
+                    {
+                        "@attributes": {
+                            "name": "guid",
+                            "value": "80941ef09beb43a1a27f75db1f551969"
+                        }
+                    }
+                ]
+            },
+            {
+                "title": "Archer.2009.S06E06.HDTV.x264-KILLERS",
+                "guid": "9185cf406881c76183a2029b8ea0ddf0",
+                "link": "https://nzbs.org/getnzb/9185cf406881c76183a2029b8ea0ddf0.nzb&i=2952&r=REDACTED_API_KEY",
+                "comments": "https://nzbs.org/details/9185cf406881c76183a2029b8ea0ddf0#comments",
+                "pubDate": "Fri, 13 Feb 2015 03:53:06 +0000",
+                "category": "TV-SD",
+                "description": "Archer.2009.S06E06.HDTV.x264-KILLERS",
+                "enclosure": {
+                    "@attributes": {
+                        "url": "https://nzbs.org/getnzb/9185cf406881c76183a2029b8ea0ddf0.nzb&i=2952&r=REDACTED_API_KEY",
+                        "length": "120763052",
+                        "type": "application/x-nzb"
+                    }
+                },
+                "attr": [
+                    {
+                        "@attributes": {
+                            "name": "category",
+                            "value": "5000"
+                        }
+                    },
+                    {
+                        "@attributes": {
+                            "name": "category",
+                            "value": "5030"
+                        }
+                    },
+                    {
+                        "@attributes": {
+                            "name": "size",
+                            "value": "120763052"
+                        }
+                    },
+                    {
+                        "@attributes": {
+                            "name": "guid",
+                            "value": "9185cf406881c76183a2029b8ea0ddf0"
+                        }
+                    }
+                ]
+            },
+            {
+                "title": "Archer.2009.S06E06.720p.HDTV.x264-KILLERS",
+                "guid": "7cf7a5fc847e1d3a5f7c739092764429",
+                "link": "https://nzbs.org/getnzb/7cf7a5fc847e1d3a5f7c739092764429.nzb&i=2952&r=REDACTED_API_KEY",
+                "comments": "https://nzbs.org/details/7cf7a5fc847e1d3a5f7c739092764429#comments",
+                "pubDate": "Fri, 13 Feb 2015 03:49:01 +0000",
+                "category": "TV-HD",
+                "description": "Archer.2009.S06E06.720p.HDTV.x264-KILLERS",
+                "enclosure": {
+                    "@attributes": {
+                        "url": "https://nzbs.org/getnzb/7cf7a5fc847e1d3a5f7c739092764429.nzb&i=2952&r=REDACTED_API_KEY",
+                        "length": "545142306",
+                        "type": "application/x-nzb"
+                    }
+                },
+                "attr": [
+                    {
+                        "@attributes": {
+                            "name": "category",
+                            "value": "5000"
+                        }
+                    },
+                    {
+                        "@attributes": {
+                            "name": "category",
+                            "value": "5040"
+                        }
+                    },
+                    {
+                        "@attributes": {
+                            "name": "size",
+                            "value": "545142306"
+                        }
+                    },
+                    {
+                        "@attributes": {
+                            "name": "guid",
+                            "value": "7cf7a5fc847e1d3a5f7c739092764429"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

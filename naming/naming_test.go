@@ -1,7 +1,6 @@
 package naming
 
 import (
-	"flag"
 	"testing"
 
 	. "github.com/onsi/gomega"
@@ -24,7 +23,6 @@ func TestMediaFile(t *testing.T) {
 
 func TestNameParser(t *testing.T) {
 	RegisterTestingT(t)
-	flag.Set("logtostderr", "true")
 
 	np := NewNameParser("foo")
 	names := []string{
@@ -68,11 +66,13 @@ func TestRegex(t *testing.T) {
 			"Show.Name.2010.11.23.Source.Quality.Etc-Group",
 			"Show Name - 2010-11-23 - Ep Name",
 		},
-		"scene_sports_format": []string{
-			"Show.Name.100.Event.2010.11.23.Source.Quality.Etc-Group",
-			"Show.Name.2010.11.23.Source.Quality.Etc-Group",
-			"Show Name - 2010-11-23 - Ep Name",
-		},
+		/*
+			"scene_sports_format": []string{
+				"Show.Name.100.Event.2010.11.23.Source.Quality.Etc-Group",
+				"Show.Name.2010.11.23.Source.Quality.Etc-Group",
+				"Show Name - 2010-11-23 - Ep Name",
+			},
+		*/
 		"stupid": []string{
 			"tpz-abc102",
 		},
