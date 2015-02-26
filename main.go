@@ -10,6 +10,7 @@ import (
 	"github.com/hobeone/tv2go/db"
 	"github.com/hobeone/tv2go/indexers"
 	"github.com/hobeone/tv2go/indexers/tvdb"
+	"github.com/hobeone/tv2go/indexers/tvrage"
 	"github.com/hobeone/tv2go/providers"
 	"github.com/hobeone/tv2go/storage"
 	"github.com/hobeone/tv2go/web"
@@ -73,7 +74,8 @@ func runDaemon(cfg *config.Config) {
 	//go ShowUpdater(d.DBH)
 
 	idxReg := indexers.IndexerRegistry{
-		"tvdb": tvdb.NewTvdbIndexer("90D7DF3AE9E4841E"),
+		"tvdb":   tvdb.NewTvdbIndexer("90D7DF3AE9E4841E"),
+		"tvrage": tvrage.NewTVRageIndexer(),
 	}
 
 	//Ghetto until real provider setup done

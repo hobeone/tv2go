@@ -682,11 +682,22 @@ func configGinEngine(s *Server) {
 		api.PUT("shows/:showid/episodes", s.UpdateEpisode)
 
 		api.GET("indexers/search", s.ShowSearch)
+		api.GET("indexers", s.IndexerList)
 	}
 
 	r.GET("/statusz", s.Statusz)
 
 	s.Handler = r
+}
+
+func (server *Server) IndexerList(c *gin.Context) {
+	res := make([]string, len(server.indexers))
+	i := 0
+	for k := range server.indexers {
+		res[i] = k
+		i++
+	}
+	c.JSON(200, res)
 }
 
 // Statusz serves internal server information in JSON format

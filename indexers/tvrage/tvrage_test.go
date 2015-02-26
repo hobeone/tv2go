@@ -6,17 +6,17 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strconv"
 	"strings"
 	"testing"
 
-	"github.com/davecgh/go-spew/spew"
-	tvr "github.com/hobeone/tvrage"
-
 	"github.com/golang/glog"
+	. "github.com/onsi/gomega"
 )
 
 func TestGet(t *testing.T) {
 
+	RegisterTestingT(t)
 	// Test server that always responds with 200 code, and specific payload
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(r.RequestURI)
@@ -53,18 +53,19 @@ func TestGet(t *testing.T) {
 
 	// Make a http.Client with the transport
 	httpClient := &http.Client{Transport: transport}
-	tvr.Client = httpClient
+	rage := NewTVRageIndexer(SetClient(httpClient))
 
-	shows, err := SearchShowByName("buffy")
+	shows, err := rage.Search("buffy")
 	if err != nil {
 		t.Fatalf("Error getting shows: %s", err)
 	}
-	fmt.Println("******************")
-	showinfo, err := GetShowInfo(shows[0].ID)
+	Expect(len(shows)).To(Equal(3))
+
+	showid := strconv.FormatInt(shows[0].ID, 10)
+	showinfo, err := rage.GetShow(showid)
 	if err != nil {
 		t.Fatalf("Error getting show: %s", err)
 	}
-	spew.Dump(showinfo)
-	dbshow := TVRageToShow(showinfo)
-	spew.Dump(dbshow)
+
+	Expect(showinfo.Name).To(Equal("Buffy the Vampire Slayer"))
 }

@@ -1,35 +1,93 @@
 package tvrage
 
 import (
+	"net/http"
+	"strconv"
 	"strings"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/golang/glog"
 	"github.com/hobeone/tv2go/db"
 	tvr "github.com/hobeone/tvrage"
 )
 
-func SearchShowByName(name string) ([]tvr.Show, error) {
-	show, err := tvr.Search(name)
-	if err != nil {
-		return show, err
-	}
-	spew.Dump(show)
-
-	return show, nil
+// TVRageIndexer implements the Indexer interface using the tvdb client
+type TVRageIndexer struct {
+	httpClient *http.Client
 }
 
-func GetShowInfo(showid int64) (*tvr.Show, error) {
-	glog.Infof("Getting showid %d from TVRage.", showid)
-	show, err := tvr.Get(showid)
-	if err != nil {
-		glog.Errorf("Error getting showid %d from TVRage: %s", showid, err)
-		return &tvr.Show{}, err
+// NewTVRageIndexer returns a new indexer
+func NewTVRageIndexer(options ...func(*TVRageIndexer)) *TVRageIndexer {
+	t := &TVRageIndexer{
+		httpClient: &http.Client{},
 	}
-	return show, nil
+	for _, option := range options {
+		option(t)
+	}
+	return t
 }
 
-func TVRageToShow(ts *tvr.Show) db.Show {
+// SetClient set's the httpclient the Indexer will use.
+//
+// Example:
+//  NewTvdbIndexer(SetClient(httpclient))
+func SetClient(c *http.Client) func(*TVRageIndexer) {
+	return func(t *TVRageIndexer) {
+		tvr.Client = c
+		t.httpClient = c
+	}
+}
+
+// Search returns matches from TVRage for the given name
+func (t *TVRageIndexer) Search(name string) ([]db.Show, error) {
+	shows, err := tvr.Search(name)
+	if err != nil {
+		return nil, err
+	}
+
+	dbshows := make([]db.Show, len(shows))
+	for i, show := range shows {
+		dbshows[i] = tvrageToShow(&show)
+	}
+
+	return dbshows, nil
+}
+
+// GetShow returns show information (show + episodes) for the given id.
+func (t *TVRageIndexer) GetShow(showid string) (*db.Show, error) {
+	rageid, err := strconv.ParseInt(showid, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+
+	glog.Infof("Getting showid %d from TVRage.", rageid)
+	show, err := tvr.Get(rageid)
+	if err != nil {
+		glog.Errorf("Error getting showid %d from TVRage: %s", rageid, err)
+		return &db.Show{}, err
+	}
+
+	dbshow := tvrageToShow(show)
+
+	eps, err := tvr.EpisodeList(int(rageid))
+	if err != nil {
+		glog.Errorf("Error getting episodes for showid '%d' from TVRage: %s", rageid, err.Error())
+		return &dbshow, err
+	}
+
+	dbshow.Episodes = make([]db.Episode, len(eps))
+	for i, ep := range eps {
+		dbshow.Episodes[i] = tvrageToEp(&ep)
+	}
+
+	return &dbshow, nil
+}
+
+// UpdateShow updates the give Database show from TVRage
+func (t *TVRageIndexer) UpdateShow(dbshow *db.Show) error {
+	return nil
+}
+
+func tvrageToShow(ts *tvr.Show) db.Show {
 	s := db.Show{
 		Name:           ts.Name,
 		Genre:          strings.Join(ts.Genres, "|"),
@@ -39,4 +97,15 @@ func TVRageToShow(ts *tvr.Show) db.Show {
 		IndexerID:      ts.ID,
 	}
 	return s
+}
+
+func tvrageToEp(te *tvr.Episode) db.Episode {
+	e := db.Episode{
+		Name:           te.Title,
+		AirDate:        te.AirDate.UTC(),
+		Episode:        int64(te.Number),
+		Season:         int64(te.Season),
+		AbsoluteNumber: int64(te.Ordinal),
+	}
+	return e
 }
