@@ -5,8 +5,8 @@
   </div>
   <div class="form-group">
     <label for="newShowIndexerName">Indexer to Use:</label>
-  <select id="newShowIndexerName" ng-model="createShowsCtrl.showSearchReqest.indexer_name">
-    <option value="tvdb">tvdb</option>
+    <select id="newShowIndexerName" ng-model="createShowsCtrl.showSearchReqest.indexer_name">
+      <option ng-repeat="indexer in createShowsCtrl.indexers" value="{{indexer}}">{{indexer}}</option>
   </select>
 </div>
     <a ng-click="createShowsCtrl.searchShow(createShowsCtrl.showSearchReqest)" class="btn btn-block btn-info">

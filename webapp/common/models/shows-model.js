@@ -25,9 +25,29 @@ showService.factory('Show', function($cacheFactory, $resource) {
 indexerSearchService = angular.module('tv2go.indexerSearchService', ['ngResource']);
 
 indexerSearchService.factory('IndexerSearch', function($resource) {
-  return $resource('http://localhost:9001/api/1/indexers/search');
+  return $resource('/api/1/indexers/search');
 });
 
+angular.module('tv2go.models.indexers', ['tv2go.indexerService'])
+.service('IndexersModel', function($q, Indexer) {
+  var model = this;
+  var indexers;
+
+  function cacheIndexers(result) {
+    indexers = result;
+    return indexers;
+  }
+
+  model.getIndexers = function() {
+    return (indexers) ? $q.when(indexers): Indexer.query().$promise.then(cacheIndexers);
+  };
+
+});
+
+indexerService = angular.module('tv2go.indexerService', ['ngResource']);
+indexerService.factory('Indexer', function($resource) {
+  return $resource('/api/1/indexers', {}, {});
+});
 
 angular.module('tv2go.models.shows',['tv2go.showsService'])
 .service('ShowsModel', function($http, $q, Show) {
@@ -55,7 +75,7 @@ angular.module('tv2go.models.shows',['tv2go.showsService'])
   };
 
   model.getCurrentShowId = function() {
-    return currentShow ? currentShow.id : "";
+    return currentShow ? currentShow.id : '';
   };
 
   model.getShowById = function(showId) {
