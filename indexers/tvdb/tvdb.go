@@ -53,6 +53,11 @@ func SetClient(c *http.Client) func(*TvdbIndexer) {
 	}
 }
 
+// Name returns the string name of this indexer
+func (t *TvdbIndexer) Name() string {
+	return "tvdb"
+}
+
 // GetShow gets TVDB information for the given ID.
 func (t *TvdbIndexer) GetShow(tvdbidstr string) (*db.Show, error) {
 	tvdbid, _ := strconv.ParseInt(tvdbidstr, 10, 64)
@@ -61,7 +66,7 @@ func (t *TvdbIndexer) GetShow(tvdbidstr string) (*db.Show, error) {
 	if err != nil {
 		return nil, err
 	}
-	dbshow := tvdbToShow(series)
+	dbshow := t.tvdbToShow(series)
 	dbeps := make([]db.Episode, len(eps))
 	for i, ep := range eps {
 		dbeps[i] = tvdbToEpisode(&ep)
@@ -76,16 +81,16 @@ func (t *TvdbIndexer) Search(term string) ([]db.Show, error) {
 	if err != nil {
 		return nil, err
 	}
-	dbshows := tvdbSeriesSummaryToShow(res)
+	dbshows := t.tvdbSeriesSummaryToShow(res)
 	return dbshows, nil
 }
 
-func tvdbSeriesSummaryToShow(sums []tvd.SeriesSummary) []db.Show {
+func (t *TvdbIndexer) tvdbSeriesSummaryToShow(sums []tvd.SeriesSummary) []db.Show {
 	dbshows := make([]db.Show, len(sums))
 	for i, sum := range sums {
 		dbshows[i] = db.Show{
 			Name:        sum.Name,
-			Indexer:     "tvdb",
+			Indexer:     t.Name(),
 			IndexerID:   int64(sum.ID),
 			Language:    sum.Language,
 			Description: sum.Overview,
@@ -98,18 +103,18 @@ func tvdbSeriesSummaryToShow(sums []tvd.SeriesSummary) []db.Show {
 }
 
 // tvdbToShow converts the struct returned by Tvdb and creates a new db.Show struct.
-func tvdbToShow(ts *tvd.Series) *db.Show {
+func (t *TvdbIndexer) tvdbToShow(ts *tvd.Series) *db.Show {
 	s := &db.Show{}
-	updateDbShowFromSeries(s, ts)
+	t.updateDbShowFromSeries(s, ts)
 	return s
 }
 
-func updateDbShowFromSeries(dbshow *db.Show, ts *tvd.Series) {
+func (t *TvdbIndexer) updateDbShowFromSeries(dbshow *db.Show, ts *tvd.Series) {
 	dbshow.Name = ts.Name
 	dbshow.Genre = strings.Join(ts.Genre, "|")
 	dbshow.Status = ts.Status
 	dbshow.StartYear = ts.FirstAired.Year()
-	dbshow.Indexer = "tvdb"
+	dbshow.Indexer = t.Name()
 	dbshow.IndexerID = int64(ts.ID)
 	dbshow.Network = ts.Network
 	dbshow.Language = ts.Language
@@ -145,7 +150,7 @@ func (t *TvdbIndexer) UpdateShow(dbshow *db.Show) error {
 	if err != nil {
 		return err
 	}
-	updateDbShowFromSeries(dbshow, ts)
+	t.updateDbShowFromSeries(dbshow, ts)
 
 	for _, episode := range eps {
 		glog.Infof("Updating S:%d, E:%d for '%s (tvdb id: %d)'", episode.SeasonNumber, episode.EpisodeNumber, dbshow.Name, dbshow.IndexerID)

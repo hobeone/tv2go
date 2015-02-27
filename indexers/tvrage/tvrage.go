@@ -37,6 +37,11 @@ func SetClient(c *http.Client) func(*TVRageIndexer) {
 	}
 }
 
+// Returns the string name of this indexer.
+func (t *TVRageIndexer) Name() string {
+	return "tvrage"
+}
+
 // Search returns matches from TVRage for the given name
 func (t *TVRageIndexer) Search(name string) ([]db.Show, error) {
 	shows, err := tvr.Search(name)
@@ -95,6 +100,7 @@ func tvrageToShow(ts *tvr.Show) db.Show {
 		Status:         ts.Status,
 		StartYear:      int(ts.Started),
 		IndexerID:      ts.ID,
+		Indexer:        "tvrage",
 	}
 	return s
 }

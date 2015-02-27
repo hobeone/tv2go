@@ -208,7 +208,12 @@ func (server *Server) ShowUpdateFromIndexer(c *gin.Context) {
 		return
 	}
 
-	err = server.indexers["tvdb"].UpdateShow(dbshow)
+	if _, ok := server.indexers[dbshow.Indexer]; !ok {
+		genError(c, http.StatusInternalServerError, fmt.Sprintf("Unknown indexer '%s'", dbshow.Indexer))
+		return
+	}
+
+	err = server.indexers[dbshow.Indexer].UpdateShow(dbshow)
 	if err != nil {
 		genError(c, http.StatusInternalServerError, fmt.Sprintf("Error updating show: %s", err.Error()))
 		return
@@ -439,7 +444,13 @@ func (server *Server) ShowSearch(c *gin.Context) {
 		genError(c, http.StatusBadRequest, c.Errors.String())
 		return
 	}
-	series, err := server.indexers["tvdb"].Search(reqJSON.SearchTerm)
+
+	if _, ok := server.indexers[reqJSON.IndexerName]; !ok {
+		genError(c, http.StatusBadRequest, fmt.Sprintf("Unknown indexer: '%s'", reqJSON.IndexerName))
+		return
+	}
+
+	series, err := server.indexers[reqJSON.IndexerName].Search(reqJSON.SearchTerm)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, genericResult{
 			Message: err.Error(),
@@ -503,6 +514,10 @@ func (server *Server) AddShow(c *gin.Context) {
 	// TODO:
 	// indexer.GetIndexerFromString(reqJSON.IndexerName)
 
+	if _, ok := server.indexers[reqJSON.IndexerName]; !ok {
+		genError(c, http.StatusBadRequest, fmt.Sprintf("Unknown indexer: '%s'", reqJSON.IndexerName))
+		return
+	}
 	indexerID, err := strconv.ParseInt(reqJSON.IndexerID, 10, 64)
 	if err != nil {
 		c.JSON(500, fmt.Sprintf("Bad indexerid: %s", err.Error()))
@@ -510,7 +525,7 @@ func (server *Server) AddShow(c *gin.Context) {
 	}
 	glog.Infof("Got id to add: %s", indexerID)
 	// TODO: lame
-	dbshow, err := server.indexers["tvdb"].GetShow(strconv.FormatInt(indexerID, 10))
+	dbshow, err := server.indexers[reqJSON.IndexerName].GetShow(strconv.FormatInt(indexerID, 10))
 	if err != nil {
 		c.JSON(500, genericResult{
 			Message: err.Error(),
