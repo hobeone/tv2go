@@ -28,6 +28,10 @@ gin-bin
 *.test
 *.prof
 
+# binaries
+main
+tv2go
+
 test.db
 tv2go.db
 

@@ -367,34 +367,34 @@ type episodeSearchResp struct {
 // EpisodeSearch searches configured Providers for episode files.
 func (server *Server) EpisodeSearch(c *gin.Context) {
 
-	c.String(200, "%s", `[{"type":"NZB","age":"2015-01-31T10:22:44Z","name":"Top.Gear.UK.S22E01.1080p.HDTV.x264-FaiLED","size":4079322730,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/578d3ad92293a82861d48f657de641fa.nzb\u0026i=2952\u0026r=APIKEY"},{"type":"NZB","age":"2015-01-31T10:00:36Z","name":"Top.Gear.S22E01.1080i.HDTV.DD2.0.H.264-CtrlHD","size":2359440936,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/f4bbe642ca2387b7e36218a762d02e84.nzb\u0026i=2952\u0026r=APIKEY"},{"type":"NZB","age":"2015-01-31T09:36:28Z","name":"top gear.22x01.hdtv x264-fov","size":618547905,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/99cf2fbef2058c089e4d4668ae817d3d.nzb\u0026i=2952\u0026r=APIKEY"},{"type":"NZB","age":"2015-01-31T09:36:27Z","name":"top gear.22x01.720p hdtv x264-fov","size":1475201133,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/e8758f9e9dbb0aa3d557afeaa141f1d5.nzb\u0026i=2952\u0026r=APIKEY"},{"type":"NZB","age":"2015-01-30T19:34:55Z","name":"Top.Gear.S22E01.720p.HDTV.DD2.0.x264-NTb","size":2323495719,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/e5534286ca2e7ce6aca7b2525cfd8e47.nzb\u0026i=2952\u0026r=APIKEY"},{"type":"NZB","age":"2015-01-29T15:56:16Z","name":"Top.Gear.S22E01.720p.HDTV.VFR.x264-CtrlHD","size":2779849763,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/74a9c81cc8e26b3758e32231ba165522.nzb\u0026i=2952\u0026r=APIKEY"},{"type":"NZB","age":"2015-01-26T03:03:08Z","name":"Top.Gear.UK.S22E01.1080p.HDTV.x264-FaiLED","size":6028040788,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/643d564f16eb72da49e07be2d9d5df86.nzb\u0026i=2952\u0026r=APIKEY"},{"type":"NZB","age":"2015-01-25T21:36:21Z","name":"Top Gear.22x01.720p HDTV x264-FoV","size":2068726335,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/d11ebd3118bc2dae6c0add6159154de2.nzb\u0026i=2952\u0026r=APIKEY"},{"type":"NZB","age":"2015-01-25T21:36:20Z","name":"Top Gear.22x01.HDTV x264-FoV","size":746762552,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/b45f8918369e1fe7f11e38dc1c9da9f6.nzb\u0026i=2952\u0026r=APIKEY"},{"type":"NZB","age":"2015-01-25T21:11:59Z","name":"Top Gear.22x01.HDTV x264-FoV","size":752991164,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/feb7b4e26303d6137821c8bd209ab487.nzb\u0026i=2952\u0026r=APIKEY"}]`)
 	/*
-		h := s.dbHandle
-		episodeid, err := strconv.ParseInt(c.Params.ByName("episodeid"), 10, 64)
-
-		if err != nil {
-			genError(c, http.StatusNotFound, fmt.Sprintf("Invalid episodeid: %v", c.Params.ByName("episodeid")))
-			return
-		}
-
-		ep, err := h.GetEpisodeByID(episodeid)
-		if err != nil {
-			genError(c, http.StatusNotFound, err.Error())
-			return
-		}
-
-		res, err := s.Providers["nzbsOrg"].TvSearch(ep.Show.Name, ep.Season, ep.Episode)
-		if err != nil {
-			genError(c, http.StatusInternalServerError, fmt.Sprintf("Error Searching for show: %s", err.Error()))
-			return
-		}
-		c.JSON(200, res)
+		c.String(200, "%s", `[{"type":"NZB","age":"2015-01-31T10:22:44Z","name":"Top.Gear.UK.S22E01.1080p.HDTV.x264-FaiLED","size":4079322730,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/578d3ad92293a82861d48f657de641fa.nzb\u0026i=2952\u0026r=APIKEY"},{"type":"NZB","age":"2015-01-31T10:00:36Z","name":"Top.Gear.S22E01.1080i.HDTV.DD2.0.H.264-CtrlHD","size":2359440936,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/f4bbe642ca2387b7e36218a762d02e84.nzb\u0026i=2952\u0026r=APIKEY"},{"type":"NZB","age":"2015-01-31T09:36:28Z","name":"top gear.22x01.hdtv x264-fov","size":618547905,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/99cf2fbef2058c089e4d4668ae817d3d.nzb\u0026i=2952\u0026r=APIKEY"},{"type":"NZB","age":"2015-01-31T09:36:27Z","name":"top gear.22x01.720p hdtv x264-fov","size":1475201133,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/e8758f9e9dbb0aa3d557afeaa141f1d5.nzb\u0026i=2952\u0026r=APIKEY"},{"type":"NZB","age":"2015-01-30T19:34:55Z","name":"Top.Gear.S22E01.720p.HDTV.DD2.0.x264-NTb","size":2323495719,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/e5534286ca2e7ce6aca7b2525cfd8e47.nzb\u0026i=2952\u0026r=APIKEY"},{"type":"NZB","age":"2015-01-29T15:56:16Z","name":"Top.Gear.S22E01.720p.HDTV.VFR.x264-CtrlHD","size":2779849763,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/74a9c81cc8e26b3758e32231ba165522.nzb\u0026i=2952\u0026r=APIKEY"},{"type":"NZB","age":"2015-01-26T03:03:08Z","name":"Top.Gear.UK.S22E01.1080p.HDTV.x264-FaiLED","size":6028040788,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/643d564f16eb72da49e07be2d9d5df86.nzb\u0026i=2952\u0026r=APIKEY"},{"type":"NZB","age":"2015-01-25T21:36:21Z","name":"Top Gear.22x01.720p HDTV x264-FoV","size":2068726335,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/d11ebd3118bc2dae6c0add6159154de2.nzb\u0026i=2952\u0026r=APIKEY"},{"type":"NZB","age":"2015-01-25T21:36:20Z","name":"Top Gear.22x01.HDTV x264-FoV","size":746762552,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/b45f8918369e1fe7f11e38dc1c9da9f6.nzb\u0026i=2952\u0026r=APIKEY"},{"type":"NZB","age":"2015-01-25T21:11:59Z","name":"Top Gear.22x01.HDTV x264-FoV","size":752991164,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/feb7b4e26303d6137821c8bd209ab487.nzb\u0026i=2952\u0026r=APIKEY"}]`)
 	*/
+	h := server.dbHandle
+	episodeid, err := strconv.ParseInt(c.Params.ByName("episodeid"), 10, 64)
+
+	if err != nil {
+		genError(c, http.StatusNotFound, fmt.Sprintf("Invalid episodeid: %v", c.Params.ByName("episodeid")))
+		return
+	}
+
+	ep, err := h.GetEpisodeByID(episodeid)
+	if err != nil {
+		genError(c, http.StatusNotFound, err.Error())
+		return
+	}
+
+	res, err := server.Providers["nzbsOrg"].TvSearch(ep.Show.Name, ep.Season, ep.Episode)
+	if err != nil {
+		genError(c, http.StatusInternalServerError, fmt.Sprintf("Error Searching for show: %s", err.Error()))
+		return
+	}
+	c.JSON(200, res)
 }
 
 type downloadReq struct {
-	Indexer string `form:"indexer" binding:"required"`
-	URL     string `form:"url" binding:"required"`
+	Provider string `form:"provider" binding:"required"`
+	URL      string `form:"url" binding:"required"`
 }
 
 // DownloadEpisode takes a request to download a episode from a provider
@@ -419,16 +419,36 @@ func (server *Server) DownloadEpisode(c *gin.Context) {
 		return
 	}
 	ep.Status = types.SNATCHED
-	server.dbHandle.SaveEpisode(ep)
-	/*
-		if prov, ok := server.Providers[reqJSON.Indexer]; !ok {
-			genError(c, http.StatusBadRequest, fmt.Sprintf("Unknown indexer: %s", reqJSON.Indexer))
-			return
-		}
 
-		prov.Download(reqJSON.URL)
-	*/
-	c.JSON(200, ep)
+	prov, ok := server.Providers[reqJSON.Provider]
+	if !ok {
+		genError(c, http.StatusBadRequest, fmt.Sprintf("Unknown provider: %s", reqJSON.Provider))
+		return
+	}
+
+	filename, filebytes, err := prov.GetURL(reqJSON.URL)
+
+	if err != nil {
+		genError(c, http.StatusInternalServerError, fmt.Sprintf("Error getting file: %s", err.Error()))
+		return
+	}
+
+	dltype := prov.Type()
+	destdir := ""
+	if dltype == providers.NZB {
+		destdir = server.config.Storage.NZBBlackhole
+	} else {
+		genError(c, http.StatusInternalServerError, fmt.Sprintf("Unknown provider type: %d", prov.Type()))
+		return
+	}
+
+	dstfile, err := server.Broker.SaveToFile(destdir, filename, filebytes)
+	if err != nil {
+		genError(c, http.StatusInternalServerError, fmt.Sprintf("Error saving file: %s", err))
+		return
+	}
+	server.dbHandle.SaveEpisode(ep)
+	c.JSON(200, fmt.Sprintf("Downloaded %s from %s to %s", reqJSON.URL, reqJSON.Provider, dstfile))
 }
 
 type searchShowRequest struct {

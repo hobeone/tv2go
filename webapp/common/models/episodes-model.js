@@ -105,7 +105,7 @@ angular.module('tv2go.models.episodes',['tv2go.episodesService'])
           showid: show.id
         },
         {
-          indexer: resp.indexer,
+          provider: resp.indexer,
           url: resp.url,
         }
     ).$promise.then(function(result){

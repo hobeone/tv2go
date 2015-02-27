@@ -72,3 +72,26 @@ func TestCreateShowDir(t *testing.T) {
 	Expect(err).ToNot(HaveOccurred())
 	Expect(newdir).To(Equal(fp))
 }
+
+func TestSaveToFile(t *testing.T) {
+	RegisterTestingT(t)
+	//flag.Set("logtostderr", "true")
+	testdir, err := ioutil.TempDir("testdata", "testing")
+	if err != nil {
+		t.Fatalf("Couldn't create a tempdir for testing: %s", err)
+	}
+	defer os.RemoveAll(testdir)
+
+	b, err := NewBroker(testdir)
+	Expect(err).ToNot(HaveOccurred())
+
+	savedname, err := b.SaveToFile(testdir, "testFiLeName", []byte("teststring"))
+	Expect(err).ToNot(HaveOccurred())
+	Expect(savedname).To(ContainSubstring("testFiLeName"))
+
+	// Empty filename
+	savedname, err = b.SaveToFile(testdir, "", []byte("teststring"))
+	Expect(err).ToNot(HaveOccurred())
+	Expect(savedname).To(ContainSubstring("unknown"))
+	Expect(savedname).To(HaveSuffix(".nzb"))
+}

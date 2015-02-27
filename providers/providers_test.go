@@ -2,8 +2,13 @@ package providers
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
+	"strings"
 	"testing"
 	"time"
 )
@@ -17,7 +22,7 @@ func TestNzbsOrg(t *testing.T) {
 		t.Fatalf("Error reading file: %s", err)
 	}
 
-	str := TvSearchResponse{}
+	str := tvSearchResponse{}
 	err = json.Unmarshal(content, &str)
 	if err != nil {
 		t.Fatalf("Error unmarshaling file: %s", err)
@@ -35,5 +40,36 @@ func TestNzbsOrg(t *testing.T) {
 
 		fmt.Println(item.Category)
 		fmt.Println(item.Enclosure.Attributes.Length)
+	}
+}
+
+func TestNzbsOrgGetURL(t *testing.T) {
+	flag.Set("logtostderr", "true")
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/xml")
+		w.Header().Set("Content-Disposition", "attachment; filename=test.nzb")
+		w.WriteHeader(200)
+		fmt.Fprintln(w, "testing123")
+	}))
+	defer server.Close()
+
+	transport := &http.Transport{
+		Proxy: func(req *http.Request) (*url.URL, error) {
+			return url.Parse(server.URL)
+		},
+	}
+
+	httpClient := &http.Client{Transport: transport}
+
+	n := NewNzbsOrg("API_KEY", SetClient(httpClient))
+	fname, content, err := n.GetURL("http://testing/download/nzb")
+	if err != nil {
+		t.Fatalf("Error downloading url: %s", err)
+	}
+	if fname != "test.nzb" {
+		t.Fatalf("Expected filename to = 'test.nzb', got '%s'", fname)
+	}
+	if strings.TrimSpace(string(content)) != "testing123" {
+		t.Fatalf("Expected content to be 'testing123' got '%s'", string(content))
 	}
 }

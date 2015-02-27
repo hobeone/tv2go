@@ -1,10 +1,8 @@
 package indexers
 
-import (
-	"github.com/davecgh/go-spew/spew"
-	"github.com/hobeone/tv2go/db"
-)
+import "github.com/hobeone/tv2go/db"
 
+// Indexer defines the interface for Indexing clients
 type Indexer interface {
 	Search(string) ([]db.Show, error)
 	GetShow(string) (*db.Show, error)
@@ -12,11 +10,6 @@ type Indexer interface {
 	Name() string
 }
 
+// IndexerRegistry provides a convenient way of keeping a list of all known
+// indexers.
 type IndexerRegistry map[string]Indexer
-
-type TestIndexer struct{}
-
-func (t *TestIndexer) UpdateShow(d *db.Show) error {
-	spew.Dump(t)
-	return nil
-}

@@ -48,7 +48,9 @@ type mediaDefaults struct {
 }
 
 type storageConfig struct {
-	Directories []string
+	Directories      []string
+	NZBBlackhole     string
+	TorrentBlackhole string
 }
 
 // NewConfig returns a Config struct with reasonable defaults set.
@@ -66,8 +68,10 @@ func NewConfig() *Config {
 		},
 		Storage: storageConfig{
 			Directories: []string{
-				replaceTildeInPath("~/tv2go"),
+				replaceTildeInPath("~/tv2go/storage"),
 			},
+			NZBBlackhole:     replaceTildeInPath("~/tv2go/nzb_blackhole"),
+			TorrentBlackhole: replaceTildeInPath("~/tv2go/torrent_blackhole"),
 		},
 		MediaDefaults: mediaDefaults{
 			ShowQuality:   types.HDTV,
@@ -123,6 +127,7 @@ func (c *Config) ReadConfig(configPath string) error {
 	for i, p := range c.Storage.Directories {
 		c.Storage.Directories[i] = replaceTildeInPath(p)
 	}
+	c.Storage.NZBBlackhole = replaceTildeInPath(c.Storage.NZBBlackhole)
 
 	return nil
 }

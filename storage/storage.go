@@ -3,6 +3,7 @@ package storage
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -112,4 +113,32 @@ func LoadEpisodesFromDisk(location string) ([]naming.ParseResult, error) {
 	}
 
 	return res, nil
+}
+
+// SaveToFile saves the given content to the filename in the directory.  If
+// fname is empty it will save to a temporary file.
+func (b *Broker) SaveToFile(dirname, fname string, content []byte) (string, error) {
+	joined := ""
+	if fname == "" {
+		fh, err := ioutil.TempFile(dirname, "unknown")
+		if err != nil {
+			return "", fmt.Errorf("Error creating file (and no filename was given): %s", err)
+		}
+		joined = fh.Name()
+		fh.Close()
+	} else {
+		joined = filepath.Join(dirname, fname)
+	}
+	abspath, err := filepath.Abs(joined)
+	if err != nil {
+		return "", fmt.Errorf("Couldn't make an absolute path for %s", joined)
+	}
+
+	glog.Infof("Write content to: '%s'", abspath)
+	err = ioutil.WriteFile(abspath, content, 0644)
+	if err != nil {
+		glog.Errorf("Error writing to file '%s': %s", abspath, err)
+		return "", err
+	}
+	return abspath, nil
 }

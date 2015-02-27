@@ -309,3 +309,7 @@ func TestNameCleaner(t *testing.T) {
 	teststr = showToLocation(dir, ".a.b (YEAR)")
 	Expect(teststr).To(Equal("/a.b _YEAR_"))
 }
+
+func TestDownloadEpisode(t *testing.T) {
+
+}

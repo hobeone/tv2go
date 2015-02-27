@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/golang/glog"
 )
 
@@ -25,9 +25,24 @@ type ProviderResult struct {
 	URL         string     `json:"url"`
 }
 
+// Provider defines the interface a tv2go provider must implement
 type Provider interface {
 	TvSearch(string, int64, int64) ([]ProviderResult, error)
+	//need better name
+	//Get file contents, leave it to something else to save it to disk
+	GetURL(URL string) (string, []byte, error)
+	// Return what kind of providers this is for: NZB/Torrent
+	Type() ProviderType
 }
+
+// ProviderType is for the constants below
+type ProviderType int
+
+// Different kinds of providers
+const (
+	NZB ProviderType = 0 + iota
+	TORRENT
+)
 
 type NzbsOrg struct {
 	URL    string
@@ -55,7 +70,35 @@ func SetClient(c *http.Client) func(*NzbsOrg) {
 	}
 }
 
-type TvSearchResponse struct {
+func (n *NzbsOrg) Type() ProviderType {
+	return NZB
+}
+
+func (n *NzbsOrg) GetURL(u string) (string, []byte, error) {
+	glog.Infof("Getting URL '%s'", u)
+	resp, err := n.Client.Get(u)
+	if err != nil {
+		return "", nil, err
+	}
+
+	filename := ""
+	contHeader := resp.Header.Get("Content-Disposition")
+	res := strings.Split(contHeader, "; ")
+	for _, res := range res {
+		if strings.HasPrefix(res, "filename=") {
+			filename = strings.Split(res, "=")[1]
+		}
+	}
+
+	defer resp.Body.Close()
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return filename, b, err
+	}
+	return filename, b, nil
+}
+
+type tvSearchResponse struct {
 	Channel struct {
 		Items []struct {
 			Category  string `json:"category"`
@@ -86,11 +129,9 @@ func (n *NzbsOrg) TvSearch(showName string, season, ep int64) ([]ProviderResult,
 	u.Add("ep", strconv.FormatInt(ep, 10))
 	u.Add("o", "json")
 	urlStr := u.Encode()
-	spew.Dump(urlStr)
 
 	queryURL, _ := url.Parse(n.URL)
 	queryURL.RawQuery = urlStr
-	spew.Dump(queryURL)
 	resp, err := n.Client.Get(queryURL.String())
 
 	if err != nil {
@@ -103,7 +144,7 @@ func (n *NzbsOrg) TvSearch(showName string, season, ep int64) ([]ProviderResult,
 	if err != nil {
 		return nil, fmt.Errorf("Error reading response: %s", err)
 	}
-	parsedResponse := TvSearchResponse{}
+	parsedResponse := tvSearchResponse{}
 	err = json.Unmarshal(respBody, &parsedResponse)
 	if err != nil {
 		glog.Infof("Couldn't parse '%s': %s", respBody, err.Error())
