@@ -264,6 +264,14 @@ func (h *Handle) GetShowByID(showID int64) (*Show, error) {
 	return &show, err
 }
 
+// GetShowByName returns the show with the given name (and it's episodes) or an
+// error if not found.
+func (h *Handle) GetShowByName(name string) (*Show, error) {
+	var show Show
+	err := h.db.Preload("Episodes").Where("name = ?", name).Find(&show).Error
+	return &show, err
+}
+
 // SaveShow saves the show (and any episodes) to the database
 func (h *Handle) SaveShow(s *Show) error {
 	if h.writeUpdates {

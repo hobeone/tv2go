@@ -224,7 +224,6 @@ type ParseResult struct {
 	ReleaseGroup           string
 	AirDate                time.Time
 	AbsoluteEpisodeNumbers []int64
-	Show                   string
 	Score                  int
 	Quality                string
 	Version                string
@@ -431,4 +430,11 @@ func combineResults(finalRes, fileRes, dirRes *ParseResult, field string) error 
 	}
 
 	return nil
+}
+
+// CleanSeriesName canonicalizes a series name extracted from a file name
+func CleanSeriesName(name string) string {
+	newname := strings.Replace(name, ".", " ", -1)
+	newname = strings.Replace(newname, "_", " ", -1)
+	return newname
 }

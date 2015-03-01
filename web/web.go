@@ -17,6 +17,7 @@ import (
 	"github.com/hobeone/tv2go/config"
 	"github.com/hobeone/tv2go/db"
 	"github.com/hobeone/tv2go/indexers"
+	"github.com/hobeone/tv2go/naming"
 	"github.com/hobeone/tv2go/providers"
 	"github.com/hobeone/tv2go/storage"
 	"github.com/hobeone/tv2go/types"
@@ -500,10 +501,7 @@ func (server *Server) AddShow(c *gin.Context) {
 	var reqJSON addShowRequest
 
 	if !c.Bind(&reqJSON) {
-		c.JSON(http.StatusBadRequest, genericResult{
-			Message: c.Errors.String(),
-			Result:  "failure",
-		})
+		genError(c, http.StatusBadRequest, c.Errors.String())
 		return
 	}
 	epStatus := server.config.MediaDefaults.EpisodeStatus
@@ -511,10 +509,7 @@ func (server *Server) AddShow(c *gin.Context) {
 	if reqJSON.EpisodeStatus != "" {
 		epStatus, err = types.EpisodeStatusFromString(reqJSON.EpisodeStatus)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, genericResult{
-				Message: fmt.Sprintf("Unknown EpisodeStatus string: %s", c.Errors.String()),
-				Result:  "failure",
-			})
+			genError(c, http.StatusBadRequest, fmt.Sprintf("Unknown EpisodeStatus string: %s", c.Errors.String()))
 			return
 		}
 	}
@@ -522,10 +517,7 @@ func (server *Server) AddShow(c *gin.Context) {
 	if reqJSON.ShowQuality != "" {
 		showQuality, err = types.QualityFromString(reqJSON.ShowQuality)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, genericResult{
-				Message: fmt.Sprintf("Unknown Quality string: %s", c.Errors.String()),
-				Result:  "failure",
-			})
+			genError(c, http.StatusBadRequest, fmt.Sprintf("Unknown Quality string: %s", c.Errors.String()))
 			return
 		}
 	}
@@ -576,6 +568,84 @@ func (server *Server) AddShow(c *gin.Context) {
 	}
 
 	c.JSON(200, showToResponse(dbshow))
+}
+
+type importFileReq struct {
+	FilePath string `json:"file_path" form:"file_path" binding:"required"`
+	// Maybe add source file name? i.e. NZB or Torrent name so we can look it from a cache of dowloaded ones?
+}
+
+// ImportFile takes the given file path, tries to match it with a show and
+// episode and then moves it to where it should go.
+func (server *Server) ImportFile(c *gin.Context) {
+	var reqJSON importFileReq
+
+	if !c.Bind(&reqJSON) {
+		genError(c, http.StatusBadRequest, c.Errors.String())
+		return
+	}
+
+	err := server.Broker.FileReadable(reqJSON.FilePath)
+	if err != nil {
+		genError(c, http.StatusBadRequest, fmt.Sprintf("Can not access file '%s': %s", reqJSON.FilePath, err))
+		return
+	}
+
+	np := naming.NewNameParser("")
+	nameres := np.Parse(reqJSON.FilePath)
+	if nameres.SeriesName == "" {
+		genError(c, http.StatusBadRequest, fmt.Sprintf("Couldn't parse show name from '%s'", reqJSON.FilePath))
+		return
+	}
+
+	if len(nameres.AbsoluteEpisodeNumbers) == 0 && len(nameres.EpisodeNumbers) == 0 {
+		genError(c, http.StatusBadRequest, fmt.Sprintf("Could parse episode numbers from '%s'", reqJSON.FilePath))
+	}
+
+	cleanedName := naming.CleanSeriesName(nameres.SeriesName)
+	dbshow, err := server.dbHandle.GetShowByName(cleanedName)
+	if err != nil {
+		genError(c, http.StatusNotFound, fmt.Sprintf("Couldn't find show with name: '%s'", cleanedName))
+		return
+	}
+
+	epnum := nameres.EpisodeNumbers[0]
+	dbep, err := server.dbHandle.GetEpisodeByShowSeasonAndNumber(dbshow.ID, nameres.SeasonNumber, epnum)
+
+	if err != nil {
+		genError(c, http.StatusBadRequest, fmt.Sprintf("Could find an season/episode for %v, %v", nameres.SeasonNumber, epnum))
+		return
+	}
+
+	ext := filepath.Ext(reqJSON.FilePath)
+	//loc, err := dbep.GetLocation()
+	//Season 01/Show Name-S01E01-Ep Title.ext"
+	loc := "Season %02d/%s - S%02dE%02d - %s%s"
+	expandedLoc := fmt.Sprintf(loc, dbep.Season, dbshow.Name, dbep.Season, dbep.Episode, dbep.Name, ext)
+
+	expandedLoc = filepath.Join(dbshow.Location, expandedLoc)
+	// TODO: import if forced, or quality is equal or better
+	err = server.Broker.FileReadable(expandedLoc)
+	if err == nil {
+		genError(c, http.StatusBadRequest, fmt.Sprintf("File already exists at '%s'", expandedLoc))
+		return
+	}
+
+	err = server.Broker.MoveFile(reqJSON.FilePath, expandedLoc)
+	if err != nil {
+		genError(c, http.StatusInternalServerError, fmt.Sprintf("Error moving file to location: %s", err))
+		return
+	}
+
+	dbep.Location = expandedLoc
+	dbep.Status = types.DOWNLOADED
+	err = server.dbHandle.SaveEpisode(dbep)
+	if err != nil {
+		genError(c, http.StatusInternalServerError, fmt.Sprintf("Error saving new episode location: %s", err))
+		return
+	}
+
+	c.JSON(200, dbep)
 }
 
 func showToLocation(path, name string) string {
@@ -718,6 +788,8 @@ func configGinEngine(s *Server) {
 
 		api.GET("indexers/search", s.ShowSearch)
 		api.GET("indexers", s.IndexerList)
+
+		api.POST("import", s.ImportFile)
 	}
 
 	r.GET("/statusz", s.Statusz)

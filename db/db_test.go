@@ -98,3 +98,13 @@ func TestAddShow(t *testing.T) {
 	err := d.AddShow(&dbshow)
 	Expect(err).ToNot(HaveOccurred())
 }
+
+func TestGetShowByName(t *testing.T) {
+	d := setupTest(t)
+	dbshow, err := d.GetShowByName("show1")
+	Expect(err).ToNot(HaveOccurred())
+	Expect(dbshow.Name).To(Equal("show1"))
+
+	dbshow, err = d.GetShowByName("")
+	Expect(err).To(MatchError("record not found"))
+}

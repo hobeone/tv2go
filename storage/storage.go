@@ -10,6 +10,7 @@ import (
 
 	"github.com/golang/glog"
 	"github.com/hobeone/tv2go/naming"
+	"github.com/termie/go-shutil"
 )
 
 // Broker is the interface between tv2go and the file system
@@ -113,6 +114,55 @@ func LoadEpisodesFromDisk(location string) ([]naming.ParseResult, error) {
 	}
 
 	return res, nil
+}
+
+// FileReadable returns an error if path can't be stat'ed or is a directory
+func (b *Broker) FileReadable(path string) error {
+	fi, err := os.Stat(path)
+
+	if err != nil {
+		return err
+	}
+
+	if fi.IsDir() {
+		return fmt.Errorf("%s is a directory not a file", path)
+	}
+	return nil
+}
+
+// MoveFile moves the src file to the dst path.  Both must be absolute paths.
+// It will try to just rename the file from the src to dst name but if that
+// fails it will copy the src to the dst and then remove the old.
+func (b *Broker) MoveFile(src, dst string) error {
+	if !filepath.IsAbs(src) || !filepath.IsAbs(dst) {
+		return fmt.Errorf("Both source and destination must be absolute paths")
+	}
+
+	// Hella odd that Go doesn't have something like Python's shutil, oh well
+	err := os.Rename(src, dst)
+
+	if _, ok := err.(*os.LinkError); ok {
+		glog.Infof("Rename failed: %s (are %s and %s on different filesystems?), falling back to copy and remove.", err, src, dst)
+	} else {
+		glog.Errorf("Rename returned an unknown error: %s", err)
+		return err
+	}
+
+	_, err = shutil.Copy(src, dst, true)
+	if err != nil {
+		glog.Infof("Copy to '%s' failed: %s", err)
+		return err
+	}
+	glog.Infof("Copy to '%s' successful.  Removing '%s'", dst, src)
+	err = os.Remove(src)
+	if err != nil {
+		if os.IsNotExist(err) {
+			glog.Infof("remove failed, source file was already removed: %s", err)
+			return nil
+		}
+		return err
+	}
+	return nil
 }
 
 // SaveToFile saves the given content to the filename in the directory.  If
