@@ -39,4 +39,14 @@ angular.module('tv2go', [
     return moment(t, "YYYY-MM-DDTHH:mm:ssZ").fromNow();
   }
 })
+.filter('nextAirDate', function() {
+  return function(t) {
+    if(angular.isDefined(t)) {
+      // GO json time format:
+      return moment(t, "YYYY-MM-DDTHH:mm:ssZ").calendar();
+    }
+    return "";
+  }
+})
+
 .controller('IndexCtrl', function(){});

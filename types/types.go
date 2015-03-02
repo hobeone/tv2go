@@ -50,6 +50,12 @@ const (
 	SNATCHED_BEST                            // episode redownloaded using best quality
 )
 
+var EpisodeDefaults = []EpisodeStatus{
+	WANTED,
+	SKIPPED,
+	IGNORED,
+}
+
 // Episode Quality Enum
 const (
 	_            = iota

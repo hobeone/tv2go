@@ -1,4 +1,4 @@
-angular.module('shows.create', ['tv2go.models.shows','tv2go.indexerSearchService', 'tv2go.models.indexers'
+angular.module('shows.create', ['tv2go.models.shows','tv2go.indexerSearchService', 'tv2go.models.indexers', 'tv2go.statusService',  'tv2go.models.status'
 ])
 .config(function($stateProvider){
   $stateProvider
@@ -26,13 +26,15 @@ angular.module('shows.create', ['tv2go.models.shows','tv2go.indexerSearchService
   })
   ;
 })
-.controller('CreateShowsCtrl', function($state, Show, ShowsModel, IndexerSearch, indexers) {
+.controller('CreateShowsCtrl', function($state, Show, ShowsModel, IndexerSearch, indexers, StatusModel) {
   var createShowsCtrl = this;
   createShowsCtrl.indexers = indexers;
+  createShowsCtrl.statuses = StatusModel.getStatuses();
 
   function resetForm() {
     createShowsCtrl.showSearchReqest = new IndexerSearch();
     createShowsCtrl.showSearchReqest.indexer_name =  createShowsCtrl.indexers[0];
+    createShowsCtrl.showSearchReqest.episode_status =  createShowsCtrl.statuses[0];
     createShowsCtrl.showSearchResult = {};
     createShowsCtrl.newShow = new Show();
   }

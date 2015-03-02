@@ -2,6 +2,7 @@ package db
 
 import (
 	"testing"
+	"time"
 
 	"github.com/hobeone/tv2go/types"
 	. "github.com/onsi/gomega"
@@ -107,4 +108,22 @@ func TestGetShowByName(t *testing.T) {
 
 	dbshow, err = d.GetShowByName("")
 	Expect(err).To(MatchError("record not found"))
+}
+
+func TestNextAirdateForShow(t *testing.T) {
+	d := setupTest(t)
+	dbshow, err := d.GetShowByName("show1")
+	Expect(err).ToNot(HaveOccurred())
+
+	eps, err := d.GetShowEpisodes(dbshow)
+	Expect(err).ToNot(HaveOccurred())
+
+	futureDate := time.Now().UTC().Add(time.Second * 60)
+	eps[0].AirDate = futureDate
+	err = d.SaveEpisode(&eps[0])
+	Expect(err).ToNot(HaveOccurred())
+
+	showtime, err := d.NextAirdateForShow(dbshow)
+	Expect(err).ToNot(HaveOccurred())
+	Expect(showtime).To(Equal(futureDate))
 }

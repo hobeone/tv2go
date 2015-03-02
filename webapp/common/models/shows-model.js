@@ -41,13 +41,32 @@ angular.module('tv2go.models.indexers', ['tv2go.indexerService'])
   model.getIndexers = function() {
     return (indexers) ? $q.when(indexers): Indexer.query().$promise.then(cacheIndexers);
   };
-
 });
 
 indexerService = angular.module('tv2go.indexerService', ['ngResource']);
 indexerService.factory('Indexer', function($resource) {
   return $resource('/api/1/indexers', {}, {});
 });
+
+var statusService = angular.module('tv2go.statusService', ['ngResource']);
+statusService.factory('Status', function($resource) {
+  return $resource('/api/1/statuses', {}, {});
+});
+angular.module('tv2go.models.status', ['tv2go.statusService'])
+.service('StatusModel', function($q, Status) {
+  var model = this;
+  var statusCache;
+
+  function cacheStatuses(result) {
+    statusCache = result;
+    return statusCache;
+  }
+
+  model.getStatuses = function() {
+    return (statusCache) ? $q.when(statusCache): Status.query().$promise.then(cacheStatuses);
+  };
+});
+
 
 angular.module('tv2go.models.shows',['tv2go.showsService'])
 .service('ShowsModel', function($http, $q, Show) {

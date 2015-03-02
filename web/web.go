@@ -43,12 +43,13 @@ type jsonShowCache struct {
 type jsonShow struct {
 	ID            int64         `json:"id"`
 	AirByDate     bool          `json:"air_by_date"`
+	Airs          string        `json:"airs"`
 	Cache         jsonShowCache `json:"cache"`
 	Anime         bool          `json:"anime"`
 	IndexerID     int64         `json:"indexerid"`
 	Language      string        `json:"language"`
 	Network       string        `json:"network"`
-	NextEpAirdate string        `json:"next_ep_airdate"`
+	NextEpAirdate *time.Time    `json:"next_ep_airdate,omitempty"`
 	Paused        bool          `json:"paused"`
 	Quality       string        `json:"quality"`
 	Name          string        `json:"name"`
@@ -61,24 +62,26 @@ type jsonShow struct {
 	Location      string        `json:"location"`
 }
 
-func showToResponse(dbshow *db.Show) jsonShow {
+func (server *Server) showToResponse(dbshow *db.Show) jsonShow {
+	nextAirDate := server.dbHandle.NextAirdateForShow(dbshow)
 	return jsonShow{
 		ID:        dbshow.ID,
 		AirByDate: dbshow.AirByDate,
+		Airs:      dbshow.Airs,
 		//Cache
-		Anime:     dbshow.Anime,
-		IndexerID: dbshow.IndexerID,
-		Language:  dbshow.Language,
-		Network:   dbshow.Network,
-		//NextEpAirdate: dbshow.NextEpAirdate(),
-		Paused:    dbshow.Paused,
-		Quality:   dbshow.Quality.String(),
-		Name:      dbshow.Name,
-		Sports:    dbshow.Sports,
-		Status:    dbshow.Status,
-		Subtitles: dbshow.Subtitles,
-		TVDBID:    dbshow.IndexerID,
-		Location:  dbshow.Location,
+		Anime:         dbshow.Anime,
+		IndexerID:     dbshow.IndexerID,
+		Language:      dbshow.Language,
+		Network:       dbshow.Network,
+		NextEpAirdate: nextAirDate,
+		Paused:        dbshow.Paused,
+		Quality:       dbshow.Quality.String(),
+		Name:          dbshow.Name,
+		Sports:        dbshow.Sports,
+		Status:        dbshow.Status,
+		Subtitles:     dbshow.Subtitles,
+		TVDBID:        dbshow.IndexerID,
+		Location:      dbshow.Location,
 		//TVdbid, rageid + name
 	}
 }
@@ -92,7 +95,7 @@ func (server *Server) Shows(c *gin.Context) {
 	}
 	jsonshows := make([]jsonShow, len(shows))
 	for i, s := range shows {
-		jsonshows[i] = showToResponse(&s)
+		jsonshows[i] = server.showToResponse(&s)
 	}
 	c.JSON(200, jsonshows)
 }
@@ -111,7 +114,7 @@ func (server *Server) Show(c *gin.Context) {
 		genError(c, http.StatusNotFound, "Show not found")
 		return
 	}
-	response := showToResponse(s)
+	response := server.showToResponse(s)
 	c.JSON(http.StatusOK, response)
 }
 
@@ -134,7 +137,7 @@ func (server *Server) UpdateShow(c *gin.Context) {
 	dbshow.AirByDate = showUpdate.AirByDate
 	server.dbHandle.SaveShow(dbshow)
 
-	c.JSON(200, showToResponse(dbshow))
+	c.JSON(200, server.showToResponse(dbshow))
 }
 
 // ShowUpdateFromDisk scans the show's location to find the episodes that exist.  It then tries to match these to the episodes in the database.
@@ -191,7 +194,7 @@ func (server *Server) ShowUpdateFromDisk(c *gin.Context) {
 		genError(c, http.StatusInternalServerError, fmt.Sprintf("Error saving episodes: %s", err))
 		return
 	}
-	c.JSON(200, showToResponse(dbshow))
+	c.JSON(200, server.showToResponse(dbshow))
 }
 
 // ShowUpdateFromIndexer updates show information from the indexer
@@ -228,7 +231,7 @@ func (server *Server) ShowUpdateFromIndexer(c *gin.Context) {
 
 	h.SaveShow(dbshow)
 
-	c.JSON(200, showToResponse(dbshow))
+	c.JSON(200, server.showToResponse(dbshow))
 }
 
 // ShowEpisodes returns all of a shows episodes
@@ -367,10 +370,6 @@ type episodeSearchResp struct {
 
 // EpisodeSearch searches configured Providers for episode files.
 func (server *Server) EpisodeSearch(c *gin.Context) {
-
-	/*
-		c.String(200, "%s", `[{"type":"NZB","age":"2015-01-31T10:22:44Z","name":"Top.Gear.UK.S22E01.1080p.HDTV.x264-FaiLED","size":4079322730,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/578d3ad92293a82861d48f657de641fa.nzb\u0026i=2952\u0026r=APIKEY"},{"type":"NZB","age":"2015-01-31T10:00:36Z","name":"Top.Gear.S22E01.1080i.HDTV.DD2.0.H.264-CtrlHD","size":2359440936,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/f4bbe642ca2387b7e36218a762d02e84.nzb\u0026i=2952\u0026r=APIKEY"},{"type":"NZB","age":"2015-01-31T09:36:28Z","name":"top gear.22x01.hdtv x264-fov","size":618547905,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/99cf2fbef2058c089e4d4668ae817d3d.nzb\u0026i=2952\u0026r=APIKEY"},{"type":"NZB","age":"2015-01-31T09:36:27Z","name":"top gear.22x01.720p hdtv x264-fov","size":1475201133,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/e8758f9e9dbb0aa3d557afeaa141f1d5.nzb\u0026i=2952\u0026r=APIKEY"},{"type":"NZB","age":"2015-01-30T19:34:55Z","name":"Top.Gear.S22E01.720p.HDTV.DD2.0.x264-NTb","size":2323495719,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/e5534286ca2e7ce6aca7b2525cfd8e47.nzb\u0026i=2952\u0026r=APIKEY"},{"type":"NZB","age":"2015-01-29T15:56:16Z","name":"Top.Gear.S22E01.720p.HDTV.VFR.x264-CtrlHD","size":2779849763,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/74a9c81cc8e26b3758e32231ba165522.nzb\u0026i=2952\u0026r=APIKEY"},{"type":"NZB","age":"2015-01-26T03:03:08Z","name":"Top.Gear.UK.S22E01.1080p.HDTV.x264-FaiLED","size":6028040788,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/643d564f16eb72da49e07be2d9d5df86.nzb\u0026i=2952\u0026r=APIKEY"},{"type":"NZB","age":"2015-01-25T21:36:21Z","name":"Top Gear.22x01.720p HDTV x264-FoV","size":2068726335,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/d11ebd3118bc2dae6c0add6159154de2.nzb\u0026i=2952\u0026r=APIKEY"},{"type":"NZB","age":"2015-01-25T21:36:20Z","name":"Top Gear.22x01.HDTV x264-FoV","size":746762552,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/b45f8918369e1fe7f11e38dc1c9da9f6.nzb\u0026i=2952\u0026r=APIKEY"},{"type":"NZB","age":"2015-01-25T21:11:59Z","name":"Top Gear.22x01.HDTV x264-FoV","size":752991164,"quality":"","indexer":"nzbsOrg","url":"https://nzbs.org/getnzb/feb7b4e26303d6137821c8bd209ab487.nzb\u0026i=2952\u0026r=APIKEY"}]`)
-	*/
 	h := server.dbHandle
 	episodeid, err := strconv.ParseInt(c.Params.ByName("episodeid"), 10, 64)
 
@@ -481,7 +480,7 @@ func (server *Server) ShowSearch(c *gin.Context) {
 	}
 	resp := make([]jsonShow, len(series))
 	for i, s := range series {
-		resp[i] = showToResponse(&s)
+		resp[i] = server.showToResponse(&s)
 	}
 	c.JSON(http.StatusOK, resp)
 }
@@ -521,10 +520,6 @@ func (server *Server) AddShow(c *gin.Context) {
 			return
 		}
 	}
-
-	// Assume TVDB only for now
-	// TODO:
-	// indexer.GetIndexerFromString(reqJSON.IndexerName)
 
 	if _, ok := server.indexers[reqJSON.IndexerName]; !ok {
 		genError(c, http.StatusBadRequest, fmt.Sprintf("Unknown indexer: '%s'", reqJSON.IndexerName))
@@ -567,85 +562,122 @@ func (server *Server) AddShow(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, showToResponse(dbshow))
+	c.JSON(200, server.showToResponse(dbshow))
 }
 
-type importFileReq struct {
-	FilePath string `json:"file_path" form:"file_path" binding:"required"`
-	// Maybe add source file name? i.e. NZB or Torrent name so we can look it from a cache of dowloaded ones?
+// http://wiki.sabnzbd.org/user-scripts
+type postprocessReq struct {
+	Path       string `json:"path" form:"path" binding:"required"`
+	SourceName string `json:"source_name" form:"source_name"`
 }
 
-// ImportFile takes the given file path, tries to match it with a show and
-// episode and then moves it to where it should go.
-func (server *Server) ImportFile(c *gin.Context) {
-	var reqJSON importFileReq
+func writeAndFlush(c *gin.Context, str string, args ...interface{}) {
+	fmt.Fprintf(c.Writer, str, args)
+	c.Writer.Flush()
+}
+
+// Postprocess takes the given path, tries to match it with a show and episode
+// and then moves it to where it should go.
+func (server *Server) Postprocess(c *gin.Context) {
+	var reqJSON postprocessReq
 
 	if !c.Bind(&reqJSON) {
 		genError(c, http.StatusBadRequest, c.Errors.String())
 		return
 	}
 
-	err := server.Broker.FileReadable(reqJSON.FilePath)
-	if err != nil {
-		genError(c, http.StatusBadRequest, fmt.Sprintf("Can not access file '%s': %s", reqJSON.FilePath, err))
+	c.Writer.Header().Set("Content-Type", "text/event-stream")
+	c.Writer.Header().Set("Cache-Control", "no-cache")
+	c.Writer.Header().Set("Connection", "keep-alive")
+	c.Writer.Flush()
+
+	// Does directory exist and is it readable
+	// Get media files from dir
+	// for each media file
+	//   map to show
+	//   map to season/episode
+	//   get show & episode
+	//   move file
+	//   update episode
+
+	if !server.Broker.Readable(reqJSON.Path) {
+		c.String(http.StatusBadRequest, "Can't open path '%s'\n", reqJSON.Path)
 		return
 	}
+	mediaFiles, err := storage.MediaFilesInDir(reqJSON.Path)
+	if err != nil {
+		c.String(http.StatusInternalServerError, "Couldn't get files from %s: %s", reqJSON.Path, err)
+		return
+	}
+
+	goodresults := []naming.ParseResult{}
 
 	np := naming.NewNameParser("")
-	nameres := np.Parse(reqJSON.FilePath)
-	if nameres.SeriesName == "" {
-		genError(c, http.StatusBadRequest, fmt.Sprintf("Couldn't parse show name from '%s'", reqJSON.FilePath))
+	for _, file := range mediaFiles {
+		nameres := np.Parse(file)
+		if nameres.SeriesName == "" {
+			writeAndFlush(c, "Couldn't parse series name from %s: skipping\n", file)
+			continue
+		}
+		if len(nameres.AbsoluteEpisodeNumbers) == 0 && len(nameres.EpisodeNumbers) == 0 {
+			writeAndFlush(c, "Could parse episode numbers from '%s'\n", reqJSON.Path)
+			continue
+		}
+		goodresults = append(goodresults, nameres)
+	}
+
+	if len(goodresults) == 0 {
+		writeAndFlush(c, "Couldn't find any media files in '%s'\n", reqJSON.Path)
 		return
 	}
 
-	if len(nameres.AbsoluteEpisodeNumbers) == 0 && len(nameres.EpisodeNumbers) == 0 {
-		genError(c, http.StatusBadRequest, fmt.Sprintf("Could parse episode numbers from '%s'", reqJSON.FilePath))
+	for _, res := range goodresults {
+		cleanedName := naming.CleanSeriesName(res.SeriesName)
+		dbshow, err := server.dbHandle.GetShowByName(cleanedName)
+		if err != nil {
+			writeAndFlush(c, "Couldn't find show with name: '%s'. Skipping.\n", cleanedName)
+			continue
+		}
+
+		epnum := res.EpisodeNumbers[0]
+		dbep, err := server.dbHandle.GetEpisodeByShowSeasonAndNumber(
+			dbshow.ID, res.SeasonNumber, epnum)
+
+		if err != nil {
+			writeAndFlush(c, "Could find an season/episode for %v, %v\n", res.SeasonNumber, epnum)
+			continue
+		}
+
+		ext := filepath.Ext(res.OriginalName)
+		//loc, err := dbep.GetLocation()
+		//Season 01/Show Name-S01E01-Ep Title.ext"
+		loc := "Season %02d/%s - S%02dE%02d - %s%s"
+		expandedLoc := fmt.Sprintf(loc, dbep.Season, dbshow.Name, dbep.Season, dbep.Episode, dbep.Name, ext)
+
+		expandedLoc = filepath.Join(dbshow.Location, expandedLoc)
+		// TODO: import if forced, or quality is equal or better
+		err = server.Broker.FileReadable(expandedLoc)
+		if err == nil {
+			writeAndFlush(c, "File already exists at '%s'\n", expandedLoc)
+			continue
+		}
+
+		err = server.Broker.MoveFile(reqJSON.Path, expandedLoc)
+		if err != nil {
+			writeAndFlush(c, "Error moving file to location: %s\n", err)
+			continue
+		}
+
+		dbep.Location = expandedLoc
+		dbep.Status = types.DOWNLOADED
+		err = server.dbHandle.SaveEpisode(dbep)
+		if err != nil {
+			writeAndFlush(c, "Error saving new episode location: %s\n", err)
+			continue
+		}
 	}
+	c.String(200, "Added episodes.")
 
-	cleanedName := naming.CleanSeriesName(nameres.SeriesName)
-	dbshow, err := server.dbHandle.GetShowByName(cleanedName)
-	if err != nil {
-		genError(c, http.StatusNotFound, fmt.Sprintf("Couldn't find show with name: '%s'", cleanedName))
-		return
-	}
-
-	epnum := nameres.EpisodeNumbers[0]
-	dbep, err := server.dbHandle.GetEpisodeByShowSeasonAndNumber(dbshow.ID, nameres.SeasonNumber, epnum)
-
-	if err != nil {
-		genError(c, http.StatusBadRequest, fmt.Sprintf("Could find an season/episode for %v, %v", nameres.SeasonNumber, epnum))
-		return
-	}
-
-	ext := filepath.Ext(reqJSON.FilePath)
-	//loc, err := dbep.GetLocation()
-	//Season 01/Show Name-S01E01-Ep Title.ext"
-	loc := "Season %02d/%s - S%02dE%02d - %s%s"
-	expandedLoc := fmt.Sprintf(loc, dbep.Season, dbshow.Name, dbep.Season, dbep.Episode, dbep.Name, ext)
-
-	expandedLoc = filepath.Join(dbshow.Location, expandedLoc)
-	// TODO: import if forced, or quality is equal or better
-	err = server.Broker.FileReadable(expandedLoc)
-	if err == nil {
-		genError(c, http.StatusBadRequest, fmt.Sprintf("File already exists at '%s'", expandedLoc))
-		return
-	}
-
-	err = server.Broker.MoveFile(reqJSON.FilePath, expandedLoc)
-	if err != nil {
-		genError(c, http.StatusInternalServerError, fmt.Sprintf("Error moving file to location: %s", err))
-		return
-	}
-
-	dbep.Location = expandedLoc
-	dbep.Status = types.DOWNLOADED
-	err = server.dbHandle.SaveEpisode(dbep)
-	if err != nil {
-		genError(c, http.StatusInternalServerError, fmt.Sprintf("Error saving new episode location: %s", err))
-		return
-	}
-
-	c.JSON(200, dbep)
 }
 
 func showToLocation(path, name string) string {
@@ -788,8 +820,9 @@ func configGinEngine(s *Server) {
 
 		api.GET("indexers/search", s.ShowSearch)
 		api.GET("indexers", s.IndexerList)
+		api.GET("statuses", s.StatusList)
 
-		api.POST("import", s.ImportFile)
+		api.POST("postprocess", s.Postprocess)
 	}
 
 	r.GET("/statusz", s.Statusz)
@@ -797,6 +830,16 @@ func configGinEngine(s *Server) {
 	s.Handler = r
 }
 
+//StatusList returns all of the known Episode Statuses
+func (server *Server) StatusList(c *gin.Context) {
+	typeStrs := make([]string, len(types.EpisodeDefaults))
+	for i, v := range types.EpisodeDefaults {
+		typeStrs[i] = v.String()
+	}
+	c.JSON(200, typeStrs)
+}
+
+// IndexerList serves a list of all the known indexers
 func (server *Server) IndexerList(c *gin.Context) {
 	res := make([]string, len(server.indexers))
 	i := 0
@@ -832,6 +875,7 @@ func NewServer(cfg *config.Config, dbh *db.Handle, broker *storage.Broker, provR
 		Broker:    broker,
 		Providers: provReg,
 	}
+	gin.SetMode("debug")
 	configGinEngine(t)
 	for _, option := range options {
 		option(t)

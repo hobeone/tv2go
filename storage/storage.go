@@ -116,6 +116,15 @@ func LoadEpisodesFromDisk(location string) ([]naming.ParseResult, error) {
 	return res, nil
 }
 
+func (b *Broker) Readable(path string) bool {
+	_, err := os.Stat(path)
+
+	if err != nil {
+		return false
+	}
+	return true
+}
+
 // FileReadable returns an error if path can't be stat'ed or is a directory
 func (b *Broker) FileReadable(path string) error {
 	fi, err := os.Stat(path)

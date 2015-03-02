@@ -72,6 +72,16 @@ func (s *Show) AfterFind() error {
 	return nil
 }
 
+func (h *Handle) NextAirdateForShow(dbshow *Show) *time.Time {
+	var ep Episode
+	err := h.db.Where("show_id = ? and air_date >= ? and status IN (?,?)", dbshow.ID, time.Now(), types.WANTED, types.UNAIRED).Order("air_date asc").First(&ep).Error
+
+	if err != nil {
+		return nil
+	}
+	return &ep.AirDate
+}
+
 // Episode represents an individual episode of a Show
 type Episode struct {
 	ID                  int64 `gorm:"column:id; primary_key:yes"`
