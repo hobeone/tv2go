@@ -108,7 +108,7 @@ func LoadEpisodesFromDisk(location string) ([]naming.ParseResult, error) {
 		return res, err
 	}
 
-	np := naming.NewNameParser(location)
+	np := naming.NewNameParser(location, naming.StandardRegexes)
 	for i, f := range mediaFiles {
 		res[i] = np.Parse(f)
 	}

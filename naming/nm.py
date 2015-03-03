@@ -177,8 +177,13 @@ normal_regexes = [
      (-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$                # Group
      '''),
 ]
+
+
 import re
-for reg in normal_regexes:
+
+from regexes import anime_regexes
+
+for reg in anime_regexes:
     news = ""
     linenum = 0
     for l in reg[1].split("\n"):

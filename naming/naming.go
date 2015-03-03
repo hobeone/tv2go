@@ -18,143 +18,15 @@ import (
 
 // NameRegex contains a compiled Regex and Name
 type NameRegex struct {
-	Name  string
-	Regex pcre.Regexp
+	Name        string
+	Regex       pcre.Regexp
+	TestStrings []TestString
 }
 
-// NameRegexes is a list of Regular Expressions to try in order when trying to
-// extract information from a filename.
-var NameRegexes = []NameRegex{
-	// Lifted from SickRage
-	{
-		Name: "standard_repeat",
-		Regex: pcre.MustCompile(`(?i)^(?P<series_name>.+?)[. _-]+`+ //  Show_Name and separator
-			`s(?P<season_num>\d+)[. _-]*`+ //  S01 and optional separator
-			`e(?P<ep_num>\d+)`+ //  E02 and separator
-			`([. _-]+s(?P=season_num)[. _-]*`+ //  S01 and optional separator
-			`e(?P<extra_ep_num>\d+))+`+ //  E03/etc and separator
-			`[. _-]*((?P<extra_info>.+?)`+ //  Source_Quality_Etc-
-			`((?<![. _-])(?<!WEB)`+ //  Make sure this is really the release group
-			`-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$`, pcre.CASELESS), //  Group
-	},
-	{
-		Name: "fov_repeat",
-		Regex: pcre.MustCompile(`(?i)^(?P<series_name>.+?)[. _-]+`+ //  Show_Name and separator
-			`(?P<season_num>\d+)x`+ //  1x
-			`(?P<ep_num>\d+)`+ //  02 and separator
-			`([. _-]+(?P=season_num)x`+ //  1x
-			`(?P<extra_ep_num>\d+))+`+ //  03/etc and separator
-			`[. _-]*((?P<extra_info>.+?)`+ //  Source_Quality_Etc-
-			`((?<![. _-])(?<!WEB)`+ //  Make sure this is really the release group
-			`-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$`, pcre.CASELESS), //  Group
-	},
-	{
-		Name: "standard",
-		Regex: pcre.MustCompile(`(?i)^((?P<series_name>.+?)[. _-]+)?`+ //  Show_Name and separator
-			`(\()?s(?P<season_num>\d+)[. _-]*`+ //  S01 and optional separator
-			`e(?P<ep_num>\d+)(\))?`+ //  E02 and separator
-			`(([. _-]*e|-)`+ //  linking e/- char
-			`(?P<extra_ep_num>(?!(1080|720|480)[pi])\d+)(\))?)*`+ //  additional E03/etc
-			`[. _-]*((?P<extra_info>.+?)`+ //  Source_Quality_Etc-
-			`((?<![. _-])(?<!WEB)`+ //  Make sure this is really the release group
-			`-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$`, pcre.CASELESS), //  Group
-	},
-	{
-		Name: "fov",
-		Regex: pcre.MustCompile(`(?i)^((?P<series_name>.+?)[\[. _-]+)?`+ //  Show_Name and separator
-			`(?P<season_num>\d+)x`+ //  1x
-			`(?P<ep_num>\d+)`+ //  02 and separator
-			`(([. _-]*x|-)`+ //  linking x/- char
-			`(?P<extra_ep_num>`+
-			`(?!(1080|720|480)[pi])(?!(?<=x)264)`+ //  ignore obviously wrong multi-eps
-			`\d+))*`+ //  additional x03/etc
-			`[\]. _-]*((?P<extra_info>.+?)`+ //  Source_Quality_Etc-
-			`((?<![. _-])(?<!WEB)`+ //  Make sure this is really the release group
-			`-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$`, pcre.CASELESS), //  Group
-	},
-	{
-		Name: "scene_date_format",
-		Regex: pcre.MustCompile(`(?i)^((?P<series_name>.+?)[. _-]+)?`+ //  Show_Name and separator
-			`(?P<air_date>(\d+[. _-]\d+[. _-]\d+)|(\d+\w+[. _-]\w+[. _-]\d+))`+
-			`[. _-]*((?P<extra_info>.+?)`+ //  Source_Quality_Etc-
-			`((?<![. _-])(?<!WEB)`+ //  Make sure this is really the release group
-			`-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$`, pcre.CASELESS), //  Group
-	},
-	{
-		Name: "scene_sports_format",
-		Regex: pcre.MustCompile(`^(?P<series_name>.*?(UEFA|MLB|ESPN|WWE|MMA|UFC|TNA|EPL|NASCAR|NBA|NFL|NHL|NRL|PGA|SUPER LEAGUE|FORMULA|FIFA|NETBALL|MOTOGP).*?)[. _-]+`+
-			`((?P<series_num>\d{1,3})[. _-]+)?`+
-			`(?P<air_date>(\d+[. _-]\d+[. _-]\d+)|(\d+\w+[. _-]\w+[. _-]\d+))[. _-]+`+
-			`((?P<extra_info>.+?)((?<![. _-])`+
-			`(?<!WEB)-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$`, pcre.CASELESS),
-	},
-	{
-		Name: "stupid",
-		Regex: pcre.MustCompile(`(?i)(?P<release_group>.+?)-\w+?[\. ]?`+ //  tpz-abc
-			`(?!264)`+ //  don't count x264
-			`(?P<season_num>\d{1,2})`+ //  1
-			`(?P<ep_num>\d{2})$`, pcre.CASELESS), //  02
-	},
-	{
-		Name: "verbose",
-		Regex: pcre.MustCompile(`(?i)^(?P<series_name>.+?)[. _-]+`+ //  Show Name and separator
-			`season[. _-]+`+ //  season and separator
-			`(?P<season_num>\d+)[. _-]+`+ //  1
-			`episode[. _-]+`+ //  episode and separator
-			`(?P<ep_num>\d+)[. _-]+`+ //  02 and separator
-			`(?P<extra_info>.+)$`, pcre.CASELESS), //  Source_Quality_Etc-
-	},
-	{
-		Name: "season_only",
-		Regex: pcre.MustCompile(`(?i)^((?P<series_name>.+?)[. _-]+)?`+ //  Show_Name and separator
-			`s(eason[. _-])?`+ //  S01/Season 01
-			`(?P<season_num>\d+)[. _-]*`+ //  S01 and optional separator
-			`[. _-]*((?P<extra_info>.+?)`+ //  Source_Quality_Etc-
-			`((?<![. _-])(?<!WEB)`+ //  Make sure this is really the release group
-			`-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$`, pcre.CASELESS), //  Group
-	},
-	{
-		Name: "no_season_multi_ep",
-		Regex: pcre.MustCompile(`(?i)^((?P<series_name>.+?)[. _-]+)?`+ //  Show_Name and separator
-			`(e(p(isode)?)?|part|pt)[. _-]?`+ //  e, ep, episode, or part
-			`(?P<ep_num>(\d+|[ivx]+))`+ //  first ep num
-			`((([. _-]+(and|&|to)[. _-]+)|-)`+ //  and/&/to joiner
-			`(?P<extra_ep_num>(?!(1080|720|480)[pi])(\d+|[ivx]+))[. _-])`+ //  second ep num
-			`([. _-]*(?P<extra_info>.+?)`+ //  Source_Quality_Etc-
-			`((?<![. _-])(?<!WEB)`+ //  Make sure this is really the release group
-			`-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$`, pcre.CASELESS), //  Group
-	},
-	{
-		Name: "no_season_general",
-		Regex: pcre.MustCompile(`(?i)^((?P<series_name>.+?)[. _-]+)?`+ //  Show_Name and separator
-			`(e(p(isode)?)?|part|pt)[. _-]?`+ //  e, ep, episode, or part
-			`(?P<ep_num>(\d+|([ivx]+(?=[. _-]))))`+ //  first ep num
-			`([. _-]+((and|&|to)[. _-]+)?`+ //  and/&/to joiner
-			`((e(p(isode)?)?|part|pt)[. _-]?)`+ //  e, ep, episode, or part
-			`(?P<extra_ep_num>(?!(1080|720|480)[pi])`+
-			`(\d+|([ivx]+(?=[. _-]))))[. _-])*`+ //  second ep num
-			`([. _-]*(?P<extra_info>.+?)`+ //  Source_Quality_Etc-
-			`((?<![. _-])(?<!WEB)`+ //  Make sure this is really the release group
-			`-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$`, pcre.CASELESS), //  Group
-	},
-	{
-		Name: "no_season",
-		Regex: pcre.MustCompile(`(?i)^((?P<series_name>.+?)(?:[. _-]{2,}|[. _]))?`+ //  Show_Name and separator
-			`(?P<ep_num>\d{1,3})`+ //  02
-			`(?:-(?P<extra_ep_num>\d{1,3}))*`+ //  -03-04-05 etc
-			`\s?of?\s?\d{1,3}?`+ //  of joiner (with or without spaces) and series total ep
-			`[. _-]+((?P<extra_info>.+?)`+ //  Source_Quality_Etc-
-			`((?<![. _-])(?<!WEB)`+ //  Make sure this is really the release group
-			`-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$`, pcre.CASELESS), //  Group
-	},
-	{
-		Name: "bare",
-		Regex: pcre.MustCompile(`(?i)^(?P<series_name>.+?)[. _-]+`+ //  Show_Name and separator
-			`(?P<season_num>\d{1,2})`+ //  1
-			`(?P<ep_num>\d{2})`+ //  02 and separator
-			`([. _-]+(?P<extra_info>(?!\d{3}[. _-]+)[^-]+)`+ //  Source_Quality_Etc-
-			`(-(?P<release_group>[^- ]+([. _-]\[.*\])?))?)?$`, pcre.CASELESS), //  Group
-	},
+type TestString struct {
+	String      string
+	ShouldMatch bool
+	MatchGroups map[string]string
 }
 
 var (
@@ -238,11 +110,13 @@ func (a byScore) Less(i, j int) bool { return a[i].Score < a[j].Score }
 
 type NameParser struct {
 	FileName string
+	Regexes  []NameRegex
 }
 
-func NewNameParser(filename string) *NameParser {
+func NewNameParser(filename string, regexes []NameRegex) *NameParser {
 	return &NameParser{
 		FileName: filename,
+		Regexes:  regexes,
 	}
 }
 
@@ -252,6 +126,7 @@ var knownMatches = []string{
 	"ep_num",
 	"ep_ab_num",
 	"extra_ep_num",
+	"extra_ab_ep_num",
 	"extra_info",
 	"release_group",
 	"air_date",
@@ -277,7 +152,7 @@ func regexNamedMatch(re *pcre.Regexp, str string) (map[string]string, bool) {
 
 func (np *NameParser) parseString(name string) (*ParseResult, error) {
 	var matchResults []ParseResult
-	for i, r := range NameRegexes {
+	for i, r := range np.Regexes {
 		glog.Infof("Trying to match %s with regex %s", name, r.Name)
 		if matches, ok := regexNamedMatch(&r.Regex, name); ok {
 			glog.Infof("Matched %s with regex %s", name, r.Name)

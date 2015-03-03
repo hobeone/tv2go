@@ -123,7 +123,6 @@ func TestNextAirdateForShow(t *testing.T) {
 	err = d.SaveEpisode(&eps[0])
 	Expect(err).ToNot(HaveOccurred())
 
-	showtime, err := d.NextAirdateForShow(dbshow)
-	Expect(err).ToNot(HaveOccurred())
-	Expect(showtime).To(Equal(futureDate))
+	showtime := d.NextAirdateForShow(dbshow)
+	Expect(showtime).To(Equal(&futureDate))
 }

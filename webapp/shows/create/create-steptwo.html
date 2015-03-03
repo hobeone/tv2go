@@ -1,17 +1,32 @@
 <form class="create-form" role="form" ng-submit="createShowsCtrl.createShow(createShowsCtrl.newShow)" novalidate>
 
-  <div class="form-group">
-      <label for="newShowIndexerID">Pick a show:</label>
-      <select id="newShowIndexerID" ng-model="createShowsCtrl.newShow.indexerid">
-        <option ng-repeat="s in createShowsCtrl.showSearchResult" value="{{s.indexerid}}">{{s.name}}</option>
-      </select>
+<div class="form-group">
+  <label for="newShowIndexerID">Pick a show:</label>
+  <select id="newShowIndexerID" ng-model="createShowsCtrl.newShow.indexerid">
+    <option ng-repeat="s in createShowsCtrl.showSearchResult" value="{{s.indexerid}}">{{s.name}}</option>
+  </select>
+</div>
 
-      <label for="newShowEpisodeStatus">Episode Status:</label>
-      <select id="newShowEpisodeStatus" ng-model="createShowsCtrl.newShow.episode_status">
-        <option ng-repeat="status in createShowsCtrl.episodeStatuses" value="{{s.status_id}}">{{status.name}}</option>
-      </select>
+<div class="form-group">
+  <label for="newShowEpisodeStatus">Episode Status:</label>
+  <select id="newShowEpisodeStatus" ng-model="createShowsCtrl.newShow.episode_status">
+    <option ng-repeat="status in createShowsCtrl.statuses" value="{{status}}">{{status}}</option>
+  </select>
+</div>
 
-      <hr/>
-  <button type="submit" class="btn btn-info btn-lg">Create</button>
-  <button type="button" class="btn btn-default btn-lg pull-right" ng-click="createShowsCtrl.cancelCreating()">Cancel</button>
+  <div class="checkbox">
+    <label>
+      <input type="checkbox"> Anime
+    </label>
+  </div>
+
+  <div class="checkbox">
+    <label>
+      <input type="checkbox"> Airs by Date
+    </label>
+  </div>
+
+<hr/>
+<button type="submit" class="btn btn-info btn-lg">Create</button>
+<button type="button" class="btn btn-default btn-lg pull-right" ng-click="createShowsCtrl.cancelCreating()">Cancel</button>
 </form>

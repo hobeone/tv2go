@@ -57,6 +57,7 @@ func setupTestServer(mux http.Handler) (*httptest.Server, *http.Client) {
 var GoldenShowResponse = fmt.Sprintf(`{
 	"id": 1,
 	"air_by_date": false,
+	"airs": "",
 	"cache": {
 		"Banner": 0,
 		"Poster": 0
@@ -65,7 +66,6 @@ var GoldenShowResponse = fmt.Sprintf(`{
 	"indexerid": 1,
 	"language": "",
 	"network": "",
-	"next_ep_airdate": "",
 	"paused": false,
 	"quality": "",
 	"name": "show1",
@@ -119,6 +119,7 @@ var ShowsGoldenResp = fmt.Sprintf(`[
 {
 	"id": 1,
 	"air_by_date": false,
+	"airs": "",
 	"cache": {
 		"Banner": 0,
 		"Poster": 0
@@ -127,7 +128,6 @@ var ShowsGoldenResp = fmt.Sprintf(`[
 	"indexerid": 1,
 	"language": "",
 	"network": "",
-	"next_ep_airdate": "",
 	"paused": false,
 	"quality": "",
 	"name": "show1",
@@ -142,6 +142,7 @@ var ShowsGoldenResp = fmt.Sprintf(`[
 {
 	"id": 2,
 	"air_by_date": false,
+	"airs": "",
 	"cache": {
 		"Banner": 0,
 		"Poster": 0
@@ -150,7 +151,6 @@ var ShowsGoldenResp = fmt.Sprintf(`[
 	"indexerid": 2,
 	"language": "",
 	"network": "",
-	"next_ep_airdate": "",
 	"paused": false,
 	"quality": "",
 	"name": "show2",

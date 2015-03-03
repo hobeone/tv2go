@@ -491,6 +491,8 @@ type addShowRequest struct {
 	ShowQuality   string `json:"show_quality"`
 	EpisodeStatus string `json:"episode_status"`
 	Location      string `json:"location"`
+	Anime         bool   `json:"is_anime"`
+	AirByDate     bool   `json:"is_air_by_date"`
 }
 
 // AddShow adds the current show to the database.
@@ -541,6 +543,8 @@ func (server *Server) AddShow(c *gin.Context) {
 		return
 	}
 	dbshow.Quality = showQuality
+	dbshow.Anime = reqJSON.Anime
+	dbshow.AirByDate = reqJSON.AirByDate
 	for i := range dbshow.Episodes {
 		dbshow.Episodes[i].Status = epStatus
 		dbshow.Episodes[i].Quality = types.NONE
@@ -612,7 +616,7 @@ func (server *Server) Postprocess(c *gin.Context) {
 
 	goodresults := []naming.ParseResult{}
 
-	np := naming.NewNameParser("")
+	np := naming.NewNameParser("", naming.StandardRegexes)
 	for _, file := range mediaFiles {
 		nameres := np.Parse(file)
 		if nameres.SeriesName == "" {

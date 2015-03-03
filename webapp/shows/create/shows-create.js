@@ -1,4 +1,4 @@
-angular.module('shows.create', ['tv2go.models.shows','tv2go.indexerSearchService', 'tv2go.models.indexers', 'tv2go.statusService',  'tv2go.models.status'
+angular.module('shows.create', ['tv2go.models.shows','tv2go.indexerSearchService', 'tv2go.models.indexers', 'tv2go.statusService', 
 ])
 .config(function($stateProvider){
   $stateProvider
@@ -14,6 +14,9 @@ angular.module('shows.create', ['tv2go.models.shows','tv2go.indexerSearchService
       indexers: function(IndexersModel) {
         return IndexersModel.getIndexers();
       },
+      statuses: function(Status) {
+        return Status.query();
+      }
     }
   })
   .state('tv2go.shows.create.stepone', {
@@ -26,17 +29,20 @@ angular.module('shows.create', ['tv2go.models.shows','tv2go.indexerSearchService
   })
   ;
 })
-.controller('CreateShowsCtrl', function($state, Show, ShowsModel, IndexerSearch, indexers, StatusModel) {
+.controller('CreateShowsCtrl', function($state, Show, ShowsModel, IndexerSearch, indexers, statuses) {
   var createShowsCtrl = this;
   createShowsCtrl.indexers = indexers;
-  createShowsCtrl.statuses = StatusModel.getStatuses();
+  createShowsCtrl.statuses = statuses;
 
   function resetForm() {
     createShowsCtrl.showSearchReqest = new IndexerSearch();
-    createShowsCtrl.showSearchReqest.indexer_name =  createShowsCtrl.indexers[0];
+    createShowsCtrl.showSearchReqest.indexer_name =  'tvdb';
     createShowsCtrl.showSearchReqest.episode_status =  createShowsCtrl.statuses[0];
     createShowsCtrl.showSearchResult = {};
     createShowsCtrl.newShow = new Show();
+    createShowsCtrl.newShow.episode_status = createShowsCtrl.statuses[0];
+    createShowsCtrl.newShow.is_anime = false;
+    createShowsCtrl.newShow.is_air_by_date = false;
   }
 
   function cancelCreating() {
