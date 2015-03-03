@@ -472,10 +472,7 @@ func (server *Server) ShowSearch(c *gin.Context) {
 
 	series, err := server.indexers[reqJSON.IndexerName].Search(reqJSON.SearchTerm)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, genericResult{
-			Message: err.Error(),
-			Result:  "failure",
-		})
+		genError(c, http.StatusInternalServerError, fmt.Sprintf("Error searching for show on %s: %s", reqJSON.IndexerName, err))
 		return
 	}
 	resp := make([]jsonShow, len(series))
