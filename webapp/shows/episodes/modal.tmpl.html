@@ -14,7 +14,7 @@
               <th>Title</th>
               <th>Indexer</th>
               <th>Size</th>
-              <th>Peers</th>
+              <th>Seeders</th>
               <th>Quality</th>
               <th></th>
             </tr>
@@ -24,7 +24,7 @@
               <td>{{r.name}}</td>
               <td>{{r.indexer}}</td>
               <td>{{r.size | humanize}}</td>
-              <td>{{r.peers}}</td>
+              <td>{{r.seeders}}</td>
               <td>{{r.quality}}</td>
               <td><i ng-click="episodeSearchCtrl.downloadResult(r)" class="fa fa-download"></i></td>
             </tr>

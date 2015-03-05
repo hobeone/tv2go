@@ -17,7 +17,7 @@ import (
 type NzbsOrg struct {
 	URL    string
 	APIKEY string
-	Client *http.Client
+	NZBProvider
 	// TODO: figure out how to set up an interface for this:
 	//Logger glog.Logger
 }
@@ -27,7 +27,12 @@ func NewNzbsOrg(key string, options ...func(*NzbsOrg)) *NzbsOrg {
 	n := &NzbsOrg{
 		APIKEY: key,
 		URL:    "https://nzbs.org/api",
-		Client: &http.Client{},
+		NZBProvider: NZBProvider{
+			Name: "nzbsOrg",
+			BaseProvider: BaseProvider{
+				Client: &http.Client{},
+			},
+		},
 	}
 	for _, option := range options {
 		option(n)
@@ -41,15 +46,6 @@ func SetClient(c *http.Client) func(*NzbsOrg) {
 	return func(n *NzbsOrg) {
 		n.Client = c
 	}
-}
-
-// Type returns the type of files provided.
-func (n *NzbsOrg) Type() ProviderType {
-	return NZB
-}
-
-func (n *NzbsOrg) name() string {
-	return "nzbsOrg"
 }
 
 // GetURL fetches the data from the given url and returns a filename string,
@@ -112,6 +108,7 @@ func (n *NzbsOrg) TvSearch(showName string, season, ep int64) ([]ProviderResult,
 
 	queryURL, _ := url.Parse(n.URL)
 	queryURL.RawQuery = urlStr
+	glog.Infof("Searching nzbs.org with %s", queryURL.String())
 	resp, err := n.Client.Get(queryURL.String())
 
 	if err != nil {

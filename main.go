@@ -90,7 +90,8 @@ func runDaemon(cfg *config.Config) {
 	}
 	provReg := providers.ProviderRegistry{
 		// get key from cfg
-		"nzbsOrg": providers.NewNzbsOrg(nzborgKey),
+		"nzbsOrg":      providers.NewNzbsOrg(nzborgKey),
+		"nyaaTorrents": providers.NewNyaaTorrents(),
 	}
 
 	broker, err := storage.NewBroker(cfg.Storage.Directories...)

@@ -2,11 +2,23 @@ package providers
 
 import (
 	"fmt"
+	"net/http"
 	"time"
 )
 
 // ProviderRegistry provides an easy way to map providers to string names
 type ProviderRegistry map[string]Provider
+
+func (pr ProviderRegistry) Search(showname string, season, epnum int64) []ProviderResult {
+	res := []ProviderResult{}
+	for _, provider := range pr {
+		resultset, err := provider.TvSearch(showname, season, epnum)
+		if err == nil {
+			res = append(res, resultset...)
+		}
+	}
+	return res
+}
 
 // ProviderResult describes the information that Providers will return from searches
 type ProviderResult struct {
@@ -17,6 +29,7 @@ type ProviderResult struct {
 	Quality      string     `json:"quality"`
 	ProviderName string     `json:"indexer"`
 	URL          string     `json:"url"`
+	Seeders      int64      `json:"seeders"`
 }
 
 // Provider defines the interface a tv2go provider must implement
@@ -27,6 +40,36 @@ type Provider interface {
 	GetURL(URL string) (string, []byte, error)
 	// Return what kind of providers this is for: NZB/Torrent
 	Type() ProviderType
+}
+
+type BaseProvider struct {
+	Client *http.Client
+}
+
+type TorrentProvider struct {
+	Name string
+	BaseProvider
+}
+
+func (t *TorrentProvider) Type() ProviderType {
+	return TORRENT
+}
+
+func (t *TorrentProvider) name() string {
+	return t.Name
+}
+
+type NZBProvider struct {
+	Name string
+	BaseProvider
+}
+
+func (t *NZBProvider) Type() ProviderType {
+	return NZB
+}
+
+func (t *NZBProvider) name() string {
+	return t.Name
 }
 
 // ProviderType is for the constants below

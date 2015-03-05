@@ -384,9 +384,10 @@ func (server *Server) EpisodeSearch(c *gin.Context) {
 		return
 	}
 
-	res, err := server.Providers["nzbsOrg"].TvSearch(ep.Show.Name, ep.Season, ep.Episode)
-	if err != nil {
-		genError(c, http.StatusInternalServerError, fmt.Sprintf("Error Searching for show: %s", err.Error()))
+	res := server.Providers.Search(ep.Show.Name, ep.Season, ep.Episode)
+	//res, err := server.Providers["nzbsOrg"].TvSearch(ep.Show.Name, ep.Season, ep.Episode)
+	if len(res) == 0 {
+		genError(c, http.StatusNotFound, fmt.Sprintf("No results found for show: %s", ep.Show.Name))
 		return
 	}
 	c.JSON(200, res)
@@ -435,9 +436,12 @@ func (server *Server) DownloadEpisode(c *gin.Context) {
 
 	dltype := prov.Type()
 	destdir := ""
-	if dltype == providers.NZB {
+	switch dltype {
+	case providers.NZB:
 		destdir = server.config.Storage.NZBBlackhole
-	} else {
+	case providers.TORRENT:
+		destdir = server.config.Storage.TorrentBlackhole
+	case providers.UNKNOWN:
 		genError(c, http.StatusInternalServerError, fmt.Sprintf("Unknown provider type: %d", prov.Type()))
 		return
 	}

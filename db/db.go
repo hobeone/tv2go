@@ -56,7 +56,7 @@ type Show struct {
 // BeforeSave validates a show before writing it to the database
 func (s *Show) BeforeSave() error {
 	if s.Name == "" {
-		return fmt.Errorf("Name can not be empty")
+		return fmt.Errorf("Show Name can not be empty")
 	}
 	if s.IndexerID == 0 {
 		return fmt.Errorf("IndexerID can not be unset")
@@ -109,9 +109,9 @@ type Episode struct {
 
 // BeforeSave performs validation on the record before saving
 func (e *Episode) BeforeSave() error {
-	if e.Name == "" {
-		return errors.New("Name can not be empty")
-	}
+	//if e.Name == "" {
+	//	return errors.New("Episode name can not be empty")
+	//}
 	// Season 0 is used for Specials
 	//	if e.Season == 0 {
 	//		return errors.New("Season must be set")
