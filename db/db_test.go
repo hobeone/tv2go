@@ -1,9 +1,11 @@
 package db
 
 import (
+	"flag"
 	"testing"
 	"time"
 
+	"github.com/hobeone/tv2go/quality"
 	"github.com/hobeone/tv2go/types"
 	. "github.com/onsi/gomega"
 )
@@ -96,6 +98,7 @@ func TestGetShowByName(t *testing.T) {
 	dbshow, err := d.GetShowByName("show1")
 	Expect(err).ToNot(HaveOccurred())
 	Expect(dbshow.Name).To(Equal("show1"))
+	Expect(dbshow.QualityGroup.Name).To(Equal("HDALL"))
 
 	dbshow, err = d.GetShowByName("")
 	Expect(err).To(MatchError("record not found"))
@@ -116,4 +119,31 @@ func TestNextAirdateForShow(t *testing.T) {
 
 	showtime := d.NextAirdateForShow(dbshow)
 	Expect(showtime).To(Equal(&futureDate))
+}
+func TestQualityGroup(t *testing.T) {
+	d := setupTest(t)
+	flag.Set("logtostderr", "true")
+	qg := quality.QualityGroup{
+		Name: "HDALL_Test",
+		Qualities: []quality.Quality{
+			quality.UNKNOWN,
+			quality.FULLHDBLURAY,
+			quality.Quality(-1), // Should be dropped on save
+		},
+	}
+
+	err := d.db.Save(&qg).Error
+	if err != nil {
+		t.Fatalf("Couldn't save test QualityGroup: %s", err)
+	}
+	Expect(qg.ID).ToNot(BeZero())
+
+	dbqg := &quality.QualityGroup{}
+	err = d.db.Find(dbqg, qg.ID).Error
+	if err != nil {
+		t.Fatalf("Couldn't find test QualityGroup: %s", err)
+	}
+
+	Expect(dbqg.Includes(quality.FULLHDBLURAY)).To(BeTrue())
+	Expect(dbqg.Includes(quality.SDTV)).To(BeFalse())
 }

@@ -150,6 +150,10 @@ func (b *Broker) MoveFile(src, dst string) error {
 	// Hella odd that Go doesn't have something like Python's shutil, oh well
 	err := os.Rename(src, dst)
 
+	if err == nil {
+		return nil
+	}
+
 	if _, ok := err.(*os.LinkError); ok {
 		glog.Infof("Rename failed: %s (are %s and %s on different filesystems?), falling back to copy and remove.", err, src, dst)
 	} else {

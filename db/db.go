@@ -35,7 +35,8 @@ type Show struct {
 	Genre             string // pipe seperated
 	Classification    string
 	Runtime           int64 // in minutes
-	Quality           quality.Quality
+	QualityGroup      quality.QualityGroup
+	QualityGroupID    int64
 	Airs              string // Hour of the day
 	Status            string
 	FlattenFolders    bool
@@ -153,7 +154,7 @@ type Handle struct {
 
 func setupDB(db gorm.DB) error {
 	tx := db.Begin()
-	err := tx.AutoMigrate(&Show{}, &Episode{}).Error
+	err := tx.AutoMigrate(&Show{}, &Episode{}, &quality.QualityGroup{}).Error
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -164,7 +165,9 @@ func setupDB(db gorm.DB) error {
 		"idx_show_season_ep", "show_id", "season", "episode",
 	)
 	tx.Model(&Show{}).AddUniqueIndex("idx_show_name", "name")
+	tx.Model(&quality.QualityGroup{}).AddUniqueIndex("idx_quality_group_name", "name")
 	tx.Commit()
+	RunMigrations(&db)
 	return nil
 }
 
@@ -224,7 +227,7 @@ func (h *Handle) AddShow(s *Show) error {
 // GetAllShows returns all shows in the database.
 func (h *Handle) GetAllShows() ([]Show, error) {
 	var shows []Show
-	err := h.db.Find(&shows).Error
+	err := h.db.Preload("QualityGroup").Find(&shows).Error
 	return shows, err
 }
 
@@ -261,7 +264,7 @@ func (h *Handle) GetEpisodeByShowSeasonAndNumber(showid, season, number int64) (
 func (h *Handle) GetShowByID(showID int64) (*Show, error) {
 	var show Show
 
-	err := h.db.Find(&show, showID).Error
+	err := h.db.Preload("QualityGroup").Find(&show, showID).Error
 	if err != nil {
 		return nil, err
 	}
@@ -276,7 +279,7 @@ func (h *Handle) GetShowByID(showID int64) (*Show, error) {
 // error if not found.
 func (h *Handle) GetShowByName(name string) (*Show, error) {
 	var show Show
-	err := h.db.Preload("Episodes").Where("name = ?", name).Find(&show).Error
+	err := h.db.Preload("Episodes").Preload("QualityGroup").Where("name = ?", name).Find(&show).Error
 	return &show, err
 }
 
@@ -314,6 +317,63 @@ func (h *Handle) SaveEpisodes(eps []*Episode) error {
 	return nil
 }
 
+func (h *Handle) GetQualityGroupFromStringOrDefault(name string) *quality.QualityGroup {
+	qual := &quality.QualityGroup{}
+	err := h.db.Where("name = ?", name).Find(qual).Error
+	if err == nil {
+		return qual
+	}
+	err = h.db.Where("default = ?", true).Find(qual).Error
+	if err == nil {
+		return qual
+	}
+	h.db.FirstOrInit(qual, quality.DefaultQualityGroup)
+	return qual
+}
+
+// Migrations
+
+type DBVersion struct {
+	ID        int64
+	Version   int64
+	UpdatedAt time.Time
+	CreatedAt time.Time
+}
+
+func RunMigrations(dbh *gorm.DB) {
+	tx := dbh.Begin()
+	err := Migration_001_AddBaseData(tx)
+	if err != nil {
+		tx.Rollback()
+	}
+	tx.Commit()
+}
+
+func Migration_001_AddBaseData(tx *gorm.DB) error {
+	baseQualities := []quality.QualityGroup{
+		quality.QualityGroup{
+			Name:    "HDALL",
+			Default: true,
+			Qualities: []quality.Quality{
+				quality.HDTV,
+				quality.HDWEBDL,
+				quality.HDBLURAY,
+				quality.FULLHDWEBDL,
+				quality.FULLHDTV,
+				quality.FULLHDBLURAY,
+			},
+		},
+	}
+
+	for _, qg := range baseQualities {
+		err := tx.Save(&qg).Error
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // Testing functionality
 
 // TestReporter is a shim interface so we don't need to include the testing
@@ -335,6 +395,7 @@ func LoadFixtures(t TestReporter, d *Handle) []Show {
 			IndexerID:       1,
 			Location:        basedir + "/testdata/show1",
 			DefaultEpStatus: types.WANTED,
+			QualityGroupID:  1,
 			Episodes: []Episode{
 				{
 					Name:    "show1episode1",

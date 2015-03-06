@@ -24,6 +24,16 @@ const (
 	FULLHDBLURAY Quality = 800
 )
 
+var ALL_HD_QUALITIES = []Quality{
+	HDTV,
+	RAWHDTV,
+	FULLHDTV,
+	HDWEBDL,
+	FULLHDWEBDL,
+	HDBLURAY,
+	FULLHDBLURAY,
+}
+
 var qualities = map[string]Quality{
 	"Unknown":      UNKNOWN,
 	"SD TV":        SDTV,
@@ -67,39 +77,18 @@ func QualityFromString(s string) (Quality, error) {
 	return UNKNOWN, fmt.Errorf("Unknown Quality String: %s", s)
 }
 
-type QualityGroup struct {
-	Name       string
-	Qualities  []Quality
-	MinQuality Quality
-	MaxQuality Quality
-}
-
-func (q QualityGroup) AcceptableQuality(qual Quality) bool {
-	if qual >= q.MinQuality && qual <= q.MaxQuality {
-		return true
-	}
-	for _, quality := range q.Qualities {
-		if quality == qual {
-			return true
+func QualityFromInt(i int64) (Quality, error) {
+	for _, q := range qualities {
+		if i == int64(q) {
+			return q, nil
 		}
 	}
-	return false
-}
-
-var HDALL = QualityGroup{
-	Name:       "HDALL",
-	MinQuality: HDTV,
-	MaxQuality: FULLHDBLURAY,
-}
-
-var Qualities = []Quality{
-	HDBLURAY,
-	FULLHDBLURAY,
+	return UNKNOWN, fmt.Errorf("'%d' doesn't map to a known Quality", i)
 }
 
 func QualityFromName(name string, anime bool) Quality {
 	// Search for exact match in a file string:
-	for _, qual := range Qualities {
+	for _, qual := range qualities {
 		regexStr := strings.Replace(qual.String(), " ", `\W`, -1)
 		regexStr = `\W` + regexStr + `\W`
 		regex := regexp.MustCompile(regexStr)

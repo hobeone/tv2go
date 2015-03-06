@@ -52,7 +52,7 @@ type jsonShow struct {
 	Network       string        `json:"network"`
 	NextEpAirdate *time.Time    `json:"next_ep_airdate,omitempty"`
 	Paused        bool          `json:"paused"`
-	Quality       string        `json:"quality"`
+	QualityGroup  string        `json:"quality_group"`
 	Name          string        `json:"name"`
 	Sports        bool          `json:"sports"`
 	Status        string        `json:"status"`
@@ -76,7 +76,7 @@ func (server *Server) showToResponse(dbshow *db.Show) jsonShow {
 		Network:       dbshow.Network,
 		NextEpAirdate: nextAirDate,
 		Paused:        dbshow.Paused,
-		Quality:       dbshow.Quality.String(),
+		QualityGroup:  dbshow.QualityGroup.Name,
 		Name:          dbshow.Name,
 		Sports:        dbshow.Sports,
 		Status:        dbshow.Status,
@@ -491,7 +491,7 @@ func (server *Server) ShowSearch(c *gin.Context) {
 type addShowRequest struct {
 	IndexerName   string `json:"indexer_name" form:"indexer_name" binding:"required"`
 	IndexerID     string `json:"indexerid" form:"indexerid" binding:"required"`
-	ShowQuality   string `json:"show_quality"`
+	QualityGroup  string `json:"quality_group"`
 	EpisodeStatus string `json:"episode_status"`
 	Location      string `json:"location"`
 	Anime         bool   `json:"is_anime"`
@@ -517,14 +517,7 @@ func (server *Server) AddShow(c *gin.Context) {
 			return
 		}
 	}
-	showQuality := server.config.MediaDefaults.ShowQuality
-	if reqJSON.ShowQuality != "" {
-		showQuality, err = quality.QualityFromString(reqJSON.ShowQuality)
-		if err != nil {
-			genError(c, http.StatusBadRequest, fmt.Sprintf("Unknown Quality string: %s", c.Errors.String()))
-			return
-		}
-	}
+	showQuality := h.GetQualityGroupFromStringOrDefault(reqJSON.QualityGroup)
 
 	if _, ok := server.indexers[reqJSON.IndexerName]; !ok {
 		genError(c, http.StatusBadRequest, fmt.Sprintf("Unknown indexer: '%s'", reqJSON.IndexerName))
@@ -545,7 +538,7 @@ func (server *Server) AddShow(c *gin.Context) {
 		})
 		return
 	}
-	dbshow.Quality = showQuality
+	dbshow.QualityGroup = *showQuality
 	dbshow.Anime = reqJSON.Anime
 	dbshow.AirByDate = reqJSON.AirByDate
 	for i := range dbshow.Episodes {

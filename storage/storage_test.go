@@ -1,13 +1,11 @@
 package storage
 
 import (
-	"flag"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
 
-	"github.com/davecgh/go-spew/spew"
 	. "github.com/onsi/gomega"
 )
 
@@ -107,7 +105,7 @@ func TestFileReadable(t *testing.T) {
 	}
 	defer os.RemoveAll(testdir)
 
-	testfilepath := testdir + "testReadableFile"
+	testfilepath := testdir + "/testReadableFile"
 
 	err = ioutil.WriteFile(testfilepath, []byte("testfile\n"), 0644)
 	Expect(err).ToNot(HaveOccurred())
@@ -150,7 +148,7 @@ func TestMoveFile(t *testing.T) {
 // Bleh, not sure how to test this reliably
 func TestMoveAcrossFilesystem(t *testing.T) {
 	RegisterTestingT(t)
-	flag.Set("logtostderr", "true")
+	//flag.Set("logtostderr", "true")
 
 	testdir, err := ioutil.TempDir("testdata", "testing")
 	if err != nil {
@@ -172,8 +170,6 @@ func TestMoveAcrossFilesystem(t *testing.T) {
 	testfilepath, err = filepath.Abs(testfilepath)
 	testfilepathdest := filepath.Join(testdir2, "testFileDest")
 
-	spew.Dump(testfilepath)
-	spew.Dump(testfilepathdest)
 	err = b.MoveFile(testfilepath, testfilepathdest)
 	Expect(err).ToNot(HaveOccurred())
 
