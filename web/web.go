@@ -19,6 +19,7 @@ import (
 	"github.com/hobeone/tv2go/indexers"
 	"github.com/hobeone/tv2go/naming"
 	"github.com/hobeone/tv2go/providers"
+	"github.com/hobeone/tv2go/quality"
 	"github.com/hobeone/tv2go/storage"
 	"github.com/hobeone/tv2go/types"
 )
@@ -185,6 +186,7 @@ func (server *Server) ShowUpdateFromDisk(c *gin.Context) {
 			glog.Errorf("Couldn't find episode by show, season, number: %d, %d, %d", showid, pr.SeasonNumber, pr.EpisodeNumbers[0])
 			continue
 		}
+		dbep.Quality = pr.Quality
 		dbep.Location = pr.OriginalName
 		dbep.Status = types.DOWNLOADED
 		dbeps = append(dbeps, dbep)
@@ -517,7 +519,7 @@ func (server *Server) AddShow(c *gin.Context) {
 	}
 	showQuality := server.config.MediaDefaults.ShowQuality
 	if reqJSON.ShowQuality != "" {
-		showQuality, err = types.QualityFromString(reqJSON.ShowQuality)
+		showQuality, err = quality.QualityFromString(reqJSON.ShowQuality)
 		if err != nil {
 			genError(c, http.StatusBadRequest, fmt.Sprintf("Unknown Quality string: %s", c.Errors.String()))
 			return
@@ -548,7 +550,7 @@ func (server *Server) AddShow(c *gin.Context) {
 	dbshow.AirByDate = reqJSON.AirByDate
 	for i := range dbshow.Episodes {
 		dbshow.Episodes[i].Status = epStatus
-		dbshow.Episodes[i].Quality = types.NONE
+		dbshow.Episodes[i].Quality = quality.UNKNOWN
 	}
 	if dbshow.Location == "" {
 		dbshow.Location = showToLocation(server.Broker.RootDirs[0], dbshow.Name)

@@ -32,7 +32,7 @@ func TestShowValidations(t *testing.T) {
 	}
 
 	err := d.SaveShow(&dbshow)
-	Expect(err).To(MatchError("Name can not be empty"))
+	Expect(err).To(MatchError("Show Name can not be empty"))
 
 	// Empty indexerid
 	dbshow = Show{
@@ -68,11 +68,6 @@ func TestEpisodeValidations(t *testing.T) {
 	err = dbep.BeforeSave()
 	Expect(err).ToNot(HaveOccurred())
 
-	dbep.Name = ""
-
-	err = d.SaveEpisode(dbep)
-	Expect(err).To(MatchError("Name can not be empty"))
-
 	dbep, _ = d.GetEpisodeByID(1)
 	dbep.Episode = 0
 	err = d.SaveEpisode(dbep)
@@ -83,10 +78,6 @@ func TestEpisodeValidations(t *testing.T) {
 	err = d.SaveEpisode(dbep)
 	Expect(err).To(MatchError("Status must be set"))
 
-	dbep, _ = d.GetEpisodeByID(1)
-	dbep.Quality = 0
-	err = d.SaveEpisode(dbep)
-	Expect(err).To(MatchError("Quality must be set"))
 }
 
 func TestAddShow(t *testing.T) {

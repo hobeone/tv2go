@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/golang/glog"
+	"github.com/hobeone/tv2go/quality"
 	"github.com/hobeone/tv2go/types"
 	"github.com/jinzhu/gorm"
 
@@ -34,7 +35,7 @@ type Show struct {
 	Genre             string // pipe seperated
 	Classification    string
 	Runtime           int64 // in minutes
-	Quality           types.Quality
+	Quality           quality.Quality
 	Airs              string // Hour of the day
 	Status            string
 	FlattenFolders    bool
@@ -47,7 +48,7 @@ type Show struct {
 	Sports            bool
 	Anime             bool
 	Scene             bool
-	DefaultEpStatus   int64 // convert to enum
+	DefaultEpStatus   types.EpisodeStatus
 	LastIndexerUpdate time.Time
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
@@ -95,7 +96,7 @@ type Episode struct {
 	HasNFO              bool `gorm:"column:has_nfo"`
 	HasTBN              bool `gorm:"column:has_tbn"`
 	Status              types.EpisodeStatus
-	Quality             types.Quality
+	Quality             quality.Quality
 	Location            string
 	FileSize            int64
 	ReleaseName         string
@@ -124,9 +125,6 @@ func (e *Episode) BeforeSave() error {
 		return errors.New("Status must be set")
 	}
 
-	if e.Quality == 0 {
-		return errors.New("Quality must be set")
-	}
 	return nil
 }
 
@@ -333,9 +331,10 @@ func LoadFixtures(t TestReporter, d *Handle) []Show {
 	}
 	shows := []Show{
 		{
-			Name:      "show1",
-			IndexerID: 1,
-			Location:  basedir + "/testdata/show1",
+			Name:            "show1",
+			IndexerID:       1,
+			Location:        basedir + "/testdata/show1",
+			DefaultEpStatus: types.WANTED,
 			Episodes: []Episode{
 				{
 					Name:    "show1episode1",
@@ -343,14 +342,14 @@ func LoadFixtures(t TestReporter, d *Handle) []Show {
 					Episode: 1,
 					AirDate: time.Date(2006, time.January, 1, 0, 0, 0, 0, time.UTC),
 					Status:  types.WANTED,
-					Quality: types.NONE,
+					Quality: quality.UNKNOWN,
 				},
 				{
 					Name:    "show1episode2",
 					Season:  1,
 					Episode: 2,
 					Status:  types.WANTED,
-					Quality: types.NONE,
+					Quality: quality.UNKNOWN,
 				},
 			},
 		},
@@ -365,7 +364,7 @@ func LoadFixtures(t TestReporter, d *Handle) []Show {
 					Episode:  1,
 					AirDate:  time.Date(2001, time.January, 1, 0, 0, 0, 0, time.UTC),
 					Status:   types.WANTED,
-					Quality:  types.NONE,
+					Quality:  quality.UNKNOWN,
 					Location: "testdata/show1",
 				},
 				{
@@ -374,7 +373,7 @@ func LoadFixtures(t TestReporter, d *Handle) []Show {
 					Episode: 1,
 					AirDate: time.Date(2002, time.February, 1, 0, 0, 0, 0, time.UTC),
 					Status:  types.WANTED,
-					Quality: types.NONE,
+					Quality: quality.UNKNOWN,
 				},
 			},
 		},

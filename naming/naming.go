@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hobeone/tv2go/quality"
 	"github.com/kyoh86/go-pcre"
 
 	"github.com/gholt/brimtime"
@@ -97,7 +98,7 @@ type ParseResult struct {
 	AirDate                time.Time
 	AbsoluteEpisodeNumbers []int64
 	Score                  int
-	Quality                string
+	Quality                quality.Quality
 	Version                string
 	RegexUsed              string
 }
@@ -255,6 +256,12 @@ func (np *NameParser) Parse(name string) ParseResult {
 	dirNameResult, _ := np.parseString(dirNameBase)
 	finalRes, _ := np.parseString(name)
 
+	q := quality.QualityFromName(fileName, false)
+	if q == quality.UNKNOWN {
+		glog.Errorf("Could't parse quality from '%s'", fileName)
+	} else {
+		glog.Infof("Found quality %s for '%s'", q.String(), fileName)
+	}
 	combineResults(finalRes, fileNameResult, dirNameResult, "AirDate")
 	combineResults(finalRes, fileNameResult, dirNameResult, "AbsoluteEpisodeNumbers")
 	combineResults(finalRes, fileNameResult, dirNameResult, "SeasonNumber")
@@ -264,7 +271,7 @@ func (np *NameParser) Parse(name string) ParseResult {
 	combineResults(finalRes, dirNameResult, fileNameResult, "ReleaseGroup")
 	combineResults(finalRes, dirNameResult, fileNameResult, "Version")
 	// TODO: set this
-	combineResults(finalRes, fileNameResult, dirNameResult, "Quality")
+	finalRes.Quality = q
 	return *finalRes
 }
 

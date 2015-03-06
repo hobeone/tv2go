@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/hobeone/tv2go/quality"
 	"github.com/hobeone/tv2go/types"
 )
 
@@ -43,7 +44,7 @@ type dbConfig struct {
 }
 
 type mediaDefaults struct {
-	ShowQuality   types.Quality
+	ShowQuality   quality.Quality
 	EpisodeStatus types.EpisodeStatus
 }
 
@@ -74,7 +75,7 @@ func NewConfig() *Config {
 			TorrentBlackhole: replaceTildeInPath("~/tv2go/torrent_blackhole"),
 		},
 		MediaDefaults: mediaDefaults{
-			ShowQuality:   types.HDTV,
+			ShowQuality:   quality.HDTV,
 			EpisodeStatus: types.SKIPPED,
 		},
 	}

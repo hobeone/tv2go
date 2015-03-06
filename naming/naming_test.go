@@ -3,6 +3,7 @@ package naming
 import (
 	"testing"
 
+	"github.com/davecgh/go-spew/spew"
 	. "github.com/onsi/gomega"
 )
 
@@ -34,6 +35,7 @@ func TestNameParser(t *testing.T) {
 	for _, f := range names {
 		r := np.Parse(f)
 		Expect(r.SeriesName).To(Equal("Archer (2009)"))
+		spew.Dump(r)
 	}
 }
 
