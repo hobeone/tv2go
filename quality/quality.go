@@ -1,6 +1,7 @@
 package quality
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"reflect"
@@ -47,6 +48,10 @@ var qualities = map[string]Quality{
 	"1080p BluRay": FULLHDBLURAY,
 }
 
+func (q Quality) MarshalJSON() ([]byte, error) {
+	return json.Marshal(q.String())
+}
+
 // Scan implements the sql.Scanner interface
 func (q *Quality) Scan(src interface{}) error {
 	switch s := src.(type) {
@@ -90,7 +95,7 @@ func QualityFromName(name string, anime bool) Quality {
 	// Search for exact match in a file string:
 	for _, qual := range qualities {
 		regexStr := strings.Replace(qual.String(), " ", `\W`, -1)
-		regexStr = `\W` + regexStr + `\W`
+		regexStr = `\W` + regexStr + `($|[\W])` // Either non-word or end of line
 		regex := regexp.MustCompile(regexStr)
 		if regex.MatchString(name) {
 			return qual

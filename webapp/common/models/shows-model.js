@@ -54,6 +54,11 @@ statusService.factory("Status", function($resource) {
   return $resource("/api/1/statuses");
 });
 
+qualityGroupService = angular.module('tv2go.qualityGroupService', ['ngResource']);
+qualityGroupService.factory("QualityGroup", function($resource) {
+  return $resource("/api/1/quality_groups");
+});
+
 angular.module('tv2go.models.shows',['tv2go.showsService'])
 .service('ShowsModel', function($http, $q, Show) {
   var model = this;

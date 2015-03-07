@@ -3,6 +3,7 @@ angular.module('tv2go', [
   'ui.router',
   'ng.group',
   'xeditable',
+  'ui.bootstrap',
   'angularModalService',
   'shows',
   'shows.episodes',

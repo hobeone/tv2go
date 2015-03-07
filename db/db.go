@@ -63,6 +63,9 @@ func (s *Show) BeforeSave() error {
 	if s.IndexerID == 0 {
 		return fmt.Errorf("IndexerID can not be unset")
 	}
+	if s.Indexer == "" {
+		return fmt.Errorf("Indexer must be set")
+	}
 	return nil
 }
 
@@ -317,6 +320,19 @@ func (h *Handle) SaveEpisodes(eps []*Episode) error {
 	return nil
 }
 
+func (h *Handle) GetQualityGroups() ([]quality.QualityGroup, error) {
+	groups := []quality.QualityGroup{}
+	err := h.db.Find(&groups).Error
+	if err != nil {
+		return groups, err
+	}
+	return groups, nil
+}
+
+// GetQualityGroupFromStringOrDefault tries to find a matching QualityGroup
+// with the given name.  If that doesn't exist it returns the first one with
+// the Default bit set.  If _that_ fails it will return (and create inthe db)
+// the hardcoded default.
 func (h *Handle) GetQualityGroupFromStringOrDefault(name string) *quality.QualityGroup {
 	qual := &quality.QualityGroup{}
 	err := h.db.Where("name = ?", name).Find(qual).Error
@@ -351,7 +367,7 @@ func RunMigrations(dbh *gorm.DB) {
 
 func Migration_001_AddBaseData(tx *gorm.DB) error {
 	baseQualities := []quality.QualityGroup{
-		quality.QualityGroup{
+		{
 			Name:    "HDALL",
 			Default: true,
 			Qualities: []quality.Quality{
@@ -360,6 +376,43 @@ func Migration_001_AddBaseData(tx *gorm.DB) error {
 				quality.HDBLURAY,
 				quality.FULLHDWEBDL,
 				quality.FULLHDTV,
+				quality.FULLHDBLURAY,
+			},
+		},
+		{
+			Name: "SD",
+			Qualities: []quality.Quality{
+				quality.SDTV,
+				quality.SDDVD,
+			},
+		},
+		{
+			Name: "HD720p",
+			Qualities: []quality.Quality{
+				quality.HDWEBDL,
+				quality.HDBLURAY,
+				quality.HDTV,
+			},
+		},
+		{
+			Name: "HD1080p",
+			Qualities: []quality.Quality{
+				quality.FULLHDTV,
+				quality.FULLHDWEBDL,
+				quality.FULLHDBLURAY,
+			},
+		},
+		{
+			Name: "ALL",
+			Qualities: []quality.Quality{
+				quality.SDTV,
+				quality.SDDVD,
+				quality.HDTV,
+				quality.RAWHDTV,
+				quality.FULLHDTV,
+				quality.HDWEBDL,
+				quality.FULLHDWEBDL,
+				quality.HDBLURAY,
 				quality.FULLHDBLURAY,
 			},
 		},

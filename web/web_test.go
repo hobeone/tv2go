@@ -310,6 +310,18 @@ func TestNameCleaner(t *testing.T) {
 	Expect(teststr).To(Equal("/a.b _YEAR_"))
 }
 
-func TestDownloadEpisode(t *testing.T) {
+func TestQualityGroupList(t *testing.T) {
+	dbh, eng := setupTest(t)
+	db.LoadFixtures(t, dbh)
+	RegisterTestingT(t)
 
+	//Success
+	response := httptest.NewRecorder()
+	req, err := http.NewRequest("GET", "/api/1/quality_groups", nil)
+	Expect(err).ToNot(HaveOccurred(), "Error creating request: %s", err)
+
+	eng.Handler.ServeHTTP(response, req)
+	if response.Code != 200 {
+		t.Fatalf("Expected 200 response code, got %d", response.Code)
+	}
 }

@@ -3,21 +3,21 @@
   <h2>Season: {{epSeason.season}}</h2>
     <table class="table table-striped table-condensed">
       <tr>
-        <th style="width:20%">Episdode</th>
-        <th style="width:20%">Airdate</th>
+        <th style="width:10%">Episdode</th>
+        <th style="width:10%">Airdate</th>
         <th style="width:35%">Name</th>
-        <th style="width:25%">Location</th>
         <th style="width:25%">Status</th>
+        <th style="width:25%">Quality</th>
       </tr>
 
       <tr ng-repeat="ep in epSeason.items | orderBy:['-episode'] ">
         <td>{{ep.episode}}</td>
         <td>{{ep.airdate || "Unaired"}}</td>
         <td>{{ep.name}}</td>
-        <td>{{ep.location}}</td>
         <td>
           <a href="#" editable-select="ep.status" e-ng-options="status for status in episodesListCtrl.statuses" onbeforesave="episodesListCtrl.updateStatus(ep)" >{{ep.status}}</a>
         </td>
+        <td><span class="badge" tooltip="{{ep.location}}">{{ep.quality}}</span></td>
 
         <td><button class="fa fa-search" ng-click="episodesListCtrl.searchEpisode(ep)"></button></td>
       </tr>

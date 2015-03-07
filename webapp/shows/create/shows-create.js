@@ -1,4 +1,5 @@
-angular.module('shows.create', ['tv2go.models.shows','tv2go.indexerSearchService', 'tv2go.models.indexers', 'tv2go.statusService', 
+angular.module('shows.create', ['tv2go.models.shows','tv2go.indexerSearchService', 'tv2go.models.indexers', 'tv2go.statusService',
+    'tv2go.qualityGroupService'
 ])
 .config(function($stateProvider){
   $stateProvider
@@ -16,6 +17,9 @@ angular.module('shows.create', ['tv2go.models.shows','tv2go.indexerSearchService
       },
       statuses: function(Status) {
         return Status.query();
+      },
+      qualityGroups: function(QualityGroup) {
+        return QualityGroup.query();
       }
     }
   })
@@ -29,10 +33,11 @@ angular.module('shows.create', ['tv2go.models.shows','tv2go.indexerSearchService
   })
   ;
 })
-.controller('CreateShowsCtrl', function($state, Show, ShowsModel, IndexerSearch, indexers, statuses) {
+.controller('CreateShowsCtrl', function($state, Show, ShowsModel, IndexerSearch, indexers, statuses, qualityGroups) {
   var createShowsCtrl = this;
   createShowsCtrl.indexers = indexers;
   createShowsCtrl.statuses = statuses;
+  createShowsCtrl.qualityGroups = qualityGroups;
 
   function resetForm() {
     createShowsCtrl.showSearchReqest = new IndexerSearch();

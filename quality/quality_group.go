@@ -9,11 +9,11 @@ import (
 
 // QualityGroup represents a group of acceptable qualities for a Show.
 type QualityGroup struct {
-	ID            int64
-	Name          string
-	Qualities     []Quality `sql:"-"`
-	QualityString string    // CSV of ints
-	Default       bool
+	ID            int64     `json:"-"`
+	Name          string    `json:"name"`
+	Qualities     []Quality `sql:"-" json:"qualities"`
+	QualityString string    `json:"-"` // CSV of ints
+	Default       bool      `json:"default"`
 }
 
 // Includes returns true if the given Quality is included in the QualityGroup

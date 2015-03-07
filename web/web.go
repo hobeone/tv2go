@@ -821,6 +821,7 @@ func configGinEngine(s *Server) {
 		api.GET("indexers/search", s.ShowSearch)
 		api.GET("indexers", s.IndexerList)
 		api.GET("statuses", s.StatusList)
+		api.GET("quality_groups", s.QualityGroupList)
 
 		api.POST("postprocess", s.Postprocess)
 	}
@@ -828,6 +829,16 @@ func configGinEngine(s *Server) {
 	r.GET("/statusz", s.Statusz)
 
 	s.Handler = r
+}
+
+//QualityGroupList serves a list of all known QualityGroups
+func (server *Server) QualityGroupList(c *gin.Context) {
+	qualityGroups, err := server.dbHandle.GetQualityGroups()
+	if err != nil {
+		genError(c, http.StatusInternalServerError, fmt.Sprintf("Error getting QualityGroups: %s", err))
+		return
+	}
+	c.JSON(200, qualityGroups)
 }
 
 //StatusList returns all of the known Episode Statuses

@@ -1,7 +1,6 @@
 package db
 
 import (
-	"flag"
 	"testing"
 	"time"
 
@@ -122,7 +121,7 @@ func TestNextAirdateForShow(t *testing.T) {
 }
 func TestQualityGroup(t *testing.T) {
 	d := setupTest(t)
-	flag.Set("logtostderr", "true")
+	//flag.Set("logtostderr", "true")
 	qg := quality.QualityGroup{
 		Name: "HDALL_Test",
 		Qualities: []quality.Quality{
@@ -146,4 +145,13 @@ func TestQualityGroup(t *testing.T) {
 
 	Expect(dbqg.Includes(quality.FULLHDBLURAY)).To(BeTrue())
 	Expect(dbqg.Includes(quality.SDTV)).To(BeFalse())
+}
+
+func TestGetQualityGroups(t *testing.T) {
+	d := setupTest(t)
+	//flag.Set("logtostderr", "true")
+
+	qualityGroups, err := d.GetQualityGroups()
+	Expect(err).ToNot(HaveOccurred())
+	Expect(qualityGroups).To(HaveLen(5))
 }
