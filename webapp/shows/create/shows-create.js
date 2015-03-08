@@ -48,6 +48,8 @@ angular.module('shows.create', ['tv2go.models.shows','tv2go.indexerSearchService
     createShowsCtrl.newShow.episode_status = createShowsCtrl.statuses[0];
     createShowsCtrl.newShow.is_anime = false;
     createShowsCtrl.newShow.is_air_by_date = false;
+    // Set this to the first one with the default bit set
+    createShowsCtrl.newShow.quality_group = _.first(_.pluck(_.filter(createShowsCtrl.qualityGroups, 'default', true),"name"));
   }
 
   function cancelCreating() {

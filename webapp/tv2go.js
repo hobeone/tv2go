@@ -44,10 +44,18 @@ angular.module('tv2go', [
   return function(t) {
     if(angular.isDefined(t)) {
       // GO json time format:
+      return moment(t, "YYYY-MM-DDTHH:mm:ssZ").format("L");
+    }
+    return "";
+  }
+})
+.filter('nextAirDateHumanize', function() {
+  return function(t) {
+    if(angular.isDefined(t)) {
+      // GO json time format:
       return moment(t, "YYYY-MM-DDTHH:mm:ssZ").calendar();
     }
     return "";
   }
 })
-
 .controller('IndexCtrl', function(){});

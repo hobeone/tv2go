@@ -1,12 +1,27 @@
-<div class="nav nav-sidebar">
-  <div ng-repeat="show in showsListCtrl.shows | orderBy:'name'">
-      <a href="#" ui-sref="tv2go.shows.episodes({show:show.id})">{{show.name}}</a>
-  </div>
-</div>
+      <table class="table table-striped table-condensed">
+      <tr>
+        <th style="width:15%">Next AirDate</th>
+        <th style="width:20%">Name</th>
+        <th style="width:10%">Network</th>
+        <th style="width:10%">Quality</th>
+        <th style="width:25%">Downloads</th>
+        <th style="width:10%">Active</th>
+        <th style="width:10%">Status</th>
+      </tr>
 
-<div>
+      <tr ng-repeat="show in showsListCtrl.shows | orderBy:'name'">
+        <td>{{show.next_ep_airdate | nextAirDate}}</td>
+        <td><a href="#" ui-sref="tv2go.shows.episodes({show:show.id})">{{show.name}}</a></td>
+      
+        <td>{{show.network}}</td>
+        <td><span class="badge">{{show.quality_group}}</span></td>
+        <td>downloads</td>
+        <td>{{!show.paused}}</td>
+        <td>{{show.status}}</td>
+      </tr>
+      </table>
+
   <button type="button" class="btn btn-link" ui-sref="tv2go.shows.create.stepone">
     <span class="glyphicon glyphicon-plus"></span>
     Add Show
   </button>
-</div>

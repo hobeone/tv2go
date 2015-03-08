@@ -14,7 +14,7 @@
 </div>
 <div class="row col-md-6">
   <ul class="list-group">
-  <li class="list-group-item">Next Airdate: <span class="badge">{{episodesListCtrl.show.next_ep_airdate | nextAirDate}}</span></li>
+  <li class="list-group-item">Next Airdate: <span class="badge">{{episodesListCtrl.show.next_ep_airdate | nextAirDateHumanize}}</span></li>
   <li class="list-group-item">Location: <span editable-text="episodesListCtrl.show.location" onbeforesave="episodesListCtrl.saveShow(episodesListCtrl.show)">{{episodesListCtrl.show.location}}</span></li>
   <li class="list-group-item">Anime: <span editable-checkbox="episodesListCtrl.show.anime" onbeforesave="episodesListCtrl.saveShow(episodesListCtrl.show)">{{episodesListCtrl.show.anime}}</span></li>
   <li class="list-group-item">Paused: <span editable-checkbox="episodesListCtrl.show.anime" onbeforesave="episodesListCtrl.saveShow(episodesListCtrl.show)">{{episodesListCtrl.show.paused}}</span></li>

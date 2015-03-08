@@ -3,11 +3,12 @@
   <h2>Season: {{epSeason.season}}</h2>
     <table class="table table-striped table-condensed">
       <tr>
-        <th style="width:10%">Episdode</th>
+        <th style="width:10%">Episode</th>
         <th style="width:10%">Airdate</th>
         <th style="width:35%">Name</th>
         <th style="width:25%">Status</th>
         <th style="width:25%">Quality</th>
+        <th style="width:0%"></th>
       </tr>
 
       <tr ng-repeat="ep in epSeason.items | orderBy:['-episode'] ">

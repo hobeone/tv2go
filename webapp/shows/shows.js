@@ -9,12 +9,9 @@ angular.module('shows', [
       url: '/shows',
       views: {
         'top@tv2go' : { templateUrl: 'nav.tmpl.html',},
-        'left@tv2go': {
+        'detail@tv2go': {
           controller: 'ShowsListCtrl as showsListCtrl',
           templateUrl: 'shows/shows.tmpl.html',
-        },
-        'detail@tv2go': {
-          template: '',
         },
       }
     });

@@ -2,7 +2,8 @@
 
 <div class="form-group">
   <label for="newShowIndexerID">Pick a show:</label>
-  <select id="newShowIndexerID" ng-model="createShowsCtrl.newShow.indexerid">
+  <select id="newShowIndexerID" ng-model="createShowsCtrl.newShow.indexerid" required>
+    <option value="">-- choose show --</option>
     <option ng-repeat="s in createShowsCtrl.showSearchResult" value="{{s.indexerid}}">{{s.name}}</option>
   </select>
 </div>
@@ -17,10 +18,8 @@
 
 <div class="form-group">
   <label for="newShowQuality">Show Quality:</label>
-  <select id="newShowQuality" ng-model="createShowsCtrl.newShow.quality_group">
-    <option ng-repeat="quality in createShowsCtrl.qualityGroups" value="{{quality.name}}">{{quality.name}} ({{quality.qualities}})</option>
-  </select>
-</div>
+  <select ng-options="quality.name as quality.name for quality in createShowsCtrl.qualityGroups" ng-model="createShowsCtrl.newShow.quality_group"></select>
+  </div>
 
   <div class="checkbox">
     <label>

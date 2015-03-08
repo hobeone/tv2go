@@ -1,16 +1,9 @@
-<nav class="navbar navbar-inverse navbar-fixed-top">
-  <div ui-view="top"></div>
-</nav>
-  
-<div class="container-fluid middle">
-  <div class="row">
-    <div class="col-sm-3 col-md-2 sidebar">
-      <div ui-view="left"></div>
-    </div>
+<div class="container-fluid">
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div ui-view="top"></div>
+  </nav>
+
+  <div class="main">
+    <div ui-view="detail"></div>
   </div>
 </div>
-
-<div class="class=col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-  <div ui-view="detail"></div>
-</div>
-  
