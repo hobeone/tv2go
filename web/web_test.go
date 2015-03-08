@@ -307,7 +307,7 @@ func TestNameCleaner(t *testing.T) {
 	Expect(teststr).To(Equal("/a.b"))
 
 	teststr = showToLocation(dir, ".a.b (YEAR)")
-	Expect(teststr).To(Equal("/a.b _YEAR_"))
+	Expect(teststr).To(Equal("/a.b (YEAR)"))
 }
 
 func TestQualityGroupList(t *testing.T) {

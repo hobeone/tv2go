@@ -445,6 +445,7 @@ func LoadFixtures(t TestReporter, d *Handle) []Show {
 	shows := []Show{
 		{
 			Name:            "show1",
+			Indexer:         "tvdb",
 			IndexerID:       1,
 			Location:        basedir + "/testdata/show1",
 			DefaultEpStatus: types.WANTED,
@@ -469,6 +470,7 @@ func LoadFixtures(t TestReporter, d *Handle) []Show {
 		},
 		{
 			Name:      "show2",
+			Indexer:   "tvdb",
 			IndexerID: 2,
 			Location:  basedir + "/testdata/show2",
 			Episodes: []Episode{

@@ -691,7 +691,7 @@ func showToLocation(path, name string) string {
 	name = seps.ReplaceAllString(name, "")
 
 	// Remove all other unrecognised characters - NB we do allow any printable characters
-	legal := regexp.MustCompile(`[^[:alnum:]-. ]`)
+	legal := regexp.MustCompile(`[^[:alnum:]-.() ]`)
 	name = legal.ReplaceAllString(name, "_")
 
 	// Remove any double dashes caused by existing - in name
