@@ -26,3 +26,14 @@ cd webapp
 
 npm install
 ```
+
+```
+To run during development:
+go get -u -v github.com/codegangsta/gin
+
+$GOPATH/bin/gin -i -p 9001 -a 9000 r -- -logtostderr=true -config_file config.json
+
+Point your browser at localhost:9001/a/tv2go.html
+
+Add shows and click around
+```
