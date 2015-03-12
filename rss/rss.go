@@ -40,18 +40,19 @@ type Link struct {
 }
 
 type Item struct {
-	Title       string        `xml:"title,omitempty"`
-	Link        string        `xml:"link,omitempty"`
-	Description string        `xml:"description,omitempty"`
-	Author      string        `xml:"author,omitempty"`
-	Enclosure   *Enclosure    `xml:"enclosure"`
-	Guid        *Guid         `xml:"guid"`
-	PubDate     string        `xml:"pubDate,omitempty"`
-	Source      *Source       `xml:"source"`
-	Content     string        `xml:"encoded,omitempty"`
-	Date        string        `xml:"date,omitempty"`
-	Published   string        `xml:"published,omitempty"`
-	Media       *MediaContent `xml:"content"`
+	Title       string         `xml:"title,omitempty"`
+	Link        string         `xml:"link,omitempty"`
+	Description string         `xml:"description,omitempty"`
+	Author      string         `xml:"author,omitempty"`
+	Enclosure   *Enclosure     `xml:"enclosure"`
+	NewzNabAttr []*NewzNabAttr `xml:"attr"`
+	Guid        *Guid          `xml:"guid"`
+	PubDate     string         `xml:"pubDate,omitempty"`
+	Source      *Source        `xml:"source"`
+	Content     string         `xml:"encoded,omitempty"`
+	Date        string         `xml:"date,omitempty"`
+	Published   string         `xml:"published,omitempty"`
+	Media       *MediaContent  `xml:"content"`
 }
 
 type MediaContent struct {
@@ -74,4 +75,9 @@ type Enclosure struct {
 	Url    string `xml:"url,attr"`
 	Length string `xml:"length,attr,omitempty"`
 	Type   string `xml:"type,attr"`
+}
+
+type NewzNabAttr struct {
+	Name  string `xml:"name,attr"`
+	Value string `xml:"value,attr"`
 }

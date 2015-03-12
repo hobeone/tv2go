@@ -1,7 +1,7 @@
 showService = angular.module('tv2go.showsService', ['ngResource']);
 
 showService.factory('Show', function($cacheFactory, $resource) {
-  return $resource('http://localhost:9001/api/1/shows/:showid', {}, {
+  return $resource('/api/1/shows/:showid', {}, {
     all: {
       method: "GET",
       isArray:true,
@@ -12,11 +12,11 @@ showService.factory('Show', function($cacheFactory, $resource) {
     },
     updateFromIndexer: {
       method: "GET",
-      url: "http://localhost:9001/api/1/shows/:id/update",
+      url: "/api/1/shows/:id/update",
     },
     updateFromDisk: {
       method: "GET",
-      url: "http://localhost:9001/api/1/shows/:id/rescan",
+      url: "/api/1/shows/:id/rescan",
     },
 
   });

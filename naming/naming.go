@@ -154,7 +154,6 @@ func regexNamedMatch(re *pcre.Regexp, str string) (map[string]string, bool) {
 func (np *NameParser) parseString(name string) (*ParseResult, error) {
 	var matchResults []ParseResult
 	for i, r := range np.Regexes {
-		glog.Infof("Trying to match %s with regex %s", name, r.Name)
 		if matches, ok := regexNamedMatch(&r.Regex, name); ok {
 			glog.Infof("Matched %s with regex %s", name, r.Name)
 			pr := ParseResult{
@@ -165,7 +164,7 @@ func (np *NameParser) parseString(name string) (*ParseResult, error) {
 
 			if m, ok := matches["series_name"]; ok {
 				pr.SeriesName = m
-				//pr.SeriesName = cleanSeriesName(pr.SeriesName)
+				pr.SeriesName = CleanSeriesName(pr.SeriesName)
 				pr.Score++
 			}
 			if _, ok := matches["series_num"]; ok {
@@ -256,11 +255,11 @@ func (np *NameParser) Parse(name string) ParseResult {
 	dirNameResult, _ := np.parseString(dirNameBase)
 	finalRes, _ := np.parseString(name)
 
-	q := quality.QualityFromName(fileName, false)
+	q := quality.QualityFromName(name, false)
 	if q == quality.UNKNOWN {
-		glog.Errorf("Could't parse quality from '%s'", fileName)
+		glog.Errorf("Could't parse quality from '%s'", name)
 	} else {
-		glog.Infof("Found quality %s for '%s'", q.String(), fileName)
+		glog.Infof("Found quality %s for '%s'", q.String(), name)
 	}
 	combineResults(finalRes, fileNameResult, dirNameResult, "AirDate")
 	combineResults(finalRes, fileNameResult, dirNameResult, "AbsoluteEpisodeNumbers")

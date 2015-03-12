@@ -15,4 +15,5 @@ func TestQualityFromName(t *testing.T) {
 	Expect(QualityFromName("Archer (2009) - S04E12 - Sea Tunt (1) - HD TV.mkv", false)).To(Equal(HDTV))
 	Expect(QualityFromName("[HorribleSubs] Yowamushi Pedal - Grande Road - 20 [720p].mkv.torrent", true)).To(Equal(HDTV))
 	Expect(QualityFromName("12 Monkeys - S01E05 - The Night Room - HD TV", false)).To(Equal(HDTV))
+	Expect(QualityFromName("The.Return.of.Superman.E68.150308.HDTV.H264.720p-WITH", false)).To(Equal(HDTV))
 }

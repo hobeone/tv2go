@@ -2,6 +2,7 @@ package providers
 
 import (
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -11,6 +12,8 @@ import (
 	"time"
 
 	"github.com/golang/glog"
+	"github.com/hobeone/tv2go/rss"
+	"golang.org/x/net/html/charset"
 )
 
 // NzbsOrg provides a client for the nzbs.org provider
@@ -89,6 +92,86 @@ type tvSearchResponse struct {
 			} `json:"enclosure"`
 		} `json:"item"`
 	} `json:"channel"`
+}
+
+func (n *NzbsOrg) GetNewItems() ([]ProviderResult, error) {
+	u := url.Values{}
+	u.Add("apikey", n.APIKEY)
+	u.Add("t", "tvsearch")
+	u.Add("cat", "5030,5040,5060,5070")
+	u.Add("attrs", "rageid,tvdbid,season,episode")
+	urlStr := u.Encode()
+
+	queryURL, _ := url.Parse(n.URL)
+	queryURL.RawQuery = urlStr
+	glog.Infof("nzbs.org: Getting new items with %s", queryURL.String())
+	resp, err := n.Client.Get(queryURL.String())
+
+	if err != nil {
+		return nil, fmt.Errorf("Error getting url '%s': %s\n", queryURL, err)
+	}
+
+	defer resp.Body.Close()
+
+	r := rss.Rss{}
+	defer resp.Body.Close()
+	d := xml.NewDecoder(resp.Body)
+	d.Strict = false
+	d.CharsetReader = charset.NewReaderByName
+	d.DefaultSpace = "DefaultSpace"
+	d.Entity = xml.HTMLEntity
+
+	err = d.Decode(&r)
+	if err != nil {
+		glog.Errorf("Error decoding nzbs.org response: %s", err)
+		return nil, err
+	}
+
+	results := make([]ProviderResult, len(r.Items))
+	for i, story := range r.Items {
+		parsedTime := &time.Time{}
+		pt, err := time.Parse(time.RFC1123Z, story.PubDate)
+		parsedTime = &pt
+		if err != nil {
+			glog.Warningf("Couldn't parse time '%s': %s", story.PubDate, err.Error())
+			parsedTime = nil
+		}
+		size := parseIntOrZero(story.Enclosure.Length)
+		var rageID int64
+		var tvdbID int64
+		for _, attr := range story.NewzNabAttr {
+			switch attr.Name {
+			case "rageid":
+				rageID = parseIntOrZero(attr.Value)
+			case "tvdbid":
+				tvdbID = parseIntOrZero(attr.Value)
+			}
+		}
+
+		results[i] = ProviderResult{
+			Type:         "NZB",
+			Age:          parsedTime,
+			Name:         story.Title,
+			ProviderName: n.name(),
+			URL:          story.Link,
+			Size:         size,
+			TVRageID:     rageID,
+			TVDBID:       tvdbID,
+		}
+	}
+	return results, nil
+}
+
+func parseIntOrZero(str string) (i int64) {
+	if str == "" {
+		return
+	}
+	i, err := strconv.ParseInt(str, 10, 64)
+	if err != nil {
+		glog.Warningf("Couldn't parse to int: '%s': %s", err.Error())
+		i = 0
+	}
+	return
 }
 
 // TvSearch searches for a given tv show with optional episode and season

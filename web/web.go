@@ -572,7 +572,7 @@ type postprocessReq struct {
 }
 
 func writeAndFlush(c *gin.Context, str string, args ...interface{}) {
-	fmt.Fprintf(c.Writer, str, args)
+	fmt.Fprintf(c.Writer, str+"\n", args...)
 	c.Writer.Flush()
 }
 
@@ -609,25 +609,34 @@ func (server *Server) Postprocess(c *gin.Context) {
 		c.String(http.StatusInternalServerError, "Couldn't get files from %s: %s", reqJSON.Path, err)
 		return
 	}
+	if len(mediaFiles) == 0 {
+		writeAndFlush(c, "Couldn't find any media files in '%s'", reqJSON.Path)
+		return
+	}
 
 	goodresults := []naming.ParseResult{}
+	for i := 0; i < 3; i++ {
+		writeAndFlush(c, "working...")
+		time.Sleep(time.Second)
+	}
 
 	np := naming.NewNameParser("", naming.StandardRegexes)
 	for _, file := range mediaFiles {
+		writeAndFlush(c, "Trying to parse %s", file)
 		nameres := np.Parse(file)
 		if nameres.SeriesName == "" {
-			writeAndFlush(c, "Couldn't parse series name from %s: skipping\n", file)
+			writeAndFlush(c, "Couldn't parse series name from %s: skipping", file)
 			continue
 		}
 		if len(nameres.AbsoluteEpisodeNumbers) == 0 && len(nameres.EpisodeNumbers) == 0 {
-			writeAndFlush(c, "Could parse episode numbers from '%s'\n", reqJSON.Path)
+			writeAndFlush(c, "Could parse episode numbers from '%s'", reqJSON.Path)
 			continue
 		}
+		writeAndFlush(c, "Parsed to %+v", nameres)
 		goodresults = append(goodresults, nameres)
 	}
-
 	if len(goodresults) == 0 {
-		writeAndFlush(c, "Couldn't find any media files in '%s'\n", reqJSON.Path)
+		writeAndFlush(c, "Couldn't parse any files in '%s'", reqJSON.Path)
 		return
 	}
 
@@ -635,7 +644,7 @@ func (server *Server) Postprocess(c *gin.Context) {
 		cleanedName := naming.CleanSeriesName(res.SeriesName)
 		dbshow, err := server.dbHandle.GetShowByName(cleanedName)
 		if err != nil {
-			writeAndFlush(c, "Couldn't find show with name: '%s'. Skipping.\n", cleanedName)
+			writeAndFlush(c, "Couldn't find show with name: '%s'. Skipping.", cleanedName)
 			continue
 		}
 
@@ -644,7 +653,7 @@ func (server *Server) Postprocess(c *gin.Context) {
 			dbshow.ID, res.SeasonNumber, epnum)
 
 		if err != nil {
-			writeAndFlush(c, "Could find an season/episode for %v, %v\n", res.SeasonNumber, epnum)
+			writeAndFlush(c, "Could find an season/episode for %v, %v", res.SeasonNumber, epnum)
 			continue
 		}
 
@@ -658,13 +667,17 @@ func (server *Server) Postprocess(c *gin.Context) {
 		// TODO: import if forced, or quality is equal or better
 		err = server.Broker.FileReadable(expandedLoc)
 		if err == nil {
-			writeAndFlush(c, "File already exists at '%s'\n", expandedLoc)
+			writeAndFlush(c, "File already exists at '%s'", expandedLoc)
 			continue
 		}
 
-		err = server.Broker.MoveFile(reqJSON.Path, expandedLoc)
+		writeAndFlush(c, "Moving file %s to %s", res.OriginalName, expandedLoc)
+
+		// Change this to provide progress over a channel so we can write progress
+		// to the client.
+		err = server.Broker.MoveFile(res.OriginalName, expandedLoc)
 		if err != nil {
-			writeAndFlush(c, "Error moving file to location: %s\n", err)
+			writeAndFlush(c, "Error moving file to location: %s", err)
 			continue
 		}
 
@@ -672,12 +685,11 @@ func (server *Server) Postprocess(c *gin.Context) {
 		dbep.Status = types.DOWNLOADED
 		err = server.dbHandle.SaveEpisode(dbep)
 		if err != nil {
-			writeAndFlush(c, "Error saving new episode location: %s\n", err)
+			writeAndFlush(c, "Error saving new episode location: %s", err)
 			continue
 		}
 	}
 	c.String(200, "Added episodes.")
-
 }
 
 func showToLocation(path, name string) string {

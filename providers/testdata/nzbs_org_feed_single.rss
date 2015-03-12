@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:newznab="http://www.newznab.com/DTD/2010/feeds/attributes/">
+<channel>
+<atom:link href="http://nzbs.org/api?apikey=APIKEY&amp;attrs=season,episode,rageid,tvdbid&amp;t=tvsearch&amp;cat=5030,5040,5060,5070" rel="self" type="application/rss+xml" />
+<title>NZBs(dot)ORG API TV Search</title>
+<description>NZBs(dot)ORG Feed</description>
+<link>http://nzbs.org/</link>
+<language>en-gb</language>
+<webMaster>admin@nzbs.org (NZBs(dot)ORG)</webMaster>
+<category></category>
+<image>
+	<url>http://nzbs.org//templates/default/images/banner.jpg</url>
+	<title>NZBs(dot)ORG</title>
+	<link>http://nzbs.org/</link>
+	<description>Visit NZBs(dot)ORG - Home of the NZB Harvester</description>
+</image>
+
+<newznab:response offset="0" total="1000" />
+
+<item>
+	<title>New.Girl.S04E10.PROPER.720p.WEB-DL.DD5.1.H.264-LFF</title>
+	<guid isPermaLink="false">0d10aaaa66dc7ab5b442cc0265ebda83</guid>
+	<link>http://nzbs.org/getnzb/0d10aaaa66dc7ab5b442cc0265ebda83.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>http://nzbs.org/details/0d10aaaa66dc7ab5b442cc0265ebda83#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 14:43:47 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>New.Girl.S04E10.PROPER.720p.WEB-DL.DD5.1.H.264-LFF</description>
+	<enclosure url="http://nzbs.org/getnzb/0d10aaaa66dc7ab5b442cc0265ebda83.nzb&amp;i=2952&amp;r=APIKEY" length="835433768" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="835433768" />
+	<newznab:attr name="guid" value="0d10aaaa66dc7ab5b442cc0265ebda83" />
+	<newznab:attr name="season" value="S04" />
+	<newznab:attr name="episode" value="E10" />
+	<newznab:attr name="rageid" value="28304" />
+	<newznab:attr name="tvdbid" value="248682" />
+
+
+</item>
+
+</channel>
+</rss>

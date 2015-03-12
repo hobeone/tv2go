@@ -81,7 +81,10 @@ func MediaFilesInDir(directory string) ([]string, error) {
 			return err
 		}
 		if naming.IsMediaFile(path) {
+			glog.Infof("Found media file %s", path)
 			mediaFiles = append(mediaFiles, path)
+		} else {
+			glog.Infof("Skipping non media file %s", path)
 		}
 		return nil
 	}
@@ -147,8 +150,18 @@ func (b *Broker) MoveFile(src, dst string) error {
 		return fmt.Errorf("Both source and destination must be absolute paths")
 	}
 
+	dirName := filepath.Dir(dst)
+	_, err := os.Stat(dirName)
+	if os.IsNotExist(err) {
+		err = os.MkdirAll(dirName, 0755)
+		if err != nil {
+			glog.Infof("Couldn't create enclosing directory: %s", err)
+			return err
+		}
+	}
+
 	// Hella odd that Go doesn't have something like Python's shutil, oh well
-	err := os.Rename(src, dst)
+	err = os.Rename(src, dst)
 
 	if err == nil {
 		return nil

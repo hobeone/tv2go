@@ -30,6 +30,10 @@ type ProviderResult struct {
 	ProviderName string     `json:"indexer"`
 	URL          string     `json:"url"`
 	Seeders      int64      `json:"seeders"`
+	TVRageID     int64      `json:"tvrage_id"`
+	TVDBID       int64      `json:"tvdb_id"`
+	Season       string     `json:"season"`
+	Episode      string     `json:"episode"`
 }
 
 // Provider defines the interface a tv2go provider must implement
@@ -40,12 +44,18 @@ type Provider interface {
 	GetURL(URL string) (string, []byte, error)
 	// Return what kind of providers this is for: NZB/Torrent
 	Type() ProviderType
+
+	// Get new items on the provider.  Will usually mean hitting a rss feed or
+	// something.
+	GetNewItems() ([]ProviderResult, error)
 }
 
+// BaseProvider is the struct used for shared functionality of all providers.
 type BaseProvider struct {
 	Client *http.Client
 }
 
+// TorrentProvider is the base type for Torrent based providers
 type TorrentProvider struct {
 	Name string
 	BaseProvider

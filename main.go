@@ -11,8 +11,10 @@ import (
 	"github.com/hobeone/tv2go/indexers"
 	"github.com/hobeone/tv2go/indexers/tvdb"
 	"github.com/hobeone/tv2go/indexers/tvrage"
+	"github.com/hobeone/tv2go/naming"
 	"github.com/hobeone/tv2go/providers"
 	"github.com/hobeone/tv2go/storage"
+	"github.com/hobeone/tv2go/types"
 	"github.com/hobeone/tv2go/web"
 )
 
@@ -46,6 +48,57 @@ func ShowUpdater(h *db.Handle) {
 		}
 		glog.Info("Updated shows, sleeping.")
 		time.Sleep(time.Duration(5) * time.Second)
+	}
+}
+
+func (d *Daemon) ProviderPoller(providerReg *providers.ProviderRegistry, broker *storage.Broker) {
+	for {
+		np := naming.NewNameParser("", naming.StandardRegexes)
+		for name, p := range *providerReg {
+			glog.Infof("Getting new items from %s", name)
+			res, err := p.GetNewItems()
+			if err != nil {
+				glog.Errorf("Error getting new items from %s: %s", name, err)
+				continue
+			}
+			for _, r := range res {
+				pr := np.Parse(r.Name)
+				dbshow, err := d.DBH.GetShowByName(pr.SeriesName)
+				if err != nil {
+					glog.Warningf("Couldn't find show '%s' in database, skipping.", pr.SeriesName)
+					continue
+				}
+				ep, err := d.DBH.GetEpisodeByShowSeasonAndNumber(dbshow.ID, pr.SeasonNumber, pr.EpisodeNumbers[0])
+				if err != nil {
+					glog.Errorf("Don't know about Season '%d', Episode '%d', for Show %s", pr.SeasonNumber, pr.EpisodeNumbers[0], dbshow.Name)
+					continue
+				}
+				if ep.Status == types.WANTED {
+					p.GetURL(r.URL)
+					destPath := ""
+					switch p.Type() {
+					case providers.NZB:
+						destPath = d.Config.Storage.NZBBlackhole
+					}
+					filename, filecont, err := p.GetURL(r.URL)
+					if err != nil {
+						glog.Errorf("Couldn't download episode %s: %s", r.URL, err)
+						continue
+					}
+					fname, err := broker.SaveToFile(destPath, filename, filecont)
+					if err != nil {
+						glog.Errorf("Error saving to %s: %s", fname, err)
+					}
+					ep.Status = types.SNATCHED
+					err = d.DBH.SaveEpisode(ep)
+					if err != nil {
+						glog.Errorf("Error saving episode %s: %s", ep.Name, err)
+					}
+				}
+			}
+		}
+		glog.Info("Updated Providers, sleeping.")
+		time.Sleep(time.Duration(900) * time.Second)
 	}
 }
 
@@ -99,6 +152,7 @@ func runDaemon(cfg *config.Config) {
 		panic(fmt.Sprintf("Error creating storage broker: %s", err))
 	}
 
+	//go d.ProviderPoller(&provReg, broker)
 	webserver := web.NewServer(cfg, d.DBH, broker, provReg, web.SetIndexers(idxReg))
 
 	webserver.StartServing()
@@ -124,7 +178,7 @@ func loadConfig(configFile string) *config.Config {
 
 func main() {
 	defer glog.Flush()
-	flag.Set("logtostderr", "true")
+	flag.Set("alsologtostderr", "true")
 
 	cfgfile := flag.String("config_file", defaultConfig, "Config file to use")
 

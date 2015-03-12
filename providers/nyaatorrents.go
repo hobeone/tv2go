@@ -136,3 +136,8 @@ func (n *NyaaTorrents) TvSearch(showName string, season, ep int64) ([]ProviderRe
 
 	return results, nil
 }
+
+// GetNewItems scans the RSS feed for all new items.
+func (n *NyaaTorrents) GetNewItems() ([]ProviderResult, error) {
+	return []ProviderResult{}, nil
+}

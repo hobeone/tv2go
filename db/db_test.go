@@ -87,6 +87,7 @@ func TestAddShow(t *testing.T) {
 		Name:      "testshow1",
 		Location:  "testlocation",
 		IndexerID: 1,
+		Indexer:   "tvdb",
 	}
 	err := d.AddShow(&dbshow)
 	Expect(err).ToNot(HaveOccurred())

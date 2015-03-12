@@ -1,0 +1,2016 @@
+<?xml version="1.0" encoding="utf-8" ?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:newznab="http://www.newznab.com/DTD/2010/feeds/attributes/">
+<channel>
+<atom:link href="https://nzbs.org/api?apikey=APIKEY&amp;attrs=season,episode,rageid,tvdbid&amp;t=tvsearch&amp;cat=5030,5040,5060,5070" rel="self" type="application/rss+xml" />
+<title>NZBs(dot)ORG API TV Search</title>
+<description>NZBs(dot)ORG Feed</description>
+<link>https://nzbs.org/</link>
+<language>en-gb</language>
+<webMaster>admin@nzbs.org (NZBs(dot)ORG)</webMaster>
+<category></category>
+<image>
+	<url>https://nzbs.org//templates/default/images/banner.jpg</url>
+	<title>NZBs(dot)ORG</title>
+	<link>https://nzbs.org/</link>
+	<description>Visit NZBs(dot)ORG - Home of the NZB Harvester</description>
+</image>
+
+<newznab:response offset="0" total="1000" />
+<item>
+	<title>Barging.Round.Britain.S01E03.HDTV.x264-C4TV</title>
+	<guid isPermaLink="false">a844b1172f723b5e24a5a5517338ced4</guid>
+	<link>https://nzbs.org/getnzb/a844b1172f723b5e24a5a5517338ced4.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/a844b1172f723b5e24a5a5517338ced4#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:57:27 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Barging.Round.Britain.S01E03.HDTV.x264-C4TV</description>
+	<enclosure url="https://nzbs.org/getnzb/a844b1172f723b5e24a5a5517338ced4.nzb&amp;i=2952&amp;r=APIKEY" length="215361713" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="215361713" />
+	<newznab:attr name="guid" value="a844b1172f723b5e24a5a5517338ced4" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E03" />
+	<newznab:attr name="rageid" value="47539" />
+
+
+</item>
+<item>
+	<title>Barging.Round.Britain.S01E03.720p.HDTV.x264-C4TV</title>
+	<guid isPermaLink="false">4ac99ef0bda176fde230e75fec23d559</guid>
+	<link>https://nzbs.org/getnzb/4ac99ef0bda176fde230e75fec23d559.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/4ac99ef0bda176fde230e75fec23d559#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:57:29 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Barging.Round.Britain.S01E03.720p.HDTV.x264-C4TV</description>
+	<enclosure url="https://nzbs.org/getnzb/4ac99ef0bda176fde230e75fec23d559.nzb&amp;i=2952&amp;r=APIKEY" length="502806207" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="502806207" />
+	<newznab:attr name="guid" value="4ac99ef0bda176fde230e75fec23d559" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E03" />
+	<newznab:attr name="rageid" value="47539" />
+
+
+</item>
+<item>
+	<title>Barging.Round.Britain.S01E02.720p.HDTV.x264-C4TV</title>
+	<guid isPermaLink="false">e59513124805f79cdf12cea7de5df153</guid>
+	<link>https://nzbs.org/getnzb/e59513124805f79cdf12cea7de5df153.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/e59513124805f79cdf12cea7de5df153#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:53:39 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Barging.Round.Britain.S01E02.720p.HDTV.x264-C4TV</description>
+	<enclosure url="https://nzbs.org/getnzb/e59513124805f79cdf12cea7de5df153.nzb&amp;i=2952&amp;r=APIKEY" length="550125237" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="550125237" />
+	<newznab:attr name="guid" value="e59513124805f79cdf12cea7de5df153" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E02" />
+	<newznab:attr name="rageid" value="47539" />
+
+
+</item>
+<item>
+	<title>NRL.2015.Round.1.Panthers.vs.Bulldogs.PDTV.x264-FiHTV</title>
+	<guid isPermaLink="false">d9550a0bfb97238612fe346b45a16e97</guid>
+	<link>https://nzbs.org/getnzb/d9550a0bfb97238612fe346b45a16e97.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/d9550a0bfb97238612fe346b45a16e97#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:57:22 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>NRL.2015.Round.1.Panthers.vs.Bulldogs.PDTV.x264-FiHTV</description>
+	<enclosure url="https://nzbs.org/getnzb/d9550a0bfb97238612fe346b45a16e97.nzb&amp;i=2952&amp;r=APIKEY" length="2022885258" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="2022885258" />
+	<newznab:attr name="guid" value="d9550a0bfb97238612fe346b45a16e97" />
+	<newznab:attr name="rageid" value="" />
+	<newznab:attr name="tvdbid" value="" />
+
+
+</item>
+<item>
+	<title>Barging.Round.Britain.S01E02.HDTV.x264-C4TV</title>
+	<guid isPermaLink="false">296cb36a5ed679fde6f11f02eb4cb71b</guid>
+	<link>https://nzbs.org/getnzb/296cb36a5ed679fde6f11f02eb4cb71b.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/296cb36a5ed679fde6f11f02eb4cb71b#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:49:59 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Barging.Round.Britain.S01E02.HDTV.x264-C4TV</description>
+	<enclosure url="https://nzbs.org/getnzb/296cb36a5ed679fde6f11f02eb4cb71b.nzb&amp;i=2952&amp;r=APIKEY" length="227075578" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="227075578" />
+	<newznab:attr name="guid" value="296cb36a5ed679fde6f11f02eb4cb71b" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E02" />
+	<newznab:attr name="rageid" value="47539" />
+
+
+</item>
+<item>
+	<title>Unbreakable.Kimmy.Schmidt.S01E09.WEBRip.x264-2HD</title>
+	<guid isPermaLink="false">4d95a22cc9dcb6d99911f158f8de2bc1</guid>
+	<link>https://nzbs.org/getnzb/4d95a22cc9dcb6d99911f158f8de2bc1.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/4d95a22cc9dcb6d99911f158f8de2bc1#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:49:59 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Unbreakable.Kimmy.Schmidt.S01E09.WEBRip.x264-2HD</description>
+	<enclosure url="https://nzbs.org/getnzb/4d95a22cc9dcb6d99911f158f8de2bc1.nzb&amp;i=2952&amp;r=APIKEY" length="259340788" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="259340788" />
+	<newznab:attr name="guid" value="4d95a22cc9dcb6d99911f158f8de2bc1" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E09" />
+	<newznab:attr name="rageid" value="39221" />
+
+
+</item>
+<item>
+	<title>First.Dates.S03E01.HDTV.x264-C4TV</title>
+	<guid isPermaLink="false">dfb33c769eec5f41b982700dd068a1b6</guid>
+	<link>https://nzbs.org/getnzb/dfb33c769eec5f41b982700dd068a1b6.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/dfb33c769eec5f41b982700dd068a1b6#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:45:51 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>First.Dates.S03E01.HDTV.x264-C4TV</description>
+	<enclosure url="https://nzbs.org/getnzb/dfb33c769eec5f41b982700dd068a1b6.nzb&amp;i=2952&amp;r=APIKEY" length="348906246" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="348906246" />
+	<newznab:attr name="guid" value="dfb33c769eec5f41b982700dd068a1b6" />
+	<newznab:attr name="season" value="S03" />
+	<newznab:attr name="episode" value="E01" />
+	<newznab:attr name="rageid" value="36223" />
+	<newznab:attr name="tvdbid" value="270907" />
+
+
+</item>
+<item>
+	<title>The.X.Factor.NZ.S02E10.720p.HDTV.x264-FiHTV</title>
+	<guid isPermaLink="false">6e9c96d7417a7e5ed8cb5d754fe599ec</guid>
+	<link>https://nzbs.org/getnzb/6e9c96d7417a7e5ed8cb5d754fe599ec.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/6e9c96d7417a7e5ed8cb5d754fe599ec#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:49:57 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>The.X.Factor.NZ.S02E10.720p.HDTV.x264-FiHTV</description>
+	<enclosure url="https://nzbs.org/getnzb/6e9c96d7417a7e5ed8cb5d754fe599ec.nzb&amp;i=2952&amp;r=APIKEY" length="1416516256" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="1416516256" />
+	<newznab:attr name="guid" value="6e9c96d7417a7e5ed8cb5d754fe599ec" />
+	<newznab:attr name="season" value="S02" />
+	<newznab:attr name="episode" value="E10" />
+	<newznab:attr name="rageid" value="29196" />
+	<newznab:attr name="tvdbid" value="269001" />
+
+
+</item>
+<item>
+	<title>First.Dates.S03E01.720p.HDTV.x264-C4TV</title>
+	<guid isPermaLink="false">dc23caf04f5c2f147969519131b73444</guid>
+	<link>https://nzbs.org/getnzb/dc23caf04f5c2f147969519131b73444.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/dc23caf04f5c2f147969519131b73444#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:45:51 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>First.Dates.S03E01.720p.HDTV.x264-C4TV</description>
+	<enclosure url="https://nzbs.org/getnzb/dc23caf04f5c2f147969519131b73444.nzb&amp;i=2952&amp;r=APIKEY" length="970980240" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="970980240" />
+	<newznab:attr name="guid" value="dc23caf04f5c2f147969519131b73444" />
+	<newznab:attr name="season" value="S03" />
+	<newznab:attr name="episode" value="E01" />
+	<newznab:attr name="rageid" value="36223" />
+	<newznab:attr name="tvdbid" value="270907" />
+
+
+</item>
+<item>
+	<title>First.Dates.S03E01.HDTV.x264-C4TV</title>
+	<guid isPermaLink="false">5acff075835a3f6289039ded6db63c16</guid>
+	<link>https://nzbs.org/getnzb/5acff075835a3f6289039ded6db63c16.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/5acff075835a3f6289039ded6db63c16#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 18:01:41 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>First.Dates.S03E01.HDTV.x264-C4TV</description>
+	<enclosure url="https://nzbs.org/getnzb/5acff075835a3f6289039ded6db63c16.nzb&amp;i=2952&amp;r=APIKEY" length="346854782" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="346854782" />
+	<newznab:attr name="guid" value="5acff075835a3f6289039ded6db63c16" />
+	<newznab:attr name="season" value="S03" />
+	<newznab:attr name="episode" value="E01" />
+	<newznab:attr name="rageid" value="36223" />
+	<newznab:attr name="tvdbid" value="270907" />
+
+
+</item>
+<item>
+	<title>Unbreakable.Kimmy.Schmidt.S01E08.WEBRip.x264-2HD</title>
+	<guid isPermaLink="false">fd24d541c930e7ad93e730fb09fdb8a8</guid>
+	<link>https://nzbs.org/getnzb/fd24d541c930e7ad93e730fb09fdb8a8.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/fd24d541c930e7ad93e730fb09fdb8a8#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:57:24 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Unbreakable.Kimmy.Schmidt.S01E08.WEBRip.x264-2HD</description>
+	<enclosure url="https://nzbs.org/getnzb/fd24d541c930e7ad93e730fb09fdb8a8.nzb&amp;i=2952&amp;r=APIKEY" length="260062760" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="260062760" />
+	<newznab:attr name="guid" value="fd24d541c930e7ad93e730fb09fdb8a8" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E08" />
+	<newznab:attr name="rageid" value="39221" />
+
+
+</item>
+<item>
+	<title>Unbreakable.Kimmy.Schmidt.S01E08.WEBRip.x264-2HD</title>
+	<guid isPermaLink="false">df13e10a779831d0e20af661179bfa00</guid>
+	<link>https://nzbs.org/getnzb/df13e10a779831d0e20af661179bfa00.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/df13e10a779831d0e20af661179bfa00#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:45:53 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Unbreakable.Kimmy.Schmidt.S01E08.WEBRip.x264-2HD</description>
+	<enclosure url="https://nzbs.org/getnzb/df13e10a779831d0e20af661179bfa00.nzb&amp;i=2952&amp;r=APIKEY" length="247028621" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="247028621" />
+	<newznab:attr name="guid" value="df13e10a779831d0e20af661179bfa00" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E08" />
+	<newznab:attr name="rageid" value="39221" />
+
+
+</item>
+<item>
+	<title>Our.First.Home.NZ.S01E13.720p.HDTV.x264-FiHTV</title>
+	<guid isPermaLink="false">4431c895fc07f035900d75c1633f4d3c</guid>
+	<link>https://nzbs.org/getnzb/4431c895fc07f035900d75c1633f4d3c.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/4431c895fc07f035900d75c1633f4d3c#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:45:51 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Our.First.Home.NZ.S01E13.720p.HDTV.x264-FiHTV</description>
+	<enclosure url="https://nzbs.org/getnzb/4431c895fc07f035900d75c1633f4d3c.nzb&amp;i=2952&amp;r=APIKEY" length="982482497" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="982482497" />
+	<newznab:attr name="guid" value="4431c895fc07f035900d75c1633f4d3c" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E13" />
+
+
+</item>
+<item>
+	<title>First.Dates.S03E01.720p.HDTV.x264-C4TV</title>
+	<guid isPermaLink="false">78732b209e5221aae59758db1f7069d9</guid>
+	<link>https://nzbs.org/getnzb/78732b209e5221aae59758db1f7069d9.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/78732b209e5221aae59758db1f7069d9#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:57:23 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>First.Dates.S03E01.720p.HDTV.x264-C4TV</description>
+	<enclosure url="https://nzbs.org/getnzb/78732b209e5221aae59758db1f7069d9.nzb&amp;i=2952&amp;r=APIKEY" length="979115829" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="979115829" />
+	<newznab:attr name="guid" value="78732b209e5221aae59758db1f7069d9" />
+	<newznab:attr name="season" value="S03" />
+	<newznab:attr name="episode" value="E01" />
+	<newznab:attr name="rageid" value="36223" />
+	<newznab:attr name="tvdbid" value="270907" />
+
+
+</item>
+<item>
+	<title>The.X.Factor.NZ.S02E10.720p.HDTV.x264-FiHTV</title>
+	<guid isPermaLink="false">493b61b085d73fe6ce891be103005b08</guid>
+	<link>https://nzbs.org/getnzb/493b61b085d73fe6ce891be103005b08.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/493b61b085d73fe6ce891be103005b08#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:57:22 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>The.X.Factor.NZ.S02E10.720p.HDTV.x264-FiHTV</description>
+	<enclosure url="https://nzbs.org/getnzb/493b61b085d73fe6ce891be103005b08.nzb&amp;i=2952&amp;r=APIKEY" length="1399879985" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="1399879985" />
+	<newznab:attr name="guid" value="493b61b085d73fe6ce891be103005b08" />
+	<newznab:attr name="season" value="S02" />
+	<newznab:attr name="episode" value="E10" />
+	<newznab:attr name="rageid" value="29196" />
+	<newznab:attr name="tvdbid" value="269001" />
+
+
+</item>
+<item>
+	<title>Our.First.Home.NZ.S01E13.720p.HDTV.x264-FiHTV</title>
+	<guid isPermaLink="false">ab243dba1cdea6f8e41afc81a4c21528</guid>
+	<link>https://nzbs.org/getnzb/ab243dba1cdea6f8e41afc81a4c21528.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/ab243dba1cdea6f8e41afc81a4c21528#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:57:23 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Our.First.Home.NZ.S01E13.720p.HDTV.x264-FiHTV</description>
+	<enclosure url="https://nzbs.org/getnzb/ab243dba1cdea6f8e41afc81a4c21528.nzb&amp;i=2952&amp;r=APIKEY" length="991851324" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="991851324" />
+	<newznab:attr name="guid" value="ab243dba1cdea6f8e41afc81a4c21528" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E13" />
+
+
+</item>
+<item>
+	<title>The.Ibiza.Weekender.S01E04.PDTV.x264-C4TV</title>
+	<guid isPermaLink="false">9d4701d174e15e5a50cbac23dfe3e6ba</guid>
+	<link>https://nzbs.org/getnzb/9d4701d174e15e5a50cbac23dfe3e6ba.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/9d4701d174e15e5a50cbac23dfe3e6ba#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:39:04 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>The.Ibiza.Weekender.S01E04.PDTV.x264-C4TV</description>
+	<enclosure url="https://nzbs.org/getnzb/9d4701d174e15e5a50cbac23dfe3e6ba.nzb&amp;i=2952&amp;r=APIKEY" length="355371086" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="355371086" />
+	<newznab:attr name="guid" value="9d4701d174e15e5a50cbac23dfe3e6ba" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E04" />
+	<newznab:attr name="rageid" value="44711" />
+
+
+</item>
+<item>
+	<title>The.Ibiza.Weekender.S01E04.PDTV.x264-C4TV</title>
+	<guid isPermaLink="false">6a51e8e27eca204c246a416893d46964</guid>
+	<link>https://nzbs.org/getnzb/6a51e8e27eca204c246a416893d46964.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/6a51e8e27eca204c246a416893d46964#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:53:36 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>The.Ibiza.Weekender.S01E04.PDTV.x264-C4TV</description>
+	<enclosure url="https://nzbs.org/getnzb/6a51e8e27eca204c246a416893d46964.nzb&amp;i=2952&amp;r=APIKEY" length="354203848" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="354203848" />
+	<newznab:attr name="guid" value="6a51e8e27eca204c246a416893d46964" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E04" />
+	<newznab:attr name="rageid" value="44711" />
+
+
+</item>
+<item>
+	<title>The.Ibiza.Weekender.S01E03.PDTV.x264-C4TV</title>
+	<guid isPermaLink="false">3c5e8839f2705f9e5c9f0c0f2fcf23bc</guid>
+	<link>https://nzbs.org/getnzb/3c5e8839f2705f9e5c9f0c0f2fcf23bc.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/3c5e8839f2705f9e5c9f0c0f2fcf23bc#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:35:38 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>The.Ibiza.Weekender.S01E03.PDTV.x264-C4TV</description>
+	<enclosure url="https://nzbs.org/getnzb/3c5e8839f2705f9e5c9f0c0f2fcf23bc.nzb&amp;i=2952&amp;r=APIKEY" length="347447427" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="347447427" />
+	<newznab:attr name="guid" value="3c5e8839f2705f9e5c9f0c0f2fcf23bc" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E03" />
+	<newznab:attr name="rageid" value="44711" />
+
+
+</item>
+<item>
+	<title>The.Ibiza.Weekender.S01E03.PDTV.x264-C4TV</title>
+	<guid isPermaLink="false">ada3ffa822c75fb04de0533f68481d45</guid>
+	<link>https://nzbs.org/getnzb/ada3ffa822c75fb04de0533f68481d45.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/ada3ffa822c75fb04de0533f68481d45#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:49:57 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>The.Ibiza.Weekender.S01E03.PDTV.x264-C4TV</description>
+	<enclosure url="https://nzbs.org/getnzb/ada3ffa822c75fb04de0533f68481d45.nzb&amp;i=2952&amp;r=APIKEY" length="345426232" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="345426232" />
+	<newznab:attr name="guid" value="ada3ffa822c75fb04de0533f68481d45" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E03" />
+	<newznab:attr name="rageid" value="44711" />
+
+
+</item>
+<item>
+	<title>Hulk.and.the.Agents.of.S.M.A.S.H.S02E16.Enter.the.Maestro.720p.HDTV.x264-W4F</title>
+	<guid isPermaLink="false">416bec57786c6e71d5deec7f1f971067</guid>
+	<link>https://nzbs.org/getnzb/416bec57786c6e71d5deec7f1f971067.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/416bec57786c6e71d5deec7f1f971067#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:53:36 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Hulk.and.the.Agents.of.S.M.A.S.H.S02E16.Enter.the.Maestro.720p.HDTV.x264-W4F</description>
+	<enclosure url="https://nzbs.org/getnzb/416bec57786c6e71d5deec7f1f971067.nzb&amp;i=2952&amp;r=APIKEY" length="617936274" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="617936274" />
+	<newznab:attr name="guid" value="416bec57786c6e71d5deec7f1f971067" />
+	<newznab:attr name="season" value="S02" />
+	<newznab:attr name="episode" value="E16" />
+	<newznab:attr name="rageid" value="31477" />
+	<newznab:attr name="tvdbid" value="267543" />
+
+
+</item>
+<item>
+	<title>Britains.Worst.Crimes.S01E01.Lee.Rigby.PDTV.x264-C4TV</title>
+	<guid isPermaLink="false">810d1ea999ec57a2bb2bed47bec20190</guid>
+	<link>https://nzbs.org/getnzb/810d1ea999ec57a2bb2bed47bec20190.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/810d1ea999ec57a2bb2bed47bec20190#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:31:23 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Britains.Worst.Crimes.S01E01.Lee.Rigby.PDTV.x264-C4TV</description>
+	<enclosure url="https://nzbs.org/getnzb/810d1ea999ec57a2bb2bed47bec20190.nzb&amp;i=2952&amp;r=APIKEY" length="267552156" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="267552156" />
+	<newznab:attr name="guid" value="810d1ea999ec57a2bb2bed47bec20190" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E01" />
+	<newznab:attr name="rageid" value="47985" />
+
+
+</item>
+<item>
+	<title>Britains.Worst.Crimes.S01E01.Lee.Rigby.PDTV.x264-C4TV</title>
+	<guid isPermaLink="false">8cc4180a191a3600a3bfde4e7f0f99cb</guid>
+	<link>https://nzbs.org/getnzb/8cc4180a191a3600a3bfde4e7f0f99cb.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/8cc4180a191a3600a3bfde4e7f0f99cb#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:49:58 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Britains.Worst.Crimes.S01E01.Lee.Rigby.PDTV.x264-C4TV</description>
+	<enclosure url="https://nzbs.org/getnzb/8cc4180a191a3600a3bfde4e7f0f99cb.nzb&amp;i=2952&amp;r=APIKEY" length="273921010" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="273921010" />
+	<newznab:attr name="guid" value="8cc4180a191a3600a3bfde4e7f0f99cb" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E01" />
+	<newznab:attr name="rageid" value="47985" />
+
+
+</item>
+<item>
+	<title>Britains.Biggest.Primary.School.S01E04.PDTV.x264-C4TV</title>
+	<guid isPermaLink="false">ca9d07db9272b367015164166f6b829a</guid>
+	<link>https://nzbs.org/getnzb/ca9d07db9272b367015164166f6b829a.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/ca9d07db9272b367015164166f6b829a#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:27:23 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Britains.Biggest.Primary.School.S01E04.PDTV.x264-C4TV</description>
+	<enclosure url="https://nzbs.org/getnzb/ca9d07db9272b367015164166f6b829a.nzb&amp;i=2952&amp;r=APIKEY" length="426864820" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="426864820" />
+	<newznab:attr name="guid" value="ca9d07db9272b367015164166f6b829a" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E04" />
+	<newznab:attr name="rageid" value="45119" />
+
+
+</item>
+<item>
+	<title>Britains.Biggest.Primary.School.S01E04.PDTV.x264-C4TV</title>
+	<guid isPermaLink="false">f07929109ae5fad3aac2ba31f42ff058</guid>
+	<link>https://nzbs.org/getnzb/f07929109ae5fad3aac2ba31f42ff058.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/f07929109ae5fad3aac2ba31f42ff058#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:49:56 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Britains.Biggest.Primary.School.S01E04.PDTV.x264-C4TV</description>
+	<enclosure url="https://nzbs.org/getnzb/f07929109ae5fad3aac2ba31f42ff058.nzb&amp;i=2952&amp;r=APIKEY" length="427736096" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="427736096" />
+	<newznab:attr name="guid" value="f07929109ae5fad3aac2ba31f42ff058" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E04" />
+	<newznab:attr name="rageid" value="45119" />
+
+
+</item>
+<item>
+	<title>Hulk.and.the.Agents.of.S.M.A.S.H.S02E16.Enter.the.Maestro.HDTV.x264-W4F</title>
+	<guid isPermaLink="false">238baca5e9c63ddcdf0424cb8a25a7a8</guid>
+	<link>https://nzbs.org/getnzb/238baca5e9c63ddcdf0424cb8a25a7a8.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/238baca5e9c63ddcdf0424cb8a25a7a8#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:19:10 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Hulk.and.the.Agents.of.S.M.A.S.H.S02E16.Enter.the.Maestro.HDTV.x264-W4F</description>
+	<enclosure url="https://nzbs.org/getnzb/238baca5e9c63ddcdf0424cb8a25a7a8.nzb&amp;i=2952&amp;r=APIKEY" length="194471949" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="194471949" />
+	<newznab:attr name="guid" value="238baca5e9c63ddcdf0424cb8a25a7a8" />
+	<newznab:attr name="season" value="S02" />
+	<newznab:attr name="episode" value="E16" />
+	<newznab:attr name="rageid" value="31477" />
+	<newznab:attr name="tvdbid" value="267543" />
+
+
+</item>
+<item>
+	<title>Hulk.and.the.Agents.of.S.M.A.S.H.S02E16.Enter.the.Maestro.HDTV.x264-W4F</title>
+	<guid isPermaLink="false">cc6fcea3c65a2d16db75e636af4d9f0a</guid>
+	<link>https://nzbs.org/getnzb/cc6fcea3c65a2d16db75e636af4d9f0a.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/cc6fcea3c65a2d16db75e636af4d9f0a#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:42:25 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Hulk.and.the.Agents.of.S.M.A.S.H.S02E16.Enter.the.Maestro.HDTV.x264-W4F</description>
+	<enclosure url="https://nzbs.org/getnzb/cc6fcea3c65a2d16db75e636af4d9f0a.nzb&amp;i=2952&amp;r=APIKEY" length="183325158" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="183325158" />
+	<newznab:attr name="guid" value="cc6fcea3c65a2d16db75e636af4d9f0a" />
+	<newznab:attr name="season" value="S02" />
+	<newznab:attr name="episode" value="E16" />
+	<newznab:attr name="rageid" value="31477" />
+	<newznab:attr name="tvdbid" value="267543" />
+
+
+</item>
+<item>
+	<title>Strade.Bianche.2015.720p.HDTV.x264-WHEELS</title>
+	<guid isPermaLink="false">ff19eb321869b917a7595fd8b430d6c6</guid>
+	<link>https://nzbs.org/getnzb/ff19eb321869b917a7595fd8b430d6c6.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/ff19eb321869b917a7595fd8b430d6c6#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:19:08 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Strade.Bianche.2015.720p.HDTV.x264-WHEELS</description>
+	<enclosure url="https://nzbs.org/getnzb/ff19eb321869b917a7595fd8b430d6c6.nzb&amp;i=2952&amp;r=APIKEY" length="2680857083" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="2680857083" />
+	<newznab:attr name="guid" value="ff19eb321869b917a7595fd8b430d6c6" />
+	<newznab:attr name="rageid" value="" />
+	<newznab:attr name="tvdbid" value="" />
+
+
+</item>
+<item>
+	<title>Strade.Bianche.2015.720p.HDTV.x264-WHEELS</title>
+	<guid isPermaLink="false">09f175bb00fd6a05f8f9b9af802da49f</guid>
+	<link>https://nzbs.org/getnzb/09f175bb00fd6a05f8f9b9af802da49f.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/09f175bb00fd6a05f8f9b9af802da49f#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:39:02 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Strade.Bianche.2015.720p.HDTV.x264-WHEELS</description>
+	<enclosure url="https://nzbs.org/getnzb/09f175bb00fd6a05f8f9b9af802da49f.nzb&amp;i=2952&amp;r=APIKEY" length="2689593691" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="2689593691" />
+	<newznab:attr name="guid" value="09f175bb00fd6a05f8f9b9af802da49f" />
+	<newznab:attr name="rageid" value="" />
+	<newznab:attr name="tvdbid" value="" />
+
+
+</item>
+<item>
+	<title>Elves.S01E01.Unite.the.Magic.720p.HDTV.x264-W4F</title>
+	<guid isPermaLink="false">836c08a426980bd16b4b0f7d004c1e0a</guid>
+	<link>https://nzbs.org/getnzb/836c08a426980bd16b4b0f7d004c1e0a.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/836c08a426980bd16b4b0f7d004c1e0a#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:12:05 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Elves.S01E01.Unite.the.Magic.720p.HDTV.x264-W4F</description>
+	<enclosure url="https://nzbs.org/getnzb/836c08a426980bd16b4b0f7d004c1e0a.nzb&amp;i=2952&amp;r=APIKEY" length="910874061" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="910874061" />
+	<newznab:attr name="guid" value="836c08a426980bd16b4b0f7d004c1e0a" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E01" />
+	<newznab:attr name="rageid" value="48058" />
+
+
+</item>
+<item>
+	<title>Elves.S01E01.Unite.the.Magic.720p.HDTV.x264-W4F</title>
+	<guid isPermaLink="false">97d68df01482973cac7da05ca295af5a</guid>
+	<link>https://nzbs.org/getnzb/97d68df01482973cac7da05ca295af5a.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/97d68df01482973cac7da05ca295af5a#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:35:36 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Elves.S01E01.Unite.the.Magic.720p.HDTV.x264-W4F</description>
+	<enclosure url="https://nzbs.org/getnzb/97d68df01482973cac7da05ca295af5a.nzb&amp;i=2952&amp;r=APIKEY" length="930603284" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="930603284" />
+	<newznab:attr name="guid" value="97d68df01482973cac7da05ca295af5a" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E01" />
+	<newznab:attr name="rageid" value="48058" />
+
+
+</item>
+<item>
+	<title>Elves.S01E01.Unite.the.Magic.HDTV.x264-W4F</title>
+	<guid isPermaLink="false">436f8c9ec16428b59af48042c14dcf4f</guid>
+	<link>https://nzbs.org/getnzb/436f8c9ec16428b59af48042c14dcf4f.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/436f8c9ec16428b59af48042c14dcf4f#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:04:30 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Elves.S01E01.Unite.the.Magic.HDTV.x264-W4F</description>
+	<enclosure url="https://nzbs.org/getnzb/436f8c9ec16428b59af48042c14dcf4f.nzb&amp;i=2952&amp;r=APIKEY" length="235729984" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="235729984" />
+	<newznab:attr name="guid" value="436f8c9ec16428b59af48042c14dcf4f" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E01" />
+	<newznab:attr name="rageid" value="48058" />
+
+
+</item>
+<item>
+	<title>Wild.Card.2015.EXTENDED.720p.HDTV.x264-SYS</title>
+	<guid isPermaLink="false">ae62e22d42ca8762411c7b5ba6c84461</guid>
+	<link>https://nzbs.org/getnzb/ae62e22d42ca8762411c7b5ba6c84461.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/ae62e22d42ca8762411c7b5ba6c84461#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 16:58:32 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Wild.Card.2015.EXTENDED.720p.HDTV.x264-SYS</description>
+	<enclosure url="https://nzbs.org/getnzb/ae62e22d42ca8762411c7b5ba6c84461.nzb&amp;i=2952&amp;r=APIKEY" length="2780580597" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="2780580597" />
+	<newznab:attr name="guid" value="ae62e22d42ca8762411c7b5ba6c84461" />
+	<newznab:attr name="rageid" value="" />
+	<newznab:attr name="tvdbid" value="" />
+
+
+</item>
+<item>
+	<title>Elves.S01E01.Unite.the.Magic.HDTV.x264-W4F</title>
+	<guid isPermaLink="false">b6a45e919fe74285308155830408f041</guid>
+	<link>https://nzbs.org/getnzb/b6a45e919fe74285308155830408f041.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/b6a45e919fe74285308155830408f041#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 17:04:29 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Elves.S01E01.Unite.the.Magic.HDTV.x264-W4F</description>
+	<enclosure url="https://nzbs.org/getnzb/b6a45e919fe74285308155830408f041.nzb&amp;i=2952&amp;r=APIKEY" length="234364444" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="234364444" />
+	<newznab:attr name="guid" value="b6a45e919fe74285308155830408f041" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E01" />
+	<newznab:attr name="rageid" value="48058" />
+
+
+</item>
+<item>
+	<title>The First 48 S14E27 Update Special - Kiss of Death 1080i HDTV DD5.1 MPEG2-TrollHD</title>
+	<guid isPermaLink="false">8484d6df91baa872f82586c8423ae124</guid>
+	<link>https://nzbs.org/getnzb/8484d6df91baa872f82586c8423ae124.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/8484d6df91baa872f82586c8423ae124#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 16:43:08 +0000</pubDate> 
+	<category>TV-Other</category> 	
+	<description>The First 48 S14E27 Update Special - Kiss of Death 1080i HDTV DD5.1 MPEG2-TrollHD</description>
+	<enclosure url="https://nzbs.org/getnzb/8484d6df91baa872f82586c8423ae124.nzb&amp;i=2952&amp;r=APIKEY" length="7335934503" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5060" />
+	<newznab:attr name="size" value="7335934503" />
+	<newznab:attr name="guid" value="8484d6df91baa872f82586c8423ae124" />
+	<newznab:attr name="season" value="S14" />
+	<newznab:attr name="episode" value="E27" />
+	<newznab:attr name="rageid" value="2300" />
+	<newznab:attr name="tvdbid" value="81275" />
+
+
+</item>
+<item>
+	<title>Teenage.Mutant.Ninja.Turtles.2012.S03E11.720p.HDTV.x264-W4F</title>
+	<guid isPermaLink="false">21708f2ae74c2c92ffd6ef965819a7f9</guid>
+	<link>https://nzbs.org/getnzb/21708f2ae74c2c92ffd6ef965819a7f9.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/21708f2ae74c2c92ffd6ef965819a7f9#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 16:36:11 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Teenage.Mutant.Ninja.Turtles.2012.S03E11.720p.HDTV.x264-W4F</description>
+	<enclosure url="https://nzbs.org/getnzb/21708f2ae74c2c92ffd6ef965819a7f9.nzb&amp;i=2952&amp;r=APIKEY" length="405160822" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="405160822" />
+	<newznab:attr name="guid" value="21708f2ae74c2c92ffd6ef965819a7f9" />
+	<newznab:attr name="season" value="S03" />
+	<newznab:attr name="episode" value="E11" />
+	<newznab:attr name="rageid" value="27772" />
+	<newznab:attr name="tvdbid" value="261451" />
+
+
+</item>
+<item>
+	<title>Wild.Card.2015.EXTENDED.720p.HDTV.x264-SYS</title>
+	<guid isPermaLink="false">a63b1731a29c4d31fb7932539e95d1f9</guid>
+	<link>https://nzbs.org/getnzb/a63b1731a29c4d31fb7932539e95d1f9.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/a63b1731a29c4d31fb7932539e95d1f9#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 16:58:31 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Wild.Card.2015.EXTENDED.720p.HDTV.x264-SYS</description>
+	<enclosure url="https://nzbs.org/getnzb/a63b1731a29c4d31fb7932539e95d1f9.nzb&amp;i=2952&amp;r=APIKEY" length="2741784379" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="2741784379" />
+	<newznab:attr name="guid" value="a63b1731a29c4d31fb7932539e95d1f9" />
+	<newznab:attr name="rageid" value="" />
+	<newznab:attr name="tvdbid" value="" />
+
+
+</item>
+<item>
+	<title>Teenage.Mutant.Ninja.Turtles.2012.S03E11.720p.HDTV.x264-W4F</title>
+	<guid isPermaLink="false">3ea9a05651a7bf7efe51d32f414a1608</guid>
+	<link>https://nzbs.org/getnzb/3ea9a05651a7bf7efe51d32f414a1608.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/3ea9a05651a7bf7efe51d32f414a1608#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 16:54:55 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Teenage.Mutant.Ninja.Turtles.2012.S03E11.720p.HDTV.x264-W4F</description>
+	<enclosure url="https://nzbs.org/getnzb/3ea9a05651a7bf7efe51d32f414a1608.nzb&amp;i=2952&amp;r=APIKEY" length="413112797" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="413112797" />
+	<newznab:attr name="guid" value="3ea9a05651a7bf7efe51d32f414a1608" />
+	<newznab:attr name="season" value="S03" />
+	<newznab:attr name="episode" value="E11" />
+	<newznab:attr name="rageid" value="27772" />
+	<newznab:attr name="tvdbid" value="261451" />
+
+
+</item>
+<item>
+	<title>Expedition Unknown S01E09 Mayan Apocalypse 1080i HDTV DD5.1 MPEG2-TrollHD</title>
+	<guid isPermaLink="false">1c9f7644bb3886c3abc7be6a860be402</guid>
+	<link>https://nzbs.org/getnzb/1c9f7644bb3886c3abc7be6a860be402.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/1c9f7644bb3886c3abc7be6a860be402#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 16:28:39 +0000</pubDate> 
+	<category>TV-Other</category> 	
+	<description>Expedition Unknown S01E09 Mayan Apocalypse 1080i HDTV DD5.1 MPEG2-TrollHD</description>
+	<enclosure url="https://nzbs.org/getnzb/1c9f7644bb3886c3abc7be6a860be402.nzb&amp;i=2952&amp;r=APIKEY" length="6763531516" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5060" />
+	<newznab:attr name="size" value="6763531516" />
+	<newznab:attr name="guid" value="1c9f7644bb3886c3abc7be6a860be402" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E09" />
+	<newznab:attr name="rageid" value="46394" />
+
+
+</item>
+<item>
+	<title>12+13.-.September.(1995.dTVRip.XVid)-ghost</title>
+	<guid isPermaLink="false">79f74ff8ac7936d44dbdeff5a14975d7</guid>
+	<link>https://nzbs.org/getnzb/79f74ff8ac7936d44dbdeff5a14975d7.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/79f74ff8ac7936d44dbdeff5a14975d7#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 16:09:47 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>12+13.-.September.(1995.dTVRip.XVid)-ghost</description>
+	<enclosure url="https://nzbs.org/getnzb/79f74ff8ac7936d44dbdeff5a14975d7.nzb&amp;i=2952&amp;r=APIKEY" length="1941438717" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="1941438717" />
+	<newznab:attr name="guid" value="79f74ff8ac7936d44dbdeff5a14975d7" />
+	<newznab:attr name="rageid" value="" />
+	<newznab:attr name="tvdbid" value="" />
+
+
+</item>
+<item>
+	<title>Teenage.Mutant.Ninja.Turtles.2012.S03E11.HDTV.x264-W4F</title>
+	<guid isPermaLink="false">f528087a8fcf409d2b503a19974f58c4</guid>
+	<link>https://nzbs.org/getnzb/f528087a8fcf409d2b503a19974f58c4.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/f528087a8fcf409d2b503a19974f58c4#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 16:17:12 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Teenage.Mutant.Ninja.Turtles.2012.S03E11.HDTV.x264-W4F</description>
+	<enclosure url="https://nzbs.org/getnzb/f528087a8fcf409d2b503a19974f58c4.nzb&amp;i=2952&amp;r=APIKEY" length="147479540" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="147479540" />
+	<newznab:attr name="guid" value="f528087a8fcf409d2b503a19974f58c4" />
+	<newznab:attr name="season" value="S03" />
+	<newznab:attr name="episode" value="E11" />
+	<newznab:attr name="rageid" value="27772" />
+	<newznab:attr name="tvdbid" value="261451" />
+
+
+</item>
+<item>
+	<title>Teenage.Mutant.Ninja.Turtles.2012.S03E11.HDTV.x264-W4F</title>
+	<guid isPermaLink="false">59bb1505db7998e1e3da6fe1171a0abf</guid>
+	<link>https://nzbs.org/getnzb/59bb1505db7998e1e3da6fe1171a0abf.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/59bb1505db7998e1e3da6fe1171a0abf#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 16:46:56 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Teenage.Mutant.Ninja.Turtles.2012.S03E11.HDTV.x264-W4F</description>
+	<enclosure url="https://nzbs.org/getnzb/59bb1505db7998e1e3da6fe1171a0abf.nzb&amp;i=2952&amp;r=APIKEY" length="150834083" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="150834083" />
+	<newznab:attr name="guid" value="59bb1505db7998e1e3da6fe1171a0abf" />
+	<newznab:attr name="season" value="S03" />
+	<newznab:attr name="episode" value="E11" />
+	<newznab:attr name="rageid" value="27772" />
+	<newznab:attr name="tvdbid" value="261451" />
+
+
+</item>
+<item>
+	<title>Dinner at Tiffani&#039;s S01E02 Girls Night In 1080i HDTV DD5.1 MPEG2-TrollHD</title>
+	<guid isPermaLink="false">64e2332f683c78e8c39bf19da983ca08</guid>
+	<link>https://nzbs.org/getnzb/64e2332f683c78e8c39bf19da983ca08.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/64e2332f683c78e8c39bf19da983ca08#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 16:17:09 +0000</pubDate> 
+	<category>TV-Other</category> 	
+	<description>Dinner at Tiffani&#039;s S01E02 Girls Night In 1080i HDTV DD5.1 MPEG2-TrollHD</description>
+	<enclosure url="https://nzbs.org/getnzb/64e2332f683c78e8c39bf19da983ca08.nzb&amp;i=2952&amp;r=APIKEY" length="2748346292" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5060" />
+	<newznab:attr name="size" value="2748346292" />
+	<newznab:attr name="guid" value="64e2332f683c78e8c39bf19da983ca08" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E02" />
+	<newznab:attr name="rageid" value="41540" />
+
+
+</item>
+<item>
+	<title>The.Race.Of.Remembrance.2014.720p.HDTV.x264-CHAMPiONS</title>
+	<guid isPermaLink="false">f23a8af5f45aecbee9a01efc8c3d1e05</guid>
+	<link>https://nzbs.org/getnzb/f23a8af5f45aecbee9a01efc8c3d1e05.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/f23a8af5f45aecbee9a01efc8c3d1e05#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 15:59:49 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>The.Race.Of.Remembrance.2014.720p.HDTV.x264-CHAMPiONS</description>
+	<enclosure url="https://nzbs.org/getnzb/f23a8af5f45aecbee9a01efc8c3d1e05.nzb&amp;i=2952&amp;r=APIKEY" length="933367213" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="933367213" />
+	<newznab:attr name="guid" value="f23a8af5f45aecbee9a01efc8c3d1e05" />
+	<newznab:attr name="rageid" value="" />
+	<newznab:attr name="tvdbid" value="" />
+
+
+</item>
+<item>
+	<title>The.Race.Of.Remembrance.2014.720p.HDTV.x264-CHAMPiONS</title>
+	<guid isPermaLink="false">02df4708633975e0eceb2fad48fec4a0</guid>
+	<link>https://nzbs.org/getnzb/02df4708633975e0eceb2fad48fec4a0.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/02df4708633975e0eceb2fad48fec4a0#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 16:28:40 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>The.Race.Of.Remembrance.2014.720p.HDTV.x264-CHAMPiONS</description>
+	<enclosure url="https://nzbs.org/getnzb/02df4708633975e0eceb2fad48fec4a0.nzb&amp;i=2952&amp;r=APIKEY" length="964195833" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="964195833" />
+	<newznab:attr name="guid" value="02df4708633975e0eceb2fad48fec4a0" />
+	<newznab:attr name="rageid" value="" />
+	<newznab:attr name="tvdbid" value="" />
+
+
+</item>
+<item>
+	<title>Unbreakable.Kimmy.Schmidt.S01E07.1080p.WEBRip.x264-2HD</title>
+	<guid isPermaLink="false">211a9b794b321900d2884f90ca61050c</guid>
+	<link>https://nzbs.org/getnzb/211a9b794b321900d2884f90ca61050c.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/211a9b794b321900d2884f90ca61050c#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 16:32:08 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Unbreakable.Kimmy.Schmidt.S01E07.1080p.WEBRip.x264-2HD</description>
+	<enclosure url="https://nzbs.org/getnzb/211a9b794b321900d2884f90ca61050c.nzb&amp;i=2952&amp;r=APIKEY" length="1932818600" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="1932818600" />
+	<newznab:attr name="guid" value="211a9b794b321900d2884f90ca61050c" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E07" />
+	<newznab:attr name="rageid" value="39221" />
+
+
+</item>
+<item>
+	<title>The.Race.Of.Remembrance.2014.HDTV.x264-CHAMPiONS</title>
+	<guid isPermaLink="false">08887ff75d91c2673dfb8352ae721d2d</guid>
+	<link>https://nzbs.org/getnzb/08887ff75d91c2673dfb8352ae721d2d.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/08887ff75d91c2673dfb8352ae721d2d#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 16:24:44 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>The.Race.Of.Remembrance.2014.HDTV.x264-CHAMPiONS</description>
+	<enclosure url="https://nzbs.org/getnzb/08887ff75d91c2673dfb8352ae721d2d.nzb&amp;i=2952&amp;r=APIKEY" length="359120743" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="359120743" />
+	<newznab:attr name="guid" value="08887ff75d91c2673dfb8352ae721d2d" />
+	<newznab:attr name="rageid" value="" />
+	<newznab:attr name="tvdbid" value="" />
+
+
+</item>
+<item>
+	<title>The.Race.Of.Remembrance.2014.HDTV.x264-CHAMPiONS</title>
+	<guid isPermaLink="false">04d1dcf9bbc91572836d5e98f140f46a</guid>
+	<link>https://nzbs.org/getnzb/04d1dcf9bbc91572836d5e98f140f46a.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/04d1dcf9bbc91572836d5e98f140f46a#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 15:47:02 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>The.Race.Of.Remembrance.2014.HDTV.x264-CHAMPiONS</description>
+	<enclosure url="https://nzbs.org/getnzb/04d1dcf9bbc91572836d5e98f140f46a.nzb&amp;i=2952&amp;r=APIKEY" length="351481493" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="351481493" />
+	<newznab:attr name="guid" value="04d1dcf9bbc91572836d5e98f140f46a" />
+	<newznab:attr name="rageid" value="" />
+	<newznab:attr name="tvdbid" value="" />
+
+
+</item>
+<item>
+	<title>Unbreakable.Kimmy.Schmidt.S01E03.1080p.WEBRip.x264-2HD</title>
+	<guid isPermaLink="false">8d64ed3f4d804d1881715b6d1e77fab4</guid>
+	<link>https://nzbs.org/getnzb/8d64ed3f4d804d1881715b6d1e77fab4.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/8d64ed3f4d804d1881715b6d1e77fab4#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 16:24:42 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Unbreakable.Kimmy.Schmidt.S01E03.1080p.WEBRip.x264-2HD</description>
+	<enclosure url="https://nzbs.org/getnzb/8d64ed3f4d804d1881715b6d1e77fab4.nzb&amp;i=2952&amp;r=APIKEY" length="1819863988" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="1819863988" />
+	<newznab:attr name="guid" value="8d64ed3f4d804d1881715b6d1e77fab4" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E03" />
+	<newznab:attr name="rageid" value="39221" />
+
+
+</item>
+<item>
+	<title>Unbreakable.Kimmy.Schmidt.S01E06.1080p.WEBRip.x264-2HD</title>
+	<guid isPermaLink="false">a79a9475beec9af5286eadb05aa5a3ed</guid>
+	<link>https://nzbs.org/getnzb/a79a9475beec9af5286eadb05aa5a3ed.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/a79a9475beec9af5286eadb05aa5a3ed#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 16:32:10 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Unbreakable.Kimmy.Schmidt.S01E06.1080p.WEBRip.x264-2HD</description>
+	<enclosure url="https://nzbs.org/getnzb/a79a9475beec9af5286eadb05aa5a3ed.nzb&amp;i=2952&amp;r=APIKEY" length="1669077260" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="1669077260" />
+	<newznab:attr name="guid" value="a79a9475beec9af5286eadb05aa5a3ed" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E06" />
+	<newznab:attr name="rageid" value="39221" />
+
+
+</item>
+<item>
+	<title>Unbreakable.Kimmy.Schmidt.S01E05.1080p.WEBRip.x264-2HD</title>
+	<guid isPermaLink="false">969197bfac9dc1a512295a60eb406e6f</guid>
+	<link>https://nzbs.org/getnzb/969197bfac9dc1a512295a60eb406e6f.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/969197bfac9dc1a512295a60eb406e6f#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 16:24:43 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Unbreakable.Kimmy.Schmidt.S01E05.1080p.WEBRip.x264-2HD</description>
+	<enclosure url="https://nzbs.org/getnzb/969197bfac9dc1a512295a60eb406e6f.nzb&amp;i=2952&amp;r=APIKEY" length="1706161733" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="1706161733" />
+	<newznab:attr name="guid" value="969197bfac9dc1a512295a60eb406e6f" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E05" />
+	<newznab:attr name="rageid" value="39221" />
+
+
+</item>
+<item>
+	<title>Unbreakable.Kimmy.Schmidt.S01E04.1080p.WEBRip.x264-2HD</title>
+	<guid isPermaLink="false">582448885b7d5d5509556bdac34e53d4</guid>
+	<link>https://nzbs.org/getnzb/582448885b7d5d5509556bdac34e53d4.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/582448885b7d5d5509556bdac34e53d4#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 16:28:40 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Unbreakable.Kimmy.Schmidt.S01E04.1080p.WEBRip.x264-2HD</description>
+	<enclosure url="https://nzbs.org/getnzb/582448885b7d5d5509556bdac34e53d4.nzb&amp;i=2952&amp;r=APIKEY" length="1648878350" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="1648878350" />
+	<newznab:attr name="guid" value="582448885b7d5d5509556bdac34e53d4" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E04" />
+	<newznab:attr name="rageid" value="39221" />
+
+
+</item>
+<item>
+	<title>Saturday.Night.Live.S40E15.720p.HDTV.x264-BAJSKORV</title>
+	<guid isPermaLink="false">6279fb8dd2141a3e6601367a284164dc</guid>
+	<link>https://nzbs.org/getnzb/6279fb8dd2141a3e6601367a284164dc.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/6279fb8dd2141a3e6601367a284164dc#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 15:39:49 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Saturday.Night.Live.S40E15.720p.HDTV.x264-BAJSKORV</description>
+	<enclosure url="https://nzbs.org/getnzb/6279fb8dd2141a3e6601367a284164dc.nzb&amp;i=2952&amp;r=APIKEY" length="2621481917" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="2621481917" />
+	<newznab:attr name="guid" value="6279fb8dd2141a3e6601367a284164dc" />
+	<newznab:attr name="season" value="S40" />
+	<newznab:attr name="episode" value="E15" />
+	<newznab:attr name="rageid" value="5098" />
+	<newznab:attr name="tvdbid" value="76177" />
+
+
+</item>
+<item>
+	<title>Im.a.Celebrity.Get.Me.Out.of.Here.AU.s01e26.PDTV.x264.Hector</title>
+	<guid isPermaLink="false">7a1c02453562ef59eb6bd7c5c987826a</guid>
+	<link>https://nzbs.org/getnzb/7a1c02453562ef59eb6bd7c5c987826a.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/7a1c02453562ef59eb6bd7c5c987826a#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 15:32:48 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Im.a.Celebrity.Get.Me.Out.of.Here.AU.s01e26.PDTV.x264.Hector</description>
+	<enclosure url="https://nzbs.org/getnzb/7a1c02453562ef59eb6bd7c5c987826a.nzb&amp;i=2952&amp;r=APIKEY" length="1013311987" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="1013311987" />
+	<newznab:attr name="guid" value="7a1c02453562ef59eb6bd7c5c987826a" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E26" />
+
+
+</item>
+<item>
+	<title>Saturday.Night.Live.S40E15.720p.HDTV.x264-BAJSKORV</title>
+	<guid isPermaLink="false">0954bf50c9f657dac6e3fc01b038593b</guid>
+	<link>https://nzbs.org/getnzb/0954bf50c9f657dac6e3fc01b038593b.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/0954bf50c9f657dac6e3fc01b038593b#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 16:09:47 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Saturday.Night.Live.S40E15.720p.HDTV.x264-BAJSKORV</description>
+	<enclosure url="https://nzbs.org/getnzb/0954bf50c9f657dac6e3fc01b038593b.nzb&amp;i=2952&amp;r=APIKEY" length="2593235708" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="2593235708" />
+	<newznab:attr name="guid" value="0954bf50c9f657dac6e3fc01b038593b" />
+	<newznab:attr name="season" value="S40" />
+	<newznab:attr name="episode" value="E15" />
+	<newznab:attr name="rageid" value="5098" />
+	<newznab:attr name="tvdbid" value="76177" />
+
+
+</item>
+<item>
+	<title>Gag.Concert.H264.AAC.720p-CineBus</title>
+	<guid isPermaLink="false">dc1ffd2788bce321cf81759dab0b5b0f</guid>
+	<link>https://nzbs.org/getnzb/dc1ffd2788bce321cf81759dab0b5b0f.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/dc1ffd2788bce321cf81759dab0b5b0f#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 15:50:40 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Gag.Concert.H264.AAC.720p-CineBus</description>
+	<enclosure url="https://nzbs.org/getnzb/dc1ffd2788bce321cf81759dab0b5b0f.nzb&amp;i=2952&amp;r=APIKEY" length="2163640912" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="2163640912" />
+	<newznab:attr name="guid" value="dc1ffd2788bce321cf81759dab0b5b0f" />
+	<newznab:attr name="rageid" value="" />
+	<newznab:attr name="tvdbid" value="" />
+
+
+</item>
+<item>
+	<title>New.Girl.S04E10.PROPER.720p.WEB-DL.DD5.1.H.264-LFF</title>
+	<guid isPermaLink="false">0d10aaaa66dc7ab5b442cc0265ebda83</guid>
+	<link>https://nzbs.org/getnzb/0d10aaaa66dc7ab5b442cc0265ebda83.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/0d10aaaa66dc7ab5b442cc0265ebda83#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 14:43:47 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>New.Girl.S04E10.PROPER.720p.WEB-DL.DD5.1.H.264-LFF</description>
+	<enclosure url="https://nzbs.org/getnzb/0d10aaaa66dc7ab5b442cc0265ebda83.nzb&amp;i=2952&amp;r=APIKEY" length="835433768" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="835433768" />
+	<newznab:attr name="guid" value="0d10aaaa66dc7ab5b442cc0265ebda83" />
+	<newznab:attr name="season" value="S04" />
+	<newznab:attr name="episode" value="E10" />
+	<newznab:attr name="rageid" value="28304" />
+	<newznab:attr name="tvdbid" value="248682" />
+
+
+</item>
+<item>
+	<title>H264.AAC.720p-CineBus</title>
+	<guid isPermaLink="false">2bb1d4594823f2e61b261dadeb69b299</guid>
+	<link>https://nzbs.org/getnzb/2bb1d4594823f2e61b261dadeb69b299.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/2bb1d4594823f2e61b261dadeb69b299#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 15:14:38 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>H264.AAC.720p-CineBus</description>
+	<enclosure url="https://nzbs.org/getnzb/2bb1d4594823f2e61b261dadeb69b299.nzb&amp;i=2952&amp;r=APIKEY" length="1255692596" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="1255692596" />
+	<newznab:attr name="guid" value="2bb1d4594823f2e61b261dadeb69b299" />
+	<newznab:attr name="rageid" value="" />
+	<newznab:attr name="tvdbid" value="" />
+
+
+</item>
+<item>
+	<title>Jingbirok.E08.150308.HDTV.XviD-WITH</title>
+	<guid isPermaLink="false">8e68a1ed7f1084f33caa717da3c5a5f6</guid>
+	<link>https://nzbs.org/getnzb/8e68a1ed7f1084f33caa717da3c5a5f6.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/8e68a1ed7f1084f33caa717da3c5a5f6#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 15:14:38 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Jingbirok.E08.150308.HDTV.XviD-WITH</description>
+	<enclosure url="https://nzbs.org/getnzb/8e68a1ed7f1084f33caa717da3c5a5f6.nzb&amp;i=2952&amp;r=APIKEY" length="638981134" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="638981134" />
+	<newznab:attr name="guid" value="8e68a1ed7f1084f33caa717da3c5a5f6" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E08" />
+	<newznab:attr name="rageid" value="47637" />
+
+
+</item>
+<item>
+	<title>Jingbirok.E08.150308.HDTV.H264.720p-WITH</title>
+	<guid isPermaLink="false">0f8cb385b14e3f93935406a329a1dfab</guid>
+	<link>https://nzbs.org/getnzb/0f8cb385b14e3f93935406a329a1dfab.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/0f8cb385b14e3f93935406a329a1dfab#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 15:07:08 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Jingbirok.E08.150308.HDTV.H264.720p-WITH</description>
+	<enclosure url="https://nzbs.org/getnzb/0f8cb385b14e3f93935406a329a1dfab.nzb&amp;i=2952&amp;r=APIKEY" length="1151855380" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="1151855380" />
+	<newznab:attr name="guid" value="0f8cb385b14e3f93935406a329a1dfab" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E08" />
+	<newznab:attr name="rageid" value="47637" />
+
+
+</item>
+<item>
+	<title>Rosy.Lovers.E42.150308.HDTV.H264.720p-WITH</title>
+	<guid isPermaLink="false">13cfa5865f45e0c85c25dbf45a95ecdc</guid>
+	<link>https://nzbs.org/getnzb/13cfa5865f45e0c85c25dbf45a95ecdc.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/13cfa5865f45e0c85c25dbf45a95ecdc#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 14:47:27 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Rosy.Lovers.E42.150308.HDTV.H264.720p-WITH</description>
+	<enclosure url="https://nzbs.org/getnzb/13cfa5865f45e0c85c25dbf45a95ecdc.nzb&amp;i=2952&amp;r=APIKEY" length="1350104624" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="1350104624" />
+	<newznab:attr name="guid" value="13cfa5865f45e0c85c25dbf45a95ecdc" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E42" />
+	<newznab:attr name="rageid" value="44753" />
+
+
+</item>
+<item>
+	<title>MacGyver.S05E07.PROPER.DVDRip.XviD-iND</title>
+	<guid isPermaLink="false">e84cfa721b40ff4cc351837173a7c8d5</guid>
+	<link>https://nzbs.org/getnzb/e84cfa721b40ff4cc351837173a7c8d5.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/e84cfa721b40ff4cc351837173a7c8d5#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 15:14:38 +0000</pubDate> 
+	<category>TV-BoxSD</category> 	
+	<description>MacGyver.S05E07.PROPER.DVDRip.XviD-iND</description>
+	<enclosure url="https://nzbs.org/getnzb/e84cfa721b40ff4cc351837173a7c8d5.nzb&amp;i=2952&amp;r=APIKEY" length="419713843" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5070" />
+	<newznab:attr name="size" value="419713843" />
+	<newznab:attr name="guid" value="e84cfa721b40ff4cc351837173a7c8d5" />
+	<newznab:attr name="season" value="S05" />
+	<newznab:attr name="episode" value="E07" />
+	<newznab:attr name="rageid" value="4320" />
+	<newznab:attr name="tvdbid" value="77847" />
+
+
+</item>
+<item>
+	<title>New.Girl.S04E09.PROPER.720p.WEB-DL.DD5.1.H.264-LFF No.Ads</title>
+	<guid isPermaLink="false">60d4c0c2d922feffb80b2efdf5a8c22d</guid>
+	<link>https://nzbs.org/getnzb/60d4c0c2d922feffb80b2efdf5a8c22d.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/60d4c0c2d922feffb80b2efdf5a8c22d#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 14:11:50 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>New.Girl.S04E09.PROPER.720p.WEB-DL.DD5.1.H.264-LFF No.Ads</description>
+	<enclosure url="https://nzbs.org/getnzb/60d4c0c2d922feffb80b2efdf5a8c22d.nzb&amp;i=2952&amp;r=APIKEY" length="834491070" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="834491070" />
+	<newznab:attr name="guid" value="60d4c0c2d922feffb80b2efdf5a8c22d" />
+	<newznab:attr name="season" value="S04" />
+	<newznab:attr name="episode" value="E09" />
+	<newznab:attr name="rageid" value="28304" />
+	<newznab:attr name="tvdbid" value="248682" />
+
+
+</item>
+<item>
+	<title>The.Family.is.coming.E18.150308.HDTV.H264.720p-WITH</title>
+	<guid isPermaLink="false">e817ac52cfee1ebdb03348b6a83b63ec</guid>
+	<link>https://nzbs.org/getnzb/e817ac52cfee1ebdb03348b6a83b63ec.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/e817ac52cfee1ebdb03348b6a83b63ec#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 14:36:45 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>The.Family.is.coming.E18.150308.HDTV.H264.720p-WITH</description>
+	<enclosure url="https://nzbs.org/getnzb/e817ac52cfee1ebdb03348b6a83b63ec.nzb&amp;i=2952&amp;r=APIKEY" length="1409306373" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="1409306373" />
+	<newznab:attr name="guid" value="e817ac52cfee1ebdb03348b6a83b63ec" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E18" />
+
+
+</item>
+<item>
+	<title>Comedy.Big.League.S5.E68.150308.HDTV.H264.720p-WITH</title>
+	<guid isPermaLink="false">4b2ace688d5d6e44380e924096b0ed37</guid>
+	<link>https://nzbs.org/getnzb/4b2ace688d5d6e44380e924096b0ed37.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/4b2ace688d5d6e44380e924096b0ed37#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 14:23:37 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Comedy.Big.League.S5.E68.150308.HDTV.H264.720p-WITH</description>
+	<enclosure url="https://nzbs.org/getnzb/4b2ace688d5d6e44380e924096b0ed37.nzb&amp;i=2952&amp;r=APIKEY" length="1804884501" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="1804884501" />
+	<newznab:attr name="guid" value="4b2ace688d5d6e44380e924096b0ed37" />
+	<newznab:attr name="season" value="S05" />
+	<newznab:attr name="episode" value="E68" />
+
+
+</item>
+<item>
+	<title>Bluebirds.House.E06.150308.HDTV.H264.720p-WITH</title>
+	<guid isPermaLink="false">41ffdfada12e6e30113d7b30997dbeb3</guid>
+	<link>https://nzbs.org/getnzb/41ffdfada12e6e30113d7b30997dbeb3.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/41ffdfada12e6e30113d7b30997dbeb3#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 14:04:43 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Bluebirds.House.E06.150308.HDTV.H264.720p-WITH</description>
+	<enclosure url="https://nzbs.org/getnzb/41ffdfada12e6e30113d7b30997dbeb3.nzb&amp;i=2952&amp;r=APIKEY" length="1231574441" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="1231574441" />
+	<newznab:attr name="guid" value="41ffdfada12e6e30113d7b30997dbeb3" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E06" />
+	<newznab:attr name="rageid" value="47638" />
+
+
+</item>
+<item>
+	<title>New.Girl.S04E08.PROPER.720p.WEB-DL.DD5.1.H.264-LFF No.Ads</title>
+	<guid isPermaLink="false">478511ee71e643c5923ad39e4d3755be</guid>
+	<link>https://nzbs.org/getnzb/478511ee71e643c5923ad39e4d3755be.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/478511ee71e643c5923ad39e4d3755be#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 13:48:23 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>New.Girl.S04E08.PROPER.720p.WEB-DL.DD5.1.H.264-LFF No.Ads</description>
+	<enclosure url="https://nzbs.org/getnzb/478511ee71e643c5923ad39e4d3755be.nzb&amp;i=2952&amp;r=APIKEY" length="801778680" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="801778680" />
+	<newznab:attr name="guid" value="478511ee71e643c5923ad39e4d3755be" />
+	<newznab:attr name="season" value="S04" />
+	<newznab:attr name="episode" value="E08" />
+	<newznab:attr name="rageid" value="28304" />
+	<newznab:attr name="tvdbid" value="248682" />
+
+
+</item>
+<item>
+	<title>Formula1.Tales.From.The.Vault.S01E01.720p.HDTV.x264-CHAMPiONS</title>
+	<guid isPermaLink="false">1a9edffac85f70bec3d51791e5b63357</guid>
+	<link>https://nzbs.org/getnzb/1a9edffac85f70bec3d51791e5b63357.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/1a9edffac85f70bec3d51791e5b63357#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 13:55:36 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Formula1.Tales.From.The.Vault.S01E01.720p.HDTV.x264-CHAMPiONS</description>
+	<enclosure url="https://nzbs.org/getnzb/1a9edffac85f70bec3d51791e5b63357.nzb&amp;i=2952&amp;r=APIKEY" length="1291514037" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="1291514037" />
+	<newznab:attr name="guid" value="1a9edffac85f70bec3d51791e5b63357" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E01" />
+	<newznab:attr name="rageid" value="22208" />
+	<newznab:attr name="tvdbid" value="154961" />
+
+
+</item>
+<item>
+	<title>Formula1.Tales.From.The.Vault.S01E01.720p.HDTV.x264-CHAMPiONS</title>
+	<guid isPermaLink="false">ff10524f51898de18a4de368f248ae82</guid>
+	<link>https://nzbs.org/getnzb/ff10524f51898de18a4de368f248ae82.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/ff10524f51898de18a4de368f248ae82#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 14:00:20 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Formula1.Tales.From.The.Vault.S01E01.720p.HDTV.x264-CHAMPiONS</description>
+	<enclosure url="https://nzbs.org/getnzb/ff10524f51898de18a4de368f248ae82.nzb&amp;i=2952&amp;r=APIKEY" length="1285720482" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="1285720482" />
+	<newznab:attr name="guid" value="ff10524f51898de18a4de368f248ae82" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E01" />
+	<newznab:attr name="rageid" value="22208" />
+	<newznab:attr name="tvdbid" value="154961" />
+
+
+</item>
+<item>
+	<title>Formula1.2015.The.F1.Show.Pre.Season.720p.HDTV.x264-CHAMPiONS</title>
+	<guid isPermaLink="false">c346cff33725303bec14453d4b78d265</guid>
+	<link>https://nzbs.org/getnzb/c346cff33725303bec14453d4b78d265.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/c346cff33725303bec14453d4b78d265#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 13:51:55 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Formula1.2015.The.F1.Show.Pre.Season.720p.HDTV.x264-CHAMPiONS</description>
+	<enclosure url="https://nzbs.org/getnzb/c346cff33725303bec14453d4b78d265.nzb&amp;i=2952&amp;r=APIKEY" length="1060669818" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="1060669818" />
+	<newznab:attr name="guid" value="c346cff33725303bec14453d4b78d265" />
+	<newznab:attr name="season" value="2015" />
+	<newznab:attr name="rageid" value="22208" />
+	<newznab:attr name="tvdbid" value="154961" />
+
+
+</item>
+<item>
+	<title>Formula1.Tales.From.The.Vault.S01E01.HDTV.x264-CHAMPiONS</title>
+	<guid isPermaLink="false">2503ed38466019d1cb61e122bda51355</guid>
+	<link>https://nzbs.org/getnzb/2503ed38466019d1cb61e122bda51355.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/2503ed38466019d1cb61e122bda51355#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 13:48:22 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Formula1.Tales.From.The.Vault.S01E01.HDTV.x264-CHAMPiONS</description>
+	<enclosure url="https://nzbs.org/getnzb/2503ed38466019d1cb61e122bda51355.nzb&amp;i=2952&amp;r=APIKEY" length="483982257" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="483982257" />
+	<newznab:attr name="guid" value="2503ed38466019d1cb61e122bda51355" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E01" />
+	<newznab:attr name="rageid" value="22208" />
+	<newznab:attr name="tvdbid" value="154961" />
+
+
+</item>
+<item>
+	<title>Formula1.Tales.From.The.Vault.S01E01.HDTV.x264-CHAMPiONS</title>
+	<guid isPermaLink="false">7216fbf35a697ca752f696e01d203432</guid>
+	<link>https://nzbs.org/getnzb/7216fbf35a697ca752f696e01d203432.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/7216fbf35a697ca752f696e01d203432#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 14:00:21 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Formula1.Tales.From.The.Vault.S01E01.HDTV.x264-CHAMPiONS</description>
+	<enclosure url="https://nzbs.org/getnzb/7216fbf35a697ca752f696e01d203432.nzb&amp;i=2952&amp;r=APIKEY" length="481878937" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="481878937" />
+	<newznab:attr name="guid" value="7216fbf35a697ca752f696e01d203432" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E01" />
+	<newznab:attr name="rageid" value="22208" />
+	<newznab:attr name="tvdbid" value="154961" />
+
+
+</item>
+<item>
+	<title>Formula1.2015.The.F1.Show.Pre.Season.720p.HDTV.x264-CHAMPiONS</title>
+	<guid isPermaLink="false">483c94be0ae90dec7c3f42b7398c26ec</guid>
+	<link>https://nzbs.org/getnzb/483c94be0ae90dec7c3f42b7398c26ec.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/483c94be0ae90dec7c3f42b7398c26ec#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 14:00:20 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Formula1.2015.The.F1.Show.Pre.Season.720p.HDTV.x264-CHAMPiONS</description>
+	<enclosure url="https://nzbs.org/getnzb/483c94be0ae90dec7c3f42b7398c26ec.nzb&amp;i=2952&amp;r=APIKEY" length="1098845560" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="1098845560" />
+	<newznab:attr name="guid" value="483c94be0ae90dec7c3f42b7398c26ec" />
+	<newznab:attr name="season" value="2015" />
+	<newznab:attr name="rageid" value="22208" />
+	<newznab:attr name="tvdbid" value="154961" />
+
+
+</item>
+<item>
+	<title>Formula1.2015.The.F1.Show.Pre.Season.HDTV.x264-CHAMPiONS</title>
+	<guid isPermaLink="false">83792066bf3af7ffb6266200e9c5e91c</guid>
+	<link>https://nzbs.org/getnzb/83792066bf3af7ffb6266200e9c5e91c.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/83792066bf3af7ffb6266200e9c5e91c#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 13:41:02 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Formula1.2015.The.F1.Show.Pre.Season.HDTV.x264-CHAMPiONS</description>
+	<enclosure url="https://nzbs.org/getnzb/83792066bf3af7ffb6266200e9c5e91c.nzb&amp;i=2952&amp;r=APIKEY" length="402706430" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="402706430" />
+	<newznab:attr name="guid" value="83792066bf3af7ffb6266200e9c5e91c" />
+	<newznab:attr name="season" value="2015" />
+	<newznab:attr name="rageid" value="22208" />
+	<newznab:attr name="tvdbid" value="154961" />
+
+
+</item>
+<item>
+	<title>Formula1.2015.The.F1.Show.Pre.Season.HDTV.x264-CHAMPiONS</title>
+	<guid isPermaLink="false">3ec939287cc056d8f65e26bb72521dc6</guid>
+	<link>https://nzbs.org/getnzb/3ec939287cc056d8f65e26bb72521dc6.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/3ec939287cc056d8f65e26bb72521dc6#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 13:55:35 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Formula1.2015.The.F1.Show.Pre.Season.HDTV.x264-CHAMPiONS</description>
+	<enclosure url="https://nzbs.org/getnzb/3ec939287cc056d8f65e26bb72521dc6.nzb&amp;i=2952&amp;r=APIKEY" length="397485815" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="397485815" />
+	<newznab:attr name="guid" value="3ec939287cc056d8f65e26bb72521dc6" />
+	<newznab:attr name="season" value="2015" />
+	<newznab:attr name="rageid" value="22208" />
+	<newznab:attr name="tvdbid" value="154961" />
+
+
+</item>
+<item>
+	<title>Formula1.2015.Saubers.Secrets.Of.F1.720p.HDTV.x264-CHAMPiONS</title>
+	<guid isPermaLink="false">da570144c3f24196cfe951630bda15bd</guid>
+	<link>https://nzbs.org/getnzb/da570144c3f24196cfe951630bda15bd.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/da570144c3f24196cfe951630bda15bd#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 13:44:41 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Formula1.2015.Saubers.Secrets.Of.F1.720p.HDTV.x264-CHAMPiONS</description>
+	<enclosure url="https://nzbs.org/getnzb/da570144c3f24196cfe951630bda15bd.nzb&amp;i=2952&amp;r=APIKEY" length="609265242" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="609265242" />
+	<newznab:attr name="guid" value="da570144c3f24196cfe951630bda15bd" />
+	<newznab:attr name="season" value="2015" />
+	<newznab:attr name="rageid" value="22208" />
+	<newznab:attr name="tvdbid" value="154961" />
+
+
+</item>
+<item>
+	<title>Formula1.2015.Saubers.Secrets.Of.F1.720p.HDTV.x264-CHAMPiONS</title>
+	<guid isPermaLink="false">83a1a471b4fe35d9e8a91fbeb7f19f45</guid>
+	<link>https://nzbs.org/getnzb/83a1a471b4fe35d9e8a91fbeb7f19f45.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/83a1a471b4fe35d9e8a91fbeb7f19f45#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 13:55:35 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Formula1.2015.Saubers.Secrets.Of.F1.720p.HDTV.x264-CHAMPiONS</description>
+	<enclosure url="https://nzbs.org/getnzb/83a1a471b4fe35d9e8a91fbeb7f19f45.nzb&amp;i=2952&amp;r=APIKEY" length="615251159" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="615251159" />
+	<newznab:attr name="guid" value="83a1a471b4fe35d9e8a91fbeb7f19f45" />
+	<newznab:attr name="season" value="2015" />
+	<newznab:attr name="rageid" value="22208" />
+	<newznab:attr name="tvdbid" value="154961" />
+
+
+</item>
+<item>
+	<title>Sky.Movies.Special.Chappie.720p.HDTV.x264-C4TV</title>
+	<guid isPermaLink="false">4fc18ca3b39981d69c9be943685f813c</guid>
+	<link>https://nzbs.org/getnzb/4fc18ca3b39981d69c9be943685f813c.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/4fc18ca3b39981d69c9be943685f813c#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 13:36:29 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Sky.Movies.Special.Chappie.720p.HDTV.x264-C4TV</description>
+	<enclosure url="https://nzbs.org/getnzb/4fc18ca3b39981d69c9be943685f813c.nzb&amp;i=2952&amp;r=APIKEY" length="466143099" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="466143099" />
+	<newznab:attr name="guid" value="4fc18ca3b39981d69c9be943685f813c" />
+	<newznab:attr name="rageid" value="" />
+	<newznab:attr name="tvdbid" value="" />
+
+
+</item>
+<item>
+	<title>Sky.Movies.Special.Chappie.720p.HDTV.x264-C4TV</title>
+	<guid isPermaLink="false">86d043da56d182cc50799470f2b6709a</guid>
+	<link>https://nzbs.org/getnzb/86d043da56d182cc50799470f2b6709a.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/86d043da56d182cc50799470f2b6709a#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 13:51:54 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Sky.Movies.Special.Chappie.720p.HDTV.x264-C4TV</description>
+	<enclosure url="https://nzbs.org/getnzb/86d043da56d182cc50799470f2b6709a.nzb&amp;i=2952&amp;r=APIKEY" length="475108609" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="475108609" />
+	<newznab:attr name="guid" value="86d043da56d182cc50799470f2b6709a" />
+	<newznab:attr name="rageid" value="" />
+	<newznab:attr name="tvdbid" value="" />
+
+
+</item>
+<item>
+	<title>Formula1.2015.Saubers.Secrets.Of.F1.HDTV.x264-CHAMPiONS</title>
+	<guid isPermaLink="false">f0ee887ed7ba290bc02a3ebdd114d14a</guid>
+	<link>https://nzbs.org/getnzb/f0ee887ed7ba290bc02a3ebdd114d14a.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/f0ee887ed7ba290bc02a3ebdd114d14a#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 13:41:02 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Formula1.2015.Saubers.Secrets.Of.F1.HDTV.x264-CHAMPiONS</description>
+	<enclosure url="https://nzbs.org/getnzb/f0ee887ed7ba290bc02a3ebdd114d14a.nzb&amp;i=2952&amp;r=APIKEY" length="237533467" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="237533467" />
+	<newznab:attr name="guid" value="f0ee887ed7ba290bc02a3ebdd114d14a" />
+	<newznab:attr name="season" value="2015" />
+	<newznab:attr name="rageid" value="22208" />
+	<newznab:attr name="tvdbid" value="154961" />
+
+
+</item>
+<item>
+	<title>Formula1.2015.Saubers.Secrets.Of.F1.HDTV.x264-CHAMPiONS</title>
+	<guid isPermaLink="false">a78abf4e5b4f5e8af8a330c2db9145a9</guid>
+	<link>https://nzbs.org/getnzb/a78abf4e5b4f5e8af8a330c2db9145a9.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/a78abf4e5b4f5e8af8a330c2db9145a9#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 13:51:53 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Formula1.2015.Saubers.Secrets.Of.F1.HDTV.x264-CHAMPiONS</description>
+	<enclosure url="https://nzbs.org/getnzb/a78abf4e5b4f5e8af8a330c2db9145a9.nzb&amp;i=2952&amp;r=APIKEY" length="239367287" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="239367287" />
+	<newznab:attr name="guid" value="a78abf4e5b4f5e8af8a330c2db9145a9" />
+	<newznab:attr name="season" value="2015" />
+	<newznab:attr name="rageid" value="22208" />
+	<newznab:attr name="tvdbid" value="154961" />
+
+
+</item>
+<item>
+	<title>Sky.Movies.Special.Chappie.HDTV.x264-C4TV</title>
+	<guid isPermaLink="false">1db6c9d1598e798f44a2c61e363c755c</guid>
+	<link>https://nzbs.org/getnzb/1db6c9d1598e798f44a2c61e363c755c.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/1db6c9d1598e798f44a2c61e363c755c#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 13:36:30 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Sky.Movies.Special.Chappie.HDTV.x264-C4TV</description>
+	<enclosure url="https://nzbs.org/getnzb/1db6c9d1598e798f44a2c61e363c755c.nzb&amp;i=2952&amp;r=APIKEY" length="164549054" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="164549054" />
+	<newznab:attr name="guid" value="1db6c9d1598e798f44a2c61e363c755c" />
+	<newznab:attr name="rageid" value="" />
+	<newznab:attr name="tvdbid" value="" />
+
+
+</item>
+<item>
+	<title>Sky.Movies.Special.Chappie.HDTV.x264-C4TV</title>
+	<guid isPermaLink="false">aab6b2b7417836be49f3e2f76d837bb4</guid>
+	<link>https://nzbs.org/getnzb/aab6b2b7417836be49f3e2f76d837bb4.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/aab6b2b7417836be49f3e2f76d837bb4#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 13:51:55 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Sky.Movies.Special.Chappie.HDTV.x264-C4TV</description>
+	<enclosure url="https://nzbs.org/getnzb/aab6b2b7417836be49f3e2f76d837bb4.nzb&amp;i=2952&amp;r=APIKEY" length="163550519" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="163550519" />
+	<newznab:attr name="guid" value="aab6b2b7417836be49f3e2f76d837bb4" />
+	<newznab:attr name="rageid" value="" />
+	<newznab:attr name="tvdbid" value="" />
+
+
+</item>
+<item>
+	<title>Reginald.D.Hunters.Songs.Of.The.South.S01E03.HDTV.x264-TASTETV</title>
+	<guid isPermaLink="false">fadaa4fad3c615c30d29f7d80984cfc5</guid>
+	<link>https://nzbs.org/getnzb/fadaa4fad3c615c30d29f7d80984cfc5.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/fadaa4fad3c615c30d29f7d80984cfc5#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 13:33:04 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Reginald.D.Hunters.Songs.Of.The.South.S01E03.HDTV.x264-TASTETV</description>
+	<enclosure url="https://nzbs.org/getnzb/fadaa4fad3c615c30d29f7d80984cfc5.nzb&amp;i=2952&amp;r=APIKEY" length="469563274" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="469563274" />
+	<newznab:attr name="guid" value="fadaa4fad3c615c30d29f7d80984cfc5" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E03" />
+
+
+</item>
+<item>
+	<title>Reginald.D.Hunters.Songs.Of.The.South.S01E03.HDTV.x264-TASTETV</title>
+	<guid isPermaLink="false">e44657bd506195c1bc71f759d87662e6</guid>
+	<link>https://nzbs.org/getnzb/e44657bd506195c1bc71f759d87662e6.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/e44657bd506195c1bc71f759d87662e6#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 13:48:22 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Reginald.D.Hunters.Songs.Of.The.South.S01E03.HDTV.x264-TASTETV</description>
+	<enclosure url="https://nzbs.org/getnzb/e44657bd506195c1bc71f759d87662e6.nzb&amp;i=2952&amp;r=APIKEY" length="464891802" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="464891802" />
+	<newznab:attr name="guid" value="e44657bd506195c1bc71f759d87662e6" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E03" />
+
+
+</item>
+<item>
+	<title>New.Girl.S04E07.PROPER.720p.WEB-DL.DD5.1.H.264-LFF No.Ads</title>
+	<guid isPermaLink="false">302852371bbe4bf133e51e02e0457463</guid>
+	<link>https://nzbs.org/getnzb/302852371bbe4bf133e51e02e0457463.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/302852371bbe4bf133e51e02e0457463#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 15:03:05 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>New.Girl.S04E07.PROPER.720p.WEB-DL.DD5.1.H.264-LFF No.Ads</description>
+	<enclosure url="https://nzbs.org/getnzb/302852371bbe4bf133e51e02e0457463.nzb&amp;i=2952&amp;r=APIKEY" length="720936190" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="720936190" />
+	<newznab:attr name="guid" value="302852371bbe4bf133e51e02e0457463" />
+	<newznab:attr name="season" value="S04" />
+	<newznab:attr name="episode" value="E07" />
+	<newznab:attr name="rageid" value="28304" />
+	<newznab:attr name="tvdbid" value="248682" />
+
+
+</item>
+<item>
+	<title>Good.Sunday.Running.Man.E369.150308.repack.HDTV.H264.720p-WITH</title>
+	<guid isPermaLink="false">93d5aedce71bf5597fa9cde1d3831811</guid>
+	<link>https://nzbs.org/getnzb/93d5aedce71bf5597fa9cde1d3831811.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/93d5aedce71bf5597fa9cde1d3831811#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 13:44:40 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Good.Sunday.Running.Man.E369.150308.repack.HDTV.H264.720p-WITH</description>
+	<enclosure url="https://nzbs.org/getnzb/93d5aedce71bf5597fa9cde1d3831811.nzb&amp;i=2952&amp;r=APIKEY" length="1673737980" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="1673737980" />
+	<newznab:attr name="guid" value="93d5aedce71bf5597fa9cde1d3831811" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E369" />
+
+
+</item>
+<item>
+	<title>Happy.Sunday.2Days.1Night.E528.150308.HDTV.H264.720p-WITH</title>
+	<guid isPermaLink="false">91e7334056e32848950ae70732efab62</guid>
+	<link>https://nzbs.org/getnzb/91e7334056e32848950ae70732efab62.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/91e7334056e32848950ae70732efab62#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 13:33:04 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Happy.Sunday.2Days.1Night.E528.150308.HDTV.H264.720p-WITH</description>
+	<enclosure url="https://nzbs.org/getnzb/91e7334056e32848950ae70732efab62.nzb&amp;i=2952&amp;r=APIKEY" length="1730742174" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="1730742174" />
+	<newznab:attr name="guid" value="91e7334056e32848950ae70732efab62" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E528" />
+
+
+</item>
+<item>
+	<title>Our.Sunday.Night.Real.Man.E96.150308.HDTV.H264.720p-WITH</title>
+	<guid isPermaLink="false">6d17271e09a182dbcbdf649d297fa715</guid>
+	<link>https://nzbs.org/getnzb/6d17271e09a182dbcbdf649d297fa715.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/6d17271e09a182dbcbdf649d297fa715#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 13:26:22 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Our.Sunday.Night.Real.Man.E96.150308.HDTV.H264.720p-WITH</description>
+	<enclosure url="https://nzbs.org/getnzb/6d17271e09a182dbcbdf649d297fa715.nzb&amp;i=2952&amp;r=APIKEY" length="2113157896" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="2113157896" />
+	<newznab:attr name="guid" value="6d17271e09a182dbcbdf649d297fa715" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E96" />
+
+
+</item>
+<item>
+	<title>Reginald.D.Hunters.Songs.Of.The.South.S01E03.720p.HDTV.x264-TASTETV</title>
+	<guid isPermaLink="false">5a94fb7a4faf7ceccd5637c225e2846a</guid>
+	<link>https://nzbs.org/getnzb/5a94fb7a4faf7ceccd5637c225e2846a.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/5a94fb7a4faf7ceccd5637c225e2846a#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 13:01:59 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Reginald.D.Hunters.Songs.Of.The.South.S01E03.720p.HDTV.x264-TASTETV</description>
+	<enclosure url="https://nzbs.org/getnzb/5a94fb7a4faf7ceccd5637c225e2846a.nzb&amp;i=2952&amp;r=APIKEY" length="1321554153" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="1321554153" />
+	<newznab:attr name="guid" value="5a94fb7a4faf7ceccd5637c225e2846a" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E03" />
+
+
+</item>
+<item>
+	<title>Reginald.D.Hunters.Songs.Of.The.South.S01E03.720p.HDTV.x264-TASTETV</title>
+	<guid isPermaLink="false">94f0c4ba570e1fa5777cfc8dce0fdd7c</guid>
+	<link>https://nzbs.org/getnzb/94f0c4ba570e1fa5777cfc8dce0fdd7c.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/94f0c4ba570e1fa5777cfc8dce0fdd7c#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 13:12:09 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>Reginald.D.Hunters.Songs.Of.The.South.S01E03.720p.HDTV.x264-TASTETV</description>
+	<enclosure url="https://nzbs.org/getnzb/94f0c4ba570e1fa5777cfc8dce0fdd7c.nzb&amp;i=2952&amp;r=APIKEY" length="1308673406" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="1308673406" />
+	<newznab:attr name="guid" value="94f0c4ba570e1fa5777cfc8dce0fdd7c" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E03" />
+
+
+</item>
+<item>
+	<title>Good.Sunday.Running.Man.E369.150308.HDTV.XviD-WITH</title>
+	<guid isPermaLink="false">adf02ca5b55d198412f3772f5ace9670</guid>
+	<link>https://nzbs.org/getnzb/adf02ca5b55d198412f3772f5ace9670.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/adf02ca5b55d198412f3772f5ace9670#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 12:51:05 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Good.Sunday.Running.Man.E369.150308.HDTV.XviD-WITH</description>
+	<enclosure url="https://nzbs.org/getnzb/adf02ca5b55d198412f3772f5ace9670.nzb&amp;i=2952&amp;r=APIKEY" length="942555038" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="942555038" />
+	<newznab:attr name="guid" value="adf02ca5b55d198412f3772f5ace9670" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E369" />
+
+
+</item>
+<item>
+	<title>H264.AAC.720p-CineBus</title>
+	<guid isPermaLink="false">d61de5f465e051519076f1d65ece2769</guid>
+	<link>https://nzbs.org/getnzb/d61de5f465e051519076f1d65ece2769.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/d61de5f465e051519076f1d65ece2769#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 12:51:04 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>H264.AAC.720p-CineBus</description>
+	<enclosure url="https://nzbs.org/getnzb/d61de5f465e051519076f1d65ece2769.nzb&amp;i=2952&amp;r=APIKEY" length="2273193881" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="2273193881" />
+	<newznab:attr name="guid" value="d61de5f465e051519076f1d65ece2769" />
+	<newznab:attr name="rageid" value="" />
+	<newznab:attr name="tvdbid" value="" />
+
+
+</item>
+<item>
+	<title>Happy.Sunday.2Days.1Night.E528.150308.HDTV.XviD-WITH</title>
+	<guid isPermaLink="false">95bd28654f73cb647d7e35f3f3b8daae</guid>
+	<link>https://nzbs.org/getnzb/95bd28654f73cb647d7e35f3f3b8daae.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/95bd28654f73cb647d7e35f3f3b8daae#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 12:43:32 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>Happy.Sunday.2Days.1Night.E528.150308.HDTV.XviD-WITH</description>
+	<enclosure url="https://nzbs.org/getnzb/95bd28654f73cb647d7e35f3f3b8daae.nzb&amp;i=2952&amp;r=APIKEY" length="970107787" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="970107787" />
+	<newznab:attr name="guid" value="95bd28654f73cb647d7e35f3f3b8daae" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E528" />
+
+
+</item>
+<item>
+	<title>The.Football.League.Show.2015.03.07.720p.HDTV.x264-CHAMPiONS</title>
+	<guid isPermaLink="false">47e5d6da9ea97eec794aebe1688d6b0a</guid>
+	<link>https://nzbs.org/getnzb/47e5d6da9ea97eec794aebe1688d6b0a.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/47e5d6da9ea97eec794aebe1688d6b0a#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 12:11:48 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>The.Football.League.Show.2015.03.07.720p.HDTV.x264-CHAMPiONS</description>
+	<enclosure url="https://nzbs.org/getnzb/47e5d6da9ea97eec794aebe1688d6b0a.nzb&amp;i=2952&amp;r=APIKEY" length="2658137576" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="2658137576" />
+	<newznab:attr name="guid" value="47e5d6da9ea97eec794aebe1688d6b0a" />
+	<newznab:attr name="season" value="2015" />
+	<newznab:attr name="episode" value="03/07" />
+	<newznab:attr name="rageid" value="23423" />
+	<newznab:attr name="tvdbid" value="189231" />
+
+
+</item>
+<item>
+	<title>The.Football.League.Show.2015.03.07.720p.HDTV.x264-CHAMPiONS</title>
+	<guid isPermaLink="false">2d72e9678b3dfb688ba9111710d4c0f5</guid>
+	<link>https://nzbs.org/getnzb/2d72e9678b3dfb688ba9111710d4c0f5.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/2d72e9678b3dfb688ba9111710d4c0f5#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 12:30:47 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>The.Football.League.Show.2015.03.07.720p.HDTV.x264-CHAMPiONS</description>
+	<enclosure url="https://nzbs.org/getnzb/2d72e9678b3dfb688ba9111710d4c0f5.nzb&amp;i=2952&amp;r=APIKEY" length="2603158354" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="2603158354" />
+	<newznab:attr name="guid" value="2d72e9678b3dfb688ba9111710d4c0f5" />
+	<newznab:attr name="season" value="2015" />
+	<newznab:attr name="episode" value="03/07" />
+	<newznab:attr name="rageid" value="23423" />
+	<newznab:attr name="tvdbid" value="189231" />
+
+
+</item>
+<item>
+	<title>The.Football.League.Show.2015.03.07.HDTV.x264-CHAMPiONS</title>
+	<guid isPermaLink="false">07ae300b3bb7d7de207b4ee7903e5d2a</guid>
+	<link>https://nzbs.org/getnzb/07ae300b3bb7d7de207b4ee7903e5d2a.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/07ae300b3bb7d7de207b4ee7903e5d2a#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 12:01:28 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>The.Football.League.Show.2015.03.07.HDTV.x264-CHAMPiONS</description>
+	<enclosure url="https://nzbs.org/getnzb/07ae300b3bb7d7de207b4ee7903e5d2a.nzb&amp;i=2952&amp;r=APIKEY" length="1060616197" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="1060616197" />
+	<newznab:attr name="guid" value="07ae300b3bb7d7de207b4ee7903e5d2a" />
+	<newznab:attr name="season" value="2015" />
+	<newznab:attr name="episode" value="03/07" />
+	<newznab:attr name="rageid" value="23423" />
+	<newznab:attr name="tvdbid" value="189231" />
+
+
+</item>
+<item>
+	<title>The.Football.League.Show.2015.03.07.HDTV.x264-CHAMPiONS</title>
+	<guid isPermaLink="false">f856d0f10ef9c73c40bc9ad31f008cb6</guid>
+	<link>https://nzbs.org/getnzb/f856d0f10ef9c73c40bc9ad31f008cb6.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/f856d0f10ef9c73c40bc9ad31f008cb6#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 12:15:44 +0000</pubDate> 
+	<category>TV-SD</category> 	
+	<description>The.Football.League.Show.2015.03.07.HDTV.x264-CHAMPiONS</description>
+	<enclosure url="https://nzbs.org/getnzb/f856d0f10ef9c73c40bc9ad31f008cb6.nzb&amp;i=2952&amp;r=APIKEY" length="1061442415" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5030" />
+	<newznab:attr name="size" value="1061442415" />
+	<newznab:attr name="guid" value="f856d0f10ef9c73c40bc9ad31f008cb6" />
+	<newznab:attr name="season" value="2015" />
+	<newznab:attr name="episode" value="03/07" />
+	<newznab:attr name="rageid" value="23423" />
+	<newznab:attr name="tvdbid" value="189231" />
+
+
+</item>
+<item>
+	<title>The.Victorias.Secret.Fashion.Show.2014.1080p.HDTV.x264-BATV</title>
+	<guid isPermaLink="false">359140c403bcf71c31a9e4e901bc15cb</guid>
+	<link>https://nzbs.org/getnzb/359140c403bcf71c31a9e4e901bc15cb.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/359140c403bcf71c31a9e4e901bc15cb#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 15:36:11 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>The.Victorias.Secret.Fashion.Show.2014.1080p.HDTV.x264-BATV</description>
+	<enclosure url="https://nzbs.org/getnzb/359140c403bcf71c31a9e4e901bc15cb.nzb&amp;i=2952&amp;r=APIKEY" length="543869925" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="543869925" />
+	<newznab:attr name="guid" value="359140c403bcf71c31a9e4e901bc15cb" />
+	<newznab:attr name="rageid" value="" />
+	<newznab:attr name="tvdbid" value="" />
+
+
+</item>
+<item>
+	<title>The.Return.of.Superman.E68.150308.HDTV.H264.720p-WITH</title>
+	<guid isPermaLink="false">53ede8b7a386131c16e44b273d058ed0</guid>
+	<link>https://nzbs.org/getnzb/53ede8b7a386131c16e44b273d058ed0.nzb&amp;i=2952&amp;r=APIKEY</link>
+	<comments>https://nzbs.org/details/53ede8b7a386131c16e44b273d058ed0#comments</comments> 	
+	<pubDate>Sun, 08 Mar 2015 11:18:40 +0000</pubDate> 
+	<category>TV-HD</category> 	
+	<description>The.Return.of.Superman.E68.150308.HDTV.H264.720p-WITH</description>
+	<enclosure url="https://nzbs.org/getnzb/53ede8b7a386131c16e44b273d058ed0.nzb&amp;i=2952&amp;r=APIKEY" length="1786627860" type="application/x-nzb" />
+
+	<newznab:attr name="category" value="5000" />
+	<newznab:attr name="category" value="5040" />
+	<newznab:attr name="size" value="1786627860" />
+	<newznab:attr name="guid" value="53ede8b7a386131c16e44b273d058ed0" />
+	<newznab:attr name="season" value="S01" />
+	<newznab:attr name="episode" value="E68" />
+
+
+</item>
+
+</channel>
+</rss>

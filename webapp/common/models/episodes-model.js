@@ -2,7 +2,7 @@ episodeService = angular.module('tv2go.episodesService', ['ngResource']);
 
 episodeService.factory('Episode', ['$cacheFactory','$resource',
   function($cacheFactory, $resource) {
-    return $resource('http://localhost:9001/api/1/shows/:showid/episodes/:episodeid', {}, {
+    return $resource('/api/1/shows/:showid/episodes/:episodeid', {}, {
       all: {
         method: "GET",
         cache: true,

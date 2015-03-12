@@ -159,7 +159,7 @@ func guessQualityFromName(name string) Quality {
 		return SDTV
 	} else if checkName(name, "(dvdrip|b[r|d]rip)(.ws)?.(xvid|divx|x264)") && !checkNameAll(name, "(720|1080)[pi]") {
 		return SDDVD
-	} else if (checkNameAll(name, "720p", "hdtv", "x264") || checkName(name, "hr.ws.pdtv.x264")) && !checkNameAll(name, "(1080)[pi]") {
+	} else if (checkNameAll(name, "720p", "hdtv", "[hx]264") || checkName(name, "hr.ws.pdtv.x264")) && !checkNameAll(name, "(1080)[pi]") {
 		return HDTV
 	} else if checkNameAll(name, "720p|1080i", "hdtv", "mpeg-?2") || checkNameAll(name, "1080[pi].hdtv", "h.?264") {
 		return RAWHDTV

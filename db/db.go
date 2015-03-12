@@ -255,8 +255,11 @@ func (h *Handle) GetEpisodeByShowSeasonAndNumber(showid, season, number int64) (
 
 	err := h.db.Where("show_id = ? and season = ? and episode = ?", showid, season, number).Find(&eps).Error
 
-	if err != nil || len(eps) == 0 {
+	if err != nil {
 		return nil, err
+	}
+	if len(eps) == 0 {
+		return nil, gorm.RecordNotFound
 	}
 
 	return &eps[0], nil
