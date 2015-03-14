@@ -37,3 +37,21 @@ Point your browser at localhost:9001/a/tv2go.html
 
 Add shows and click around
 ```
+
+It currently works with Sabnzbd
+
+Set the NZBBlackhole directory in config.json to where Sabnzbd will look for new .nzb files.  Create a subdirectory named tv2go
+```
+"NZBBlackhole": "/path/to/nzb/blackhole/tv2go"
+mkdir -p /path/to/nzb/blackhole/tv2go
+```
+
+Compile the postprocess script and copy it to the Sabnzbd postprocess script directory
+
+```
+cd postprocess
+go build -o sabToTv2go postprocess.go
+cp sabToTv2go /path/to/postprocess/scripts
+```
+
+Create a new category in Sabnzbd named tv2go and set it to use sabToTv2go to postprocess the downloads.
