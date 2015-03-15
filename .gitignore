@@ -37,6 +37,8 @@ tv2go.db
 
 config.json
 
+logs/*
+
 # webapp stuff
 webapp/logs/*
 webapp/node_modules/

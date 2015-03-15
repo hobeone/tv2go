@@ -11,6 +11,7 @@ import (
 	"github.com/hobeone/tv2go/indexers"
 	"github.com/hobeone/tv2go/indexers/tvdb"
 	"github.com/hobeone/tv2go/indexers/tvrage"
+	"github.com/hobeone/tv2go/nameexception"
 	"github.com/hobeone/tv2go/naming"
 	"github.com/hobeone/tv2go/providers"
 	"github.com/hobeone/tv2go/storage"
@@ -124,7 +125,7 @@ func NewDaemon(cfg *config.Config) *Daemon {
 
 func runDaemon(cfg *config.Config) {
 	d := NewDaemon(cfg)
-	//go ShowUpdater(d.DBH)
+	go ShowUpdater(d.DBH)
 
 	idxReg := indexers.IndexerRegistry{
 		"tvdb":   tvdb.NewTvdbIndexer("90D7DF3AE9E4841E"),
@@ -142,9 +143,8 @@ func runDaemon(cfg *config.Config) {
 		panic("No Nzbs.org API key set in config")
 	}
 	provReg := providers.ProviderRegistry{
-		// get key from cfg
-		"nzbsOrg":      providers.NewNzbsOrg(nzborgKey),
-		"nyaaTorrents": providers.NewNyaaTorrents(),
+		"nzbsOrg": providers.NewNzbsOrg(nzborgKey),
+		//		"nyaaTorrents": providers.NewNyaaTorrents(),
 	}
 
 	broker, err := storage.NewBroker(cfg.Storage.Directories...)
@@ -152,7 +152,21 @@ func runDaemon(cfg *config.Config) {
 		panic(fmt.Sprintf("Error creating storage broker: %s", err))
 	}
 
-	//go d.ProviderPoller(&provReg, broker)
+	exceptionProviders := map[string]*nameexception.Provider{
+		"tvdb": nameexception.NewProvider(
+			"tvdb",
+			"tvdb",
+			"https://midgetspy.github.io/sb_tvdb_scene_exceptions/exceptions.txt",
+			time.Hour*24,
+			d.DBH,
+		),
+	}
+	exitChan := make(chan int)
+	for _, ep := range exceptionProviders {
+		go ep.Poll(exitChan)
+	}
+
+	go d.ProviderPoller(&provReg, broker)
 	webserver := web.NewServer(cfg, d.DBH, broker, provReg, web.SetIndexers(idxReg))
 
 	webserver.StartServing()

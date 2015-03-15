@@ -269,7 +269,6 @@ func (np *NameParser) Parse(name string) ParseResult {
 	combineResults(finalRes, dirNameResult, fileNameResult, "ExtraInfo")
 	combineResults(finalRes, dirNameResult, fileNameResult, "ReleaseGroup")
 	combineResults(finalRes, dirNameResult, fileNameResult, "Version")
-	// TODO: set this
 	finalRes.Quality = q
 	return *finalRes
 }
@@ -315,7 +314,40 @@ func combineResults(finalRes, fileRes, dirRes *ParseResult, field string) error 
 
 // CleanSeriesName canonicalizes a series name extracted from a file name
 func CleanSeriesName(name string) string {
-	newname := strings.Replace(name, ".", " ", -1)
-	newname = strings.Replace(newname, "_", " ", -1)
-	return newname
+	name = strings.Trim(name, " ")
+	name = strings.Trim(name, ".")
+
+	// Replace certain joining characters with a dash
+	seps := regexp.MustCompile(`[\\/\*]`)
+	name = seps.ReplaceAllString(name, "-")
+	seps = regexp.MustCompile(`[:"<>|?]`)
+	name = seps.ReplaceAllString(name, "")
+
+	// Remove any double dashes caused by existing - in name
+	name = strings.Replace(name, "--", "-", -1)
+	return name
+}
+
+func SanitizeSceneName(name string) string {
+	bad_chars := []string{",", ":", "(", ")", "!", "?", "'"}
+	for _, str := range bad_chars {
+		name = strings.Replace(name, str, "", -1)
+	}
+	name = strings.Replace(name, "- ", ".", -1)
+	name = strings.Replace(name, " ", ".", -1)
+	name = strings.Replace(name, "&", "and", -1)
+	name = strings.Replace(name, "/", ".", -1)
+	dotreplace := regexp.MustCompile(`\.\.*`)
+	dotreplace.ReplaceAllString(name, ".")
+
+	name = strings.TrimSuffix(name, ".")
+	return name
+}
+func FullSanitizeSceneName(name string) string {
+	name = SanitizeSceneName(name)
+	badchars := regexp.MustCompile(`[. -]`)
+	name = badchars.ReplaceAllString(name, " ")
+	name = strings.ToLower(name)
+	name = strings.TrimSpace(name)
+	return name
 }

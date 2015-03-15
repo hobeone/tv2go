@@ -55,6 +55,47 @@ type Show struct {
 	UpdatedAt         time.Time
 }
 
+// NameException stores alternate names of shows to use when parsing input files.
+type NameException struct {
+	ID        int64
+	Source    string
+	Indexer   string
+	IndexerID int64
+	Name      string
+	Custom    bool
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
+func (e *NameException) BeforeSave() error {
+	if e.Indexer == "" {
+		return fmt.Errorf("NameException Indexer can't be blank")
+	}
+	if e.Source == "" {
+		return fmt.Errorf("NameException Source can't be blank")
+	}
+	if e.IndexerID == 0 {
+		return fmt.Errorf("NameException IndexerID can't be blank")
+	}
+	if e.Name == "" {
+		return fmt.Errorf("NameException Name can't be blank")
+	}
+	return nil
+}
+
+// NameExceptionProviderHistory stores the last time we polled a particular
+// provider.
+type NameExceptionProviderHistory struct {
+	Name          string
+	LastRefreshed time.Time
+}
+
+// AfterFind updates all times to UTC because SQLite driver sets everything to local
+func (s *NameExceptionProviderHistory) AfterFind() error {
+	s.LastRefreshed = s.LastRefreshed.UTC()
+	return nil
+}
+
 // BeforeSave validates a show before writing it to the database
 func (s *Show) BeforeSave() error {
 	if s.Name == "" {
@@ -157,7 +198,8 @@ type Handle struct {
 
 func setupDB(db gorm.DB) error {
 	tx := db.Begin()
-	err := tx.AutoMigrate(&Show{}, &Episode{}, &quality.QualityGroup{}).Error
+	err := tx.AutoMigrate(&Show{}, &Episode{}, &quality.QualityGroup{},
+		&NameException{}, &NameExceptionProviderHistory{}).Error
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -196,7 +238,7 @@ func createAndOpenDb(dbPath string, verbose bool, memory bool) *Handle {
 	if memory {
 		mode = "memory"
 	}
-	constructedPath := fmt.Sprintf("file:%s?mode=%s", dbPath, mode)
+	constructedPath := fmt.Sprintf("file:%s?mode=%s&loc=UTC", dbPath, mode)
 	db := openDB("sqlite3", constructedPath, verbose)
 	err := setupDB(db)
 	if err != nil {
@@ -281,6 +323,22 @@ func (h *Handle) GetShowByID(showID int64) (*Show, error) {
 	return &show, err
 }
 
+// GetShowByIndexerAndID returns the show with the given indexer and indexerid or an error if it doesn't
+// exist.
+func (h *Handle) GetShowByIndexerAndID(indexer string, indexerID int64) (*Show, error) {
+	var show Show
+
+	err := h.db.Preload("QualityGroup").Where("indexer = ? AND indexer_key = ?", indexer, indexerID).Find(&show).Error
+	if err != nil {
+		return nil, err
+	}
+	err = h.db.Model(&show).Related(&show.Episodes).Error
+	if err != nil {
+		return nil, err
+	}
+	return &show, err
+}
+
 // GetShowByName returns the show with the given name (and it's episodes) or an
 // error if not found.
 func (h *Handle) GetShowByName(name string) (*Show, error) {
@@ -348,6 +406,61 @@ func (h *Handle) GetQualityGroupFromStringOrDefault(name string) *quality.Qualit
 	}
 	h.db.FirstOrInit(qual, quality.DefaultQualityGroup)
 	return qual
+}
+
+func (h *Handle) SetNameExceptionHistory(name string) error {
+	dbhistory := &NameExceptionProviderHistory{
+		Name:          name,
+		LastRefreshed: time.Now().UTC(),
+	}
+
+	err := h.db.FirstOrCreate(dbhistory).Error
+	return err
+}
+
+func (h *Handle) GetNameExceptionHistory(name string) time.Time {
+	se := &NameExceptionProviderHistory{}
+	err := h.db.Where("name = ?", name).Order("last_refreshed desc").First(se).Error
+	if err != nil {
+		return time.Time{}
+	}
+	return se.LastRefreshed
+}
+
+func (h *Handle) GetShowFromNameException(name string) (*Show, error) {
+	ne := &NameException{}
+	err := h.db.Where("name = ? COLLATE NOCASE", name).Find(ne).Error
+	if err != nil {
+		return nil, err
+	}
+	show, err := h.GetShowByIndexerAndID(ne.Indexer, ne.IndexerID)
+	if err != nil {
+		return nil, err
+	}
+	return show, nil
+}
+
+func (h *Handle) SaveNameExceptions(source string, excepts []*NameException) error {
+	if h.writeUpdates {
+		tx := h.db.Begin()
+		err := tx.Where("source = ?", source).Delete(NameException{}).Error
+		if err != nil {
+			glog.Errorf("Couldn't delete old name exceptions for %s: %s", source, err)
+			tx.Rollback()
+			return err
+		}
+		for _, e := range excepts {
+			err := tx.Save(e).Error
+			if err != nil {
+				glog.Errorf("Error saving exceptions to the database: %s", err.Error())
+				tx.Rollback()
+				return err
+			}
+		}
+		tx.Commit()
+		h.SetNameExceptionHistory(source)
+	}
+	return nil
 }
 
 // Migrations

@@ -156,3 +156,15 @@ func TestGetQualityGroups(t *testing.T) {
 	Expect(err).ToNot(HaveOccurred())
 	Expect(qualityGroups).To(HaveLen(5))
 }
+
+func TestNameException(t *testing.T) {
+	//flag.Set("logtostderr", "true")
+	d := setupTest(t)
+	se := &NameException{
+		IndexerID: 123,
+		Name:      "Testing 1 2 3",
+	}
+	err := d.db.Save(se).Error
+
+	Expect(err).ToNot(HaveOccurred())
+}

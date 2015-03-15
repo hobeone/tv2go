@@ -7,9 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -576,6 +574,51 @@ func writeAndFlush(c *gin.Context, str string, args ...interface{}) {
 	c.Writer.Flush()
 }
 
+func (server *Server) getShowFromName(c *gin.Context, name string) (*db.Show, error) {
+	cleanedName := naming.CleanSeriesName(name)
+	dbshow, err := server.dbHandle.GetShowByName(cleanedName)
+	if err == nil {
+		writeAndFlush(c, "Found show with name %s in database.")
+		return dbshow, nil
+	}
+	writeAndFlush(c, "Couldn't find show with name in db: '%s'.", cleanedName)
+
+	sceneName := naming.FullSanitizeSceneName(cleanedName)
+	writeAndFlush(c, "Trying to find match in Name Exceptions for %s", sceneName)
+	dbshow, err = server.dbHandle.GetShowFromNameException(sceneName)
+	if err == nil {
+		writeAndFlush(c, "Matched %s to database show %s", sceneName, dbshow.Name)
+		return dbshow, nil
+	}
+
+	writeAndFlush(c, "Couldn't find show in exception list")
+
+	writeAndFlush(c, "Searching indexers for %s", sceneName)
+	for name, idxer := range server.indexers {
+		writeAndFlush(c, "Search %s for %s", name, sceneName)
+		shows, err := idxer.Search(sceneName)
+		if err != nil {
+			writeAndFlush(c, "Error searching indexer for %s: %s", sceneName, err)
+			continue
+		}
+		writeAndFlush(c, "Got %d results from indexer %s", len(shows), name)
+		for _, show := range shows {
+			dbshow, err = server.dbHandle.GetShowByName(show.Name)
+			if err != nil {
+				writeAndFlush(c, "Error searching DB for show with name %s: %s", show.Name, err)
+				continue
+			}
+			writeAndFlush(c, "Found show in DB with name %s", dbshow.Name)
+			// Check that indexerid's match
+			//if dbshow.IndexerID != show.IndexerID {
+			//	writeAndFlush(c, "Indexer id for dbshow and indexer result differ (%d != %d), skipping.", dbshow.IndexerID, show.IndexerID)
+			//}
+			return dbshow, nil
+		}
+	}
+	return nil, fmt.Errorf("Couldn't match %s with any known show", name)
+}
+
 // Postprocess takes the given path, tries to match it with a show and episode
 // and then moves it to where it should go.
 func (server *Server) Postprocess(c *gin.Context) {
@@ -615,10 +658,6 @@ func (server *Server) Postprocess(c *gin.Context) {
 	}
 
 	goodresults := []naming.ParseResult{}
-	for i := 0; i < 3; i++ {
-		writeAndFlush(c, "working...")
-		time.Sleep(time.Second)
-	}
 
 	np := naming.NewNameParser("", naming.StandardRegexes)
 	for _, file := range mediaFiles {
@@ -641,10 +680,9 @@ func (server *Server) Postprocess(c *gin.Context) {
 	}
 
 	for _, res := range goodresults {
-		cleanedName := naming.CleanSeriesName(res.SeriesName)
-		dbshow, err := server.dbHandle.GetShowByName(cleanedName)
+		dbshow, err := server.getShowFromName(c, res.SeriesName)
 		if err != nil {
-			writeAndFlush(c, "Couldn't find show with name: '%s'. Skipping.", cleanedName)
+			writeAndFlush(c, "Couldn't find show with name: '%s'.", res.SeriesName)
 			continue
 		}
 
@@ -653,7 +691,7 @@ func (server *Server) Postprocess(c *gin.Context) {
 			dbshow.ID, res.SeasonNumber, epnum)
 
 		if err != nil {
-			writeAndFlush(c, "Could find an season/episode for %v, %v", res.SeasonNumber, epnum)
+			writeAndFlush(c, "Could find an season/episode for %d, %v, %v", dbshow.ID, res.SeasonNumber, epnum)
 			continue
 		}
 
@@ -675,6 +713,7 @@ func (server *Server) Postprocess(c *gin.Context) {
 
 		// Change this to provide progress over a channel so we can write progress
 		// to the client.
+
 		err = server.Broker.MoveFile(res.OriginalName, expandedLoc)
 		if err != nil {
 			writeAndFlush(c, "Error moving file to location: %s", err)
@@ -693,23 +732,7 @@ func (server *Server) Postprocess(c *gin.Context) {
 }
 
 func showToLocation(path, name string) string {
-	name = strings.Trim(name, " ")
-	name = strings.Trim(name, ".")
-
-	// Replace certain joining characters with a dash
-	seps := regexp.MustCompile(`[\\/\*]`)
-	name = seps.ReplaceAllString(name, "-")
-	seps = regexp.MustCompile(`[:"<>|?]`)
-	name = seps.ReplaceAllString(name, "")
-
-	// Remove all other unrecognised characters - NB we do allow any printable characters
-	legal := regexp.MustCompile(`[^[:alnum:]-.() ]`)
-	name = legal.ReplaceAllString(name, "_")
-
-	// Remove any double dashes caused by existing - in name
-	name = strings.Replace(name, "--", "-", -1)
-
-	newpath := filepath.Join(path, name)
+	newpath := filepath.Join(path, naming.CleanSeriesName(name))
 	return newpath
 }
 
@@ -723,14 +746,6 @@ func (server *Server) createShowDirectory(dbshow *db.Show) (string, error) {
 		return "", fmt.Errorf("Error creating show directory: %s", err.Error())
 	}
 	return createdDir, nil
-}
-
-// DBHandler makes a database connection available to other handlers
-func DBHandler(dbh *db.Handle) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Set("dbh", dbh)
-		c.Next()
-	}
 }
 
 // Logger provides a Logging middleware using glog

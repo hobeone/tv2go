@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -37,21 +36,6 @@ func setupTest(t *testing.T) (*db.Handle, *Server) {
 
 	s := NewServer(config.NewTestConfig(), dbh, broker, providers)
 	return dbh, s
-}
-
-func setupTestServer(mux http.Handler) (*httptest.Server, *http.Client) {
-	server := httptest.NewServer(mux)
-
-	transport := &http.Transport{
-		Proxy: func(req *http.Request) (*url.URL, error) {
-			spew.Dump(req.URL)
-			return url.Parse(server.URL)
-		},
-	}
-
-	httpClient := &http.Client{Transport: transport}
-
-	return server, httpClient
 }
 
 var GoldenShowResponse = fmt.Sprintf(`{
@@ -308,6 +292,9 @@ func TestNameCleaner(t *testing.T) {
 
 	teststr = showToLocation(dir, ".a.b (YEAR)")
 	Expect(teststr).To(Equal("/a.b (YEAR)"))
+
+	teststr = showToLocation(dir, "Marvel's Agents of S.H.I.E.L.D")
+	Expect(teststr).To(Equal("/Marvel's Agents of S.H.I.E.L.D"))
 }
 
 func TestQualityGroupList(t *testing.T) {

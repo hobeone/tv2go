@@ -60,3 +60,8 @@ func TestRegex(t *testing.T) {
 		}
 	}
 }
+
+func TestFullSanitizeName(t *testing.T) {
+	RegisterTestingT(t)
+	Expect(FullSanitizeSceneName(`Marvel's.Agents.of.S.H.I.E.L.D.`)).To(Equal("marvels agents of s h i e l d"))
+}
