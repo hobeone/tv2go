@@ -162,6 +162,8 @@ func TestNameException(t *testing.T) {
 	d := setupTest(t)
 	se := &NameException{
 		IndexerID: 123,
+		Indexer:   "tvdb",
+		Source:    "tvdb source one",
 		Name:      "Testing 1 2 3",
 	}
 	err := d.db.Save(se).Error

@@ -19,9 +19,6 @@ import (
 // Trying out funcitonal api config as described here:
 // http://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis
 
-//APIKEY is used in all calls to TVDB
-var APIKEY = ""
-
 // TvdbIndexer implements the Indexer interface
 type TvdbIndexer struct {
 	tvdbClient *tvd.Client
@@ -67,9 +64,13 @@ func (t *TvdbIndexer) GetShow(tvdbidstr string) (*db.Show, error) {
 		return nil, err
 	}
 	dbshow := t.tvdbToShow(series)
-	dbeps := make([]db.Episode, len(eps))
-	for i, ep := range eps {
-		dbeps[i] = tvdbToEpisode(&ep)
+	dbeps := []db.Episode{}
+	for _, ep := range eps {
+		if ep.EpisodeNumber != 0 {
+			dbeps = append(dbeps, tvdbToEpisode(&ep))
+		} else {
+			glog.Errorf("Skipping episode that doesn't have an episode number")
+		}
 	}
 	dbshow.Episodes = dbeps
 	return dbshow, nil

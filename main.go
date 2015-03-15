@@ -21,10 +21,10 @@ import (
 
 // ShowUpdater is ment to be run as a background goroutine for that looks for
 // Show which need updates from their indexer.
-func ShowUpdater(h *db.Handle) {
+func (d *Daemon) ShowUpdater() {
 	oldage := time.Duration(86400) * time.Second
 	for {
-		shows, err := h.GetAllShows()
+		shows, err := d.DBH.GetAllShows()
 		if err != nil {
 			glog.Errorf("Error getting shows: %s", err)
 			break
@@ -33,22 +33,26 @@ func ShowUpdater(h *db.Handle) {
 		for _, s := range shows {
 			if time.Now().Sub(s.LastIndexerUpdate) > oldage {
 				glog.Infof("%s hasn't been updated in more than %v", s.Name, oldage)
-				dbeps, err := h.GetShowEpisodes(&s)
+				dbeps, err := d.DBH.GetShowEpisodes(&s)
 				if err != nil {
 					glog.Errorf("Error getting show episodes from db: %s", err)
 					continue
 				}
-				err = tvdb.NewTvdbIndexer("").UpdateShow(&s)
+				if _, ok := d.Indexers[s.Indexer]; !ok {
+					glog.Errorf("Unknown indexer %s for show %s", s.Indexer, s.Name)
+					continue
+				}
+				err = d.Indexers[s.Indexer].UpdateShow(&s)
 				if err != nil {
 					glog.Errorf("Error updating show: %s", err.Error())
 					continue
 				}
 				glog.Infof("Saving %d episodes", len(dbeps))
-				h.SaveShow(&s)
+				d.DBH.SaveShow(&s)
 			}
 		}
 		glog.Info("Updated shows, sleeping.")
-		time.Sleep(time.Duration(5) * time.Second)
+		time.Sleep(time.Duration(900) * time.Second)
 	}
 }
 
@@ -105,8 +109,9 @@ func (d *Daemon) ProviderPoller(providerReg *providers.ProviderRegistry, broker 
 
 // Daemon contains everything needed to run a Tv2Go daemon.
 type Daemon struct {
-	Config *config.Config
-	DBH    *db.Handle
+	Config   *config.Config
+	DBH      *db.Handle
+	Indexers indexers.IndexerRegistry
 }
 
 // NewDaemon creates a new Daemon with the given config.
@@ -125,9 +130,8 @@ func NewDaemon(cfg *config.Config) *Daemon {
 
 func runDaemon(cfg *config.Config) {
 	d := NewDaemon(cfg)
-	go ShowUpdater(d.DBH)
 
-	idxReg := indexers.IndexerRegistry{
+	d.Indexers = indexers.IndexerRegistry{
 		"tvdb":   tvdb.NewTvdbIndexer("90D7DF3AE9E4841E"),
 		"tvrage": tvrage.NewTVRageIndexer(),
 	}
@@ -166,8 +170,9 @@ func runDaemon(cfg *config.Config) {
 		go ep.Poll(exitChan)
 	}
 
+	go d.ShowUpdater()
 	go d.ProviderPoller(&provReg, broker)
-	webserver := web.NewServer(cfg, d.DBH, broker, provReg, web.SetIndexers(idxReg))
+	webserver := web.NewServer(cfg, d.DBH, broker, provReg, web.SetIndexers(d.Indexers))
 
 	webserver.StartServing()
 }

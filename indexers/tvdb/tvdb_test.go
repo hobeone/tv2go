@@ -40,8 +40,28 @@ func TestGetShowById(t *testing.T) {
 	httpserver, httpclient := testTools(200, string(content))
 	defer httpserver.Close()
 
-	client := NewTvdbIndexer("", SetClient(httpclient))
+	client := NewTvdbIndexer("APIKEY", SetClient(httpclient))
 	show, err := client.GetShow("100")
 	Expect(err).ToNot(HaveOccurred(), "Error getting show: %s", err)
 	Expect(len(show.Episodes)).Should(Equal(18), "Eps is too long")
+}
+
+func TestGetShowWithEpisodeNumbersMissing(t *testing.T) {
+	RegisterTestingT(t)
+	content, err := ioutil.ReadFile("testdata/daily_show_all.xml")
+	if err != nil {
+		glog.Fatalf("Error reading test feed: %s", err.Error())
+	}
+
+	httpserver, httpclient := testTools(200, string(content))
+	defer httpserver.Close()
+
+	client := NewTvdbIndexer("APIKEY", SetClient(httpclient))
+	show, err := client.GetShow("100")
+	Expect(err).ToNot(HaveOccurred(), "Error getting show: %s", err)
+	for _, ep := range show.Episodes {
+		if ep.Episode == 0 {
+			t.Fatalf("Episode unexpectedly had no episode number: %v", ep)
+		}
+	}
 }
