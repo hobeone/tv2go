@@ -48,7 +48,7 @@ func (p *Provider) afterWithJitter(d time.Duration) <-chan time.Time {
 // Poll is designed to be run in a goroutine and wraps the polling and sleeping
 // behavior for each exception list.
 func (p *Provider) Poll(exitChan chan int) {
-	lastrun := p.DBH.GetNameExceptionHistory(p.Name)
+	lastrun := p.DBH.GetLastPollTime(p.Name)
 	toSleep := time.Since(lastrun)
 	if toSleep > p.PollInterval {
 		toSleep = time.Duration(0)
@@ -58,7 +58,7 @@ func (p *Provider) Poll(exitChan chan int) {
 		select {
 		case <-exitChan:
 			glog.Infof("%s name exception provider got exit signal.", p.Name)
-			p.DBH.SetNameExceptionHistory(p.Name)
+			p.DBH.SetLastPollTime(p.Name)
 			return
 		case <-p.afterWithJitter(toSleep):
 			toSleep = p.PollInterval

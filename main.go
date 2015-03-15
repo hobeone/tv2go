@@ -57,8 +57,17 @@ func (d *Daemon) ShowUpdater() {
 }
 
 func (d *Daemon) ProviderPoller(providerReg *providers.ProviderRegistry, broker *storage.Broker) {
+	interval := time.Second * 900
 	for {
 		np := naming.NewNameParser("", naming.StandardRegexes)
+		//Hack to stop hitting providers to much
+		//TODO: make this per provider etc
+		lastPoll := d.DBH.GetLastPollTime("providers")
+		if time.Since(lastPoll) < interval {
+			toSleep := interval - time.Since(lastPoll)
+			glog.Infof("Updated Providers, sleeping %v", toSleep)
+			time.Sleep(toSleep)
+		}
 		for name, p := range *providerReg {
 			glog.Infof("Getting new items from %s", name)
 			res, err := p.GetNewItems()
@@ -102,8 +111,7 @@ func (d *Daemon) ProviderPoller(providerReg *providers.ProviderRegistry, broker 
 				}
 			}
 		}
-		glog.Info("Updated Providers, sleeping.")
-		time.Sleep(time.Duration(900) * time.Second)
+		d.DBH.SetLastPollTime("providers")
 	}
 }
 

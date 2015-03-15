@@ -67,6 +67,7 @@ type NameException struct {
 	UpdatedAt time.Time
 }
 
+//BeforeSave ensures that all fields are set to non default values.
 func (e *NameException) BeforeSave() error {
 	if e.Indexer == "" {
 		return fmt.Errorf("NameException Indexer can't be blank")
@@ -83,15 +84,15 @@ func (e *NameException) BeforeSave() error {
 	return nil
 }
 
-// NameExceptionProviderHistory stores the last time we polled a particular
+// LastPollTime stores the last time we polled a particular
 // provider.
-type NameExceptionProviderHistory struct {
+type LastPollTime struct {
 	Name          string
 	LastRefreshed time.Time
 }
 
 // AfterFind updates all times to UTC because SQLite driver sets everything to local
-func (s *NameExceptionProviderHistory) AfterFind() error {
+func (s *LastPollTime) AfterFind() error {
 	s.LastRefreshed = s.LastRefreshed.UTC()
 	return nil
 }
@@ -199,7 +200,7 @@ type Handle struct {
 func setupDB(db gorm.DB) error {
 	tx := db.Begin()
 	err := tx.AutoMigrate(&Show{}, &Episode{}, &quality.QualityGroup{},
-		&NameException{}, &NameExceptionProviderHistory{}).Error
+		&NameException{}, &LastPollTime{}).Error
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -408,8 +409,8 @@ func (h *Handle) GetQualityGroupFromStringOrDefault(name string) *quality.Qualit
 	return qual
 }
 
-func (h *Handle) SetNameExceptionHistory(name string) error {
-	dbhistory := &NameExceptionProviderHistory{
+func (h *Handle) SetLastPollTime(name string) error {
+	dbhistory := &LastPollTime{
 		Name:          name,
 		LastRefreshed: time.Now().UTC(),
 	}
@@ -418,8 +419,8 @@ func (h *Handle) SetNameExceptionHistory(name string) error {
 	return err
 }
 
-func (h *Handle) GetNameExceptionHistory(name string) time.Time {
-	se := &NameExceptionProviderHistory{}
+func (h *Handle) GetLastPollTime(name string) time.Time {
+	se := &LastPollTime{}
 	err := h.db.Where("name = ?", name).Order("last_refreshed desc").First(se).Error
 	if err != nil {
 		return time.Time{}
@@ -458,7 +459,7 @@ func (h *Handle) SaveNameExceptions(source string, excepts []*NameException) err
 			}
 		}
 		tx.Commit()
-		h.SetNameExceptionHistory(source)
+		h.SetLastPollTime(source)
 	}
 	return nil
 }
