@@ -102,6 +102,14 @@ func TestGetShowByName(t *testing.T) {
 
 	dbshow, err = d.GetShowByName("")
 	Expect(err).To(MatchError("record not found"))
+
+	dbshow, err = d.GetShowByName("SHOW1")
+	Expect(err).To(MatchError("record not found"))
+
+	dbshow, err = d.GetShowByNameIgnoreCase("SHOW1")
+	Expect(err).ToNot(HaveOccurred())
+	Expect(dbshow.Name).To(Equal("show1"))
+
 }
 
 func TestNextAirdateForShow(t *testing.T) {

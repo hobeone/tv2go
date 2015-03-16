@@ -3,7 +3,6 @@ package naming
 import (
 	"testing"
 
-	"github.com/davecgh/go-spew/spew"
 	. "github.com/onsi/gomega"
 )
 
@@ -35,7 +34,6 @@ func TestNameParser(t *testing.T) {
 	for _, f := range names {
 		r := np.Parse(f)
 		Expect(r.SeriesName).To(Equal("Archer (2009)"))
-		spew.Dump(r)
 	}
 }
 
@@ -64,4 +62,5 @@ func TestRegex(t *testing.T) {
 func TestFullSanitizeName(t *testing.T) {
 	RegisterTestingT(t)
 	Expect(FullSanitizeSceneName(`Marvel's.Agents.of.S.H.I.E.L.D.`)).To(Equal("marvels agents of s h i e l d"))
+	Expect(FullSanitizeSceneName(`Adventure.Time`)).To(Equal("adventure time"))
 }

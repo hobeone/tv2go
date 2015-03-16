@@ -4,14 +4,14 @@ import (
 	"errors"
 	"fmt"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
-	"github.com/golang/glog"
 	"github.com/hobeone/tv2go/quality"
 	"github.com/hobeone/tv2go/types"
 	"github.com/jinzhu/gorm"
-
+	"github.com/mgutz/logxi/v1"
 	//import sqlite3 driver
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -218,7 +218,7 @@ func setupDB(db gorm.DB) error {
 }
 
 func openDB(dbType string, dbArgs string, verbose bool) gorm.DB {
-	glog.Infof("Opening database %s:%s", dbType, dbArgs)
+	log.Info("Opening database %s:%s", dbType, dbArgs)
 	// Error only returns from this if it is an unknown driver.
 	d, err := gorm.Open(dbType, dbArgs)
 	if err != nil {
@@ -226,12 +226,25 @@ func openDB(dbType string, dbArgs string, verbose bool) gorm.DB {
 	}
 	d.SingularTable(true)
 	d.LogMode(verbose)
+	d.SetLogger(&loggerShim{})
 	// Actually test that we have a working connection
 	err = d.DB().Ping()
 	if err != nil {
 		panic(err.Error())
 	}
 	return d
+}
+
+type loggerShim struct{}
+
+var dblog = log.New("db")
+
+func (l *loggerShim) Print(v ...interface{}) {
+	strs := make([]string, len(v))
+	for i, val := range v {
+		strs[i] = fmt.Sprintf("%v", val)
+	}
+	dblog.Debug(strings.Join(strs, " "))
 }
 
 func createAndOpenDb(dbPath string, verbose bool, memory bool) *Handle {
@@ -348,6 +361,14 @@ func (h *Handle) GetShowByName(name string) (*Show, error) {
 	return &show, err
 }
 
+// GetShowByNameIgnoreCase returns the show with the given name (and it's episodes) or an
+// error if not found.
+func (h *Handle) GetShowByNameIgnoreCase(name string) (*Show, error) {
+	var show Show
+	err := h.db.Preload("Episodes").Preload("QualityGroup").Where("name = ? COLLATE NOCASE", name).Find(&show).Error
+	return &show, err
+}
+
 // SaveShow saves the show (and any episodes) to the database
 func (h *Handle) SaveShow(s *Show) error {
 	if h.writeUpdates {
@@ -372,7 +393,7 @@ func (h *Handle) SaveEpisodes(eps []*Episode) error {
 		for _, e := range eps {
 			err := tx.Save(e).Error
 			if err != nil {
-				glog.Errorf("Error saving episodes to the database: %s", err.Error())
+				log.Error("Error saving episodes to the database: %s", err.Error())
 				tx.Rollback()
 				return err
 			}
@@ -415,7 +436,10 @@ func (h *Handle) SetLastPollTime(name string) error {
 		LastRefreshed: time.Now().UTC(),
 	}
 
-	err := h.db.FirstOrCreate(dbhistory).Error
+	err := h.db.Where(dbhistory).FirstOrCreate(dbhistory).Error
+	if err != nil {
+		log.Error("Couldn't find or create poll history: %s", err)
+	}
 	return err
 }
 
@@ -446,14 +470,14 @@ func (h *Handle) SaveNameExceptions(source string, excepts []*NameException) err
 		tx := h.db.Begin()
 		err := tx.Where("source = ?", source).Delete(NameException{}).Error
 		if err != nil {
-			glog.Errorf("Couldn't delete old name exceptions for %s: %s", source, err)
+			log.Error("Couldn't delete old name exceptions for %s: %s", source, err)
 			tx.Rollback()
 			return err
 		}
 		for _, e := range excepts {
 			err := tx.Save(e).Error
 			if err != nil {
-				glog.Errorf("Error saving exceptions to the database: %s", err.Error())
+				log.Error("Error saving exceptions to the database: %s", err.Error())
 				tx.Rollback()
 				return err
 			}

@@ -24,7 +24,6 @@ var basedir, _ = filepath.Abs("")
 
 func setupTest(t *testing.T) (*db.Handle, *Server) {
 	//flag.Set("logtostderr", "true")
-	gin.SetMode("test")
 
 	dbh := db.NewMemoryDBHandle(false, true)
 
@@ -35,6 +34,7 @@ func setupTest(t *testing.T) (*db.Handle, *Server) {
 	providers := providers.ProviderRegistry{}
 
 	s := NewServer(config.NewTestConfig(), dbh, broker, providers)
+	gin.SetMode("test")
 	return dbh, s
 }
 
@@ -205,7 +205,7 @@ func TestEpisode(t *testing.T) {
 	if response.Code != 405 {
 		t.Fatalf("Expected 405 response code, got %d", response.Code)
 	}
-	Expect(response.Body.String()).Should(Equal("Method Not Allowed\n"))
+	Expect(response.Body.String()).Should(Equal("405 method not allowed"))
 
 	//Valid - showid is ignored
 	response = httptest.NewRecorder()
