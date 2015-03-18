@@ -111,7 +111,7 @@ func (server *Server) Postprocess(c *gin.Context) {
 	np := naming.NewNameParser("", naming.StandardRegexes)
 	for _, file := range mediaFiles {
 		writeAndFlush(c, "Trying to parse %s", file)
-		nameres := np.Parse(file)
+		nameres := np.ParseFile(file)
 		if nameres.SeriesName == "" {
 			writeAndFlush(c, "Couldn't parse series name from %s: skipping", file)
 			continue

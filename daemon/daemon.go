@@ -56,8 +56,8 @@ func NewDaemon(cfg *config.Config) *Daemon {
 		panic("No Nzbs.org API key set in config")
 	}
 	d.Providers = providers.ProviderRegistry{
-		"nzbsOrg": providers.NewNzbsOrg(nzborgKey),
-		//		"nyaaTorrents": providers.NewNyaaTorrents(),
+		"nzbsOrg":      providers.NewNzbsOrg(nzborgKey),
+		"nyaaTorrents": providers.NewNyaaTorrents(),
 	}
 
 	broker, err := storage.NewBroker(cfg.Storage.Directories...)

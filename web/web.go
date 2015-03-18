@@ -25,7 +25,7 @@ type genericResult struct {
 }
 
 func genError(c *gin.Context, status int, msg string) {
-	logger.Info("Error serving request", "url", c.Request.URL.String(), "err", msg)
+	glog.Infof("Error serving request %s: %s", c.Request.URL.String(), msg)
 	c.JSON(status, genericResult{
 		Message: msg,
 		Result:  "failure",

@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang/glog"
 	"github.com/hobeone/tv2go/quality"
 	"github.com/hobeone/tv2go/types"
 )
@@ -50,7 +51,7 @@ func (server *Server) AddShow(c *gin.Context) {
 		c.JSON(500, fmt.Sprintf("Bad indexerid: %s", err.Error()))
 		return
 	}
-	logger.Info("Got id to add", "id", indexerID)
+	glog.Infof("Got id to add: %d", indexerID)
 	// TODO: lame
 	dbshow, err := server.indexers[reqJSON.IndexerName].GetShow(strconv.FormatInt(indexerID, 10))
 	if err != nil {
@@ -69,7 +70,7 @@ func (server *Server) AddShow(c *gin.Context) {
 	}
 	if dbshow.Location == "" {
 		dbshow.Location = showToLocation(server.Broker.RootDirs[0], dbshow.Name)
-		logger.Info("Location not set on show, using default", "show", dbshow.Name, "default", dbshow.Location)
+		glog.Infof("Location not set on show %s, using default %s", dbshow.Name, dbshow.Location)
 	}
 
 	err = h.AddShow(dbshow)

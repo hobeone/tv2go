@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -216,6 +217,16 @@ func setupDB(db gorm.DB) error {
 	return nil
 }
 
+type logBridge struct{}
+
+func (l logBridge) Print(v ...interface{}) {
+	strs := make([]string, len(v))
+	for i, val := range v {
+		strs[i] = fmt.Sprintf("%v", val)
+	}
+	glog.Info(strings.Join(strs, " "))
+}
+
 func openDB(dbType string, dbArgs string, verbose bool) gorm.DB {
 	glog.Infof("Opening database %s:%s", dbType, dbArgs)
 	// Error only returns from this if it is an unknown driver.
@@ -225,6 +236,7 @@ func openDB(dbType string, dbArgs string, verbose bool) gorm.DB {
 	}
 	d.SingularTable(true)
 	d.LogMode(verbose)
+	d.SetLogger(logBridge{})
 	// Actually test that we have a working connection
 	err = d.DB().Ping()
 	if err != nil {

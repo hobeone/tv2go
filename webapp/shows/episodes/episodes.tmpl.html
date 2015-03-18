@@ -12,7 +12,7 @@
       </tr>
 
       <tr ng-repeat="ep in epSeason.items | orderBy:['-episode'] ">
-        <td>{{ep.episode}}</td>
+        <td>{{ep.episode}} ({{ep.absolute_episode}})</td>
         <td>{{ep.airdate || "Unaired"}}</td>
         <td>{{ep.name}}</td>
         <td>

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang/glog"
 	"github.com/hobeone/tv2go/db"
 	"github.com/hobeone/tv2go/storage"
 	"github.com/hobeone/tv2go/types"
@@ -154,12 +155,12 @@ func (server *Server) ShowUpdateFromDisk(c *gin.Context) {
 	dbeps := []*db.Episode{}
 	for _, pr := range parseRes {
 		if len(pr.EpisodeNumbers) == 0 {
-			logger.Error("Didn't get episode number from parse result", "name", pr.OriginalName)
+			glog.Errorf("Didn't get episode number from '%s'", pr.OriginalName)
 			continue
 		}
 		dbep, err := server.dbHandle.GetEpisodeByShowSeasonAndNumber(showid, pr.SeasonNumber, pr.EpisodeNumbers[0])
 		if err != nil {
-			logger.Error("Couldn't find episode by show, season, number", "id", showid, "season", pr.SeasonNumber, "episode", pr.EpisodeNumbers[0])
+			glog.Errorf("Couldn't find episode by showid %d, season %d, number %d", showid, pr.SeasonNumber, pr.EpisodeNumbers[0])
 			continue
 		}
 		dbep.Quality = pr.Quality

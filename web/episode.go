@@ -12,18 +12,19 @@ import (
 
 func episodeToResponse(ep *db.Episode) episodeResponse {
 	return episodeResponse{
-		ID:          ep.ID,
-		ShowID:      ep.ShowId,
-		AirDate:     ep.AirDateString(),
-		Description: ep.Description,
-		FileSize:    ep.FileSize,
-		Location:    ep.Location,
-		Name:        ep.Name,
-		Quality:     ep.Quality.String(),
-		ReleaseName: ep.ReleaseName,
-		Status:      ep.Status.String(),
-		Season:      ep.Season,
-		Episode:     ep.Episode,
+		ID:              ep.ID,
+		ShowID:          ep.ShowId,
+		AirDate:         ep.AirDateString(),
+		Description:     ep.Description,
+		FileSize:        ep.FileSize,
+		Location:        ep.Location,
+		Name:            ep.Name,
+		Quality:         ep.Quality.String(),
+		ReleaseName:     ep.ReleaseName,
+		Status:          ep.Status.String(),
+		Season:          ep.Season,
+		Episode:         ep.Episode,
+		AbsoluteEpisode: ep.AbsoluteNumber,
 	}
 }
 
@@ -36,19 +37,20 @@ func episodesToResponse(eps []db.Episode) []episodeResponse {
 }
 
 type episodeResponse struct {
-	ID            int64  `json:"id" form:"id" binding:"required"`
-	ShowID        int64  `json:"showid" form:"showid" binding:"required"`
-	Name          string `json:"name" form:"name" binding:"required"`
-	Season        int64  `json:"season" form:"season"`
-	Episode       int64  `json:"episode" form:"episode"`
-	AirDate       string `json:"airdate" form:"airdate"`
-	Description   string `json:"description" form:"description"`
-	FileSize      int64  `json:"file_size" form:"file_size"`
-	FileSizeHuman string `json:"file_size_human" form:"file_size_human"`
-	Location      string `json:"location" form:"location"`
-	Quality       string `json:"quality" form:"quality"`
-	ReleaseName   string `json:"release_name" form:"release_name"`
-	Status        string `json:"status" form:"status"`
+	ID              int64  `json:"id" form:"id" binding:"required"`
+	ShowID          int64  `json:"showid" form:"showid" binding:"required"`
+	Name            string `json:"name" form:"name" binding:"required"`
+	Season          int64  `json:"season" form:"season"`
+	Episode         int64  `json:"episode" form:"episode"`
+	AbsoluteEpisode int64  `json:"absolute_episode" form:"absolute_episode"`
+	AirDate         string `json:"airdate" form:"airdate"`
+	Description     string `json:"description" form:"description"`
+	FileSize        int64  `json:"file_size" form:"file_size"`
+	FileSizeHuman   string `json:"file_size_human" form:"file_size_human"`
+	Location        string `json:"location" form:"location"`
+	Quality         string `json:"quality" form:"quality"`
+	ReleaseName     string `json:"release_name" form:"release_name"`
+	Status          string `json:"status" form:"status"`
 }
 
 // Episode returns just one episode

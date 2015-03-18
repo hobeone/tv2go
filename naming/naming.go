@@ -172,7 +172,6 @@ func (np *NameParser) parseString(name string) (*ParseResult, error) {
 			}
 			if m, ok := matches["season_num"]; ok {
 				m = strings.TrimLeft(m, "0")
-				glog.Infof("Converting Season '%s' to int", m)
 				sn, err := strconv.ParseInt(m, 10, 64)
 				if err != nil {
 					glog.Errorf("Error converting season_num '%s' to int from string: %s", m, pr.OriginalName)
@@ -245,8 +244,22 @@ func (np *NameParser) parseString(name string) (*ParseResult, error) {
 	return &ParseResult{}, fmt.Errorf("Couldn't parse string %s", name)
 }
 
-// Parse tries to extract show and episode information from a file path.
 func (np *NameParser) Parse(name string) ParseResult {
+	res, _ := np.parseString(name)
+	q := quality.QualityFromName(name, false)
+	if q == quality.UNKNOWN {
+		glog.Warningf("Could't parse quality from '%s'", name)
+	} else {
+		glog.Infof("Found quality %s for '%s'", q.String(), name)
+	}
+	res.Quality = q
+	return *res
+}
+
+// Parse tries to extract show and episode information from a file path. It
+// considers both the filename and directory when trying to extract information
+func (np *NameParser) ParseFile(name string) ParseResult {
+	glog.Info("Parsing string '%s' for show information")
 	dirName, fileName := filepath.Split(name)
 	fileName = stripExtension(fileName)
 	dirNameBase := filepath.Base(dirName)
@@ -257,7 +270,7 @@ func (np *NameParser) Parse(name string) ParseResult {
 
 	q := quality.QualityFromName(name, false)
 	if q == quality.UNKNOWN {
-		glog.Errorf("Could't parse quality from '%s'", name)
+		glog.Warningf("Could't parse quality from '%s'", name)
 	} else {
 		glog.Infof("Found quality %s for '%s'", q.String(), name)
 	}
