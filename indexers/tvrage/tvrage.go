@@ -88,7 +88,7 @@ func (t *TVRageIndexer) GetShow(showid string) (*db.Show, error) {
 }
 
 // UpdateShow updates the give Database show from TVRage
-func (t *TVRageIndexer) UpdateShow(dbshow *db.Show) error {
+func (t *TVRageIndexer) UpdateShow(dbshow *db.Show, episodes []db.Episode) error {
 	return nil
 }
 

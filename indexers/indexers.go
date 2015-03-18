@@ -6,7 +6,7 @@ import "github.com/hobeone/tv2go/db"
 type Indexer interface {
 	Search(string) ([]db.Show, error)
 	GetShow(string) (*db.Show, error)
-	UpdateShow(*db.Show) error
+	UpdateShow(*db.Show, []db.Episode) error
 	Name() string
 }
 

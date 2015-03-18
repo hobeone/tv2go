@@ -55,6 +55,27 @@ func (t *TvdbIndexer) Name() string {
 	return "tvdb"
 }
 
+func filterEpisodes(eps []tvd.Episode) []tvd.Episode {
+	dbeps := []tvd.Episode{}
+	for _, ep := range eps {
+		if ep.EpisodeNumber != 0 {
+			dbeps = append(dbeps, ep)
+		} else {
+			glog.Error("Filtering episode that doesn't have an episode number")
+		}
+	}
+	return dbeps
+
+}
+func tvdbEpsToEpisodes(eps []tvd.Episode) []db.Episode {
+	f := filterEpisodes(eps)
+	dbeps := make([]db.Episode, len(f))
+	for i, ep := range f {
+		dbeps[i] = tvdbToEpisode(&ep)
+	}
+	return dbeps
+}
+
 // GetShow gets TVDB information for the given ID.
 func (t *TvdbIndexer) GetShow(tvdbidstr string) (*db.Show, error) {
 	tvdbid, _ := strconv.ParseInt(tvdbidstr, 10, 64)
@@ -64,15 +85,7 @@ func (t *TvdbIndexer) GetShow(tvdbidstr string) (*db.Show, error) {
 		return nil, err
 	}
 	dbshow := t.tvdbToShow(series)
-	dbeps := []db.Episode{}
-	for _, ep := range eps {
-		if ep.EpisodeNumber != 0 {
-			dbeps = append(dbeps, tvdbToEpisode(&ep))
-		} else {
-			glog.Errorf("Skipping episode that doesn't have an episode number")
-		}
-	}
-	dbshow.Episodes = dbeps
+	dbshow.Episodes = tvdbEpsToEpisodes(eps)
 	return dbshow, nil
 }
 
@@ -146,22 +159,26 @@ func updateDbEpisodeFromTvdb(dbep *db.Episode, tvep *tvd.Episode) {
 }
 
 // UpdateShow updates the give Database show from TVDB
-func (t *TvdbIndexer) UpdateShow(dbshow *db.Show) error {
+func (t *TvdbIndexer) UpdateShow(dbshow *db.Show, episodes []db.Episode) error {
 	ts, eps, err := t.tvdbClient.SeriesAllByID(int(dbshow.IndexerID), "en")
 	if err != nil {
 		return err
 	}
 	t.updateDbShowFromSeries(dbshow, ts)
 
-	for _, episode := range eps {
+	for _, episode := range filterEpisodes(eps) {
 		glog.Infof("Updating S:%d, E:%d for '%s (tvdb id: %d)'", episode.SeasonNumber, episode.EpisodeNumber, dbshow.Name, dbshow.IndexerID)
 		epToUpdate := db.Episode{}
-		for _, dbep := range dbshow.Episodes {
+		for _, dbep := range episodes {
 			if dbep.Season == int64(episode.SeasonNumber) && dbep.Episode == int64(episode.EpisodeNumber) {
 				glog.Infof("Found existing episode for S:%d, E:%d for '%s (tvdb id: %d)'",
 					episode.SeasonNumber, episode.EpisodeNumber, dbshow.Name, dbshow.IndexerID)
 				epToUpdate = dbep
+				break
 			}
+		}
+		if epToUpdate.ID == 0 {
+			glog.Infof("tvdb: found new episode for show %s, S%d E%d", dbshow.Name, episode.SeasonNumber, episode.EpisodeNumber)
 		}
 		updateDbEpisodeFromTvdb(&epToUpdate, &episode)
 

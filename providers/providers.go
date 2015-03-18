@@ -2,8 +2,13 @@ package providers
 
 import (
 	"fmt"
+	"io/ioutil"
+	"math/rand"
 	"net/http"
+	"strings"
 	"time"
+
+	"github.com/golang/glog"
 )
 
 // ProviderRegistry provides an easy way to map providers to string names
@@ -38,6 +43,8 @@ type ProviderResult struct {
 
 // Provider defines the interface a tv2go provider must implement
 type Provider interface {
+	Name() string
+
 	TvSearch(string, int64, int64) ([]ProviderResult, error)
 	//need better name
 	//Get file contents, leave it to something else to save it to disk
@@ -52,34 +59,71 @@ type Provider interface {
 
 // BaseProvider is the struct used for shared functionality of all providers.
 type BaseProvider struct {
-	Client *http.Client
+	ProviderName string
+	Client       *http.Client
+	PollInterval time.Duration
+	after        func(time.Duration) <-chan (time.Time)
+}
+
+func NewBaseProvider(name string) *BaseProvider {
+	return &BaseProvider{
+		ProviderName: name,
+		Client:       &http.Client{},
+		after:        time.After,
+		PollInterval: time.Minute * 15, // reasonable default
+	}
+}
+
+func (b *BaseProvider) Name() string {
+	return b.ProviderName
+}
+
+//GetURL is designed to be used to download a file from a URL
+func (b *BaseProvider) GetURL(u string) (string, []byte, error) {
+	glog.Infof("Getting URL %s", u)
+	resp, err := b.Client.Get(u)
+	if err != nil {
+		return "", nil, err
+	}
+
+	filename := ""
+	contHeader := resp.Header.Get("Content-Disposition")
+	res := strings.Split(contHeader, "; ")
+	for _, res := range res {
+		if strings.HasPrefix(res, "filename=") {
+			filename = strings.Split(res, "=")[1]
+		}
+	}
+
+	defer resp.Body.Close()
+	content, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return filename, content, err
+	}
+	return filename, content, nil
+}
+
+func (p *BaseProvider) AfterWithJitter(d time.Duration) <-chan time.Time {
+	s := d + time.Duration(rand.Int63n(60))*time.Second
+	fmt.Printf("%v\n", s)
+	return p.after(d)
 }
 
 // TorrentProvider is the base type for Torrent based providers
 type TorrentProvider struct {
-	Name string
-	BaseProvider
+	*BaseProvider
 }
 
 func (t *TorrentProvider) Type() ProviderType {
 	return TORRENT
 }
 
-func (t *TorrentProvider) name() string {
-	return t.Name
-}
-
 type NZBProvider struct {
-	Name string
-	BaseProvider
+	*BaseProvider
 }
 
 func (t *NZBProvider) Type() ProviderType {
 	return NZB
-}
-
-func (t *NZBProvider) name() string {
-	return t.Name
 }
 
 // ProviderType is for the constants below

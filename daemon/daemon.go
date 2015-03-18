@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/golang/glog"
 	"github.com/hobeone/tv2go/config"
 	"github.com/hobeone/tv2go/db"
 	"github.com/hobeone/tv2go/indexers"
@@ -15,7 +16,6 @@ import (
 	"github.com/hobeone/tv2go/storage"
 	"github.com/hobeone/tv2go/types"
 	"github.com/hobeone/tv2go/web"
-	"github.com/mgutz/logxi/v1"
 )
 
 // Daemon contains everything needed to run a Tv2Go daemon.
@@ -86,7 +86,7 @@ func (d *Daemon) Run() {
 	}
 
 	go d.ShowUpdater()
-	go d.ProviderPoller()
+	go d.PollProviders()
 	webserver := web.NewServer(d.Config, d.DBH, d.Storage, d.Providers, web.SetIndexers(d.Indexers))
 
 	webserver.StartServing()
@@ -99,94 +99,125 @@ func (d *Daemon) ShowUpdater() {
 	for {
 		shows, err := d.DBH.GetAllShows()
 		if err != nil {
-			log.Error("Error getting shows.", "error", err)
+			glog.Errorf("Error getting shows: %s", err)
 			break
 		}
-		log.Debug("Got shows from db", "shows", len(shows))
+		glog.Infof("Got %d shows from db", len(shows))
 		for _, s := range shows {
 			if time.Now().Sub(s.LastIndexerUpdate) > oldage {
-				log.Info("%s hasn't been updated in more than %v", s.Name, oldage)
+				glog.Infof("%s hasn't been updated in more than %v", s.Name, oldage)
 				dbeps, err := d.DBH.GetShowEpisodes(&s)
 				if err != nil {
-					log.Error("Error getting show episodes from db", "err", err)
+					glog.Errorf("Error getting show episodes from db: %s", err)
 					continue
 				}
 				if _, ok := d.Indexers[s.Indexer]; !ok {
-					log.Error("Unknown indexer for show", "indexer", s.Indexer, "show", s.Name)
+					glog.Errorf("Unknown indexer '%s' for show %s", s.Indexer, s.Name)
 					continue
 				}
-				err = d.Indexers[s.Indexer].UpdateShow(&s)
+				episodes, err := d.DBH.GetShowEpisodes(&s)
 				if err != nil {
-					log.Error("Error updating show", "show", s.Name, "err", err.Error())
+					glog.Errorf("error getting episodes for show %s: %s", s.Name, err)
+				}
+				err = d.Indexers[s.Indexer].UpdateShow(&s, episodes)
+				if err != nil {
+					glog.Errorf("Error updating show %s: %s", s.Name, err.Error())
 					continue
 				}
-				log.Info("Saving %d episodes", len(dbeps))
-				d.DBH.SaveShow(&s)
+				glog.Infof("Saving %d episodes for %s", len(dbeps), s.Name)
+				err = d.DBH.SaveShow(&s)
+				if err != nil {
+					glog.Errorf("error saving show %s to db: %s", s.Name, err)
+				}
 			}
 		}
 		toSleep := time.Duration(900) * time.Second
-		log.Info("Updated shows, sleeping.", "time", toSleep.String())
+		glog.Infof("Updated shows, sleeping %s", toSleep.String())
 		time.Sleep(toSleep)
 	}
 }
 
-func (d *Daemon) ProviderPoller() {
-	interval := time.Second * 900
-	for {
-		np := naming.NewNameParser("", naming.StandardRegexes)
-		//Hack to stop hitting providers to much
-		//TODO: make this per provider etc
-		lastPoll := d.DBH.GetLastPollTime("providers")
-		if time.Since(lastPoll) < interval {
-			toSleep := interval - time.Since(lastPoll)
-			log.Info("Povider: sleeping until next update", "interval", interval.String(), "sleeptime", toSleep.String())
-			time.Sleep(toSleep)
-		} else {
-			log.Info("lastpoll was less than the min interval", "lastpoll", lastPoll.String())
-		}
-		for name, p := range d.Providers {
-			log.Info("Getting new items from provider", "provider", name)
-			res, err := p.GetNewItems()
-			if err != nil {
-				log.Error("Error getting new items from provider", "provider", name, "err", err)
-				continue
-			}
-			for _, r := range res {
-				pr := np.Parse(r.Name)
-				dbshow, err := d.DBH.GetShowByName(pr.SeriesName)
-				if err != nil {
-					log.Warn("Couldn't find show in database, skipping.", "show", pr.SeriesName)
-					continue
-				}
-				ep, err := d.DBH.GetEpisodeByShowSeasonAndNumber(dbshow.ID, pr.SeasonNumber, pr.EpisodeNumbers[0])
-				if err != nil {
-					log.Error("Can't find episode in DB", "season", pr.SeasonNumber, "episode", pr.EpisodeNumbers[0], "show", dbshow.Name)
-					continue
-				}
-				if ep.Status == types.WANTED {
-					p.GetURL(r.URL)
-					destPath := ""
-					switch p.Type() {
-					case providers.NZB:
-						destPath = d.Config.Storage.NZBBlackhole
-					}
-					filename, filecont, err := p.GetURL(r.URL)
-					if err != nil {
-						log.Error("Couldn't download episode", "url", r.URL, "err", err)
-						continue
-					}
-					fname, err := d.Storage.SaveToFile(destPath, filename, filecont)
-					if err != nil {
-						log.Error("Error saving file", "path", fname, "err", err)
-					}
-					ep.Status = types.SNATCHED
-					err = d.DBH.SaveEpisode(ep)
-					if err != nil {
-						log.Error("Error saving episode", "name", ep.Name, "err", err)
-					}
-				}
-			}
-		}
-		d.DBH.SetLastPollTime("providers")
+func (d *Daemon) PollProviders() {
+	respChan := make(chan (providers.ProviderResult))
+	for _, p := range d.Providers {
+		go providers.NewProviderPoller(p, time.Minute*15, d.DBH, respChan).Poll()
 	}
+	for {
+		select {
+		case resp := <-respChan:
+			d.ProcessProviderResult(resp)
+		}
+	}
+}
+
+func (d *Daemon) matchShowName(name string) (*db.Show, error) {
+	glog.Infof("Trying to match provider result %s", name)
+
+	glog.Infof("Trying to find an exact match in the database for %s", name)
+	dbshow, err := d.DBH.GetShowByName(name)
+	if err == nil {
+		glog.Infof("Matched name %s to show %s", name, dbshow.Name)
+		return dbshow, nil
+	}
+	glog.Infof("Couldn't find show with name %s in database.", name)
+
+	sceneName := naming.FullSanitizeSceneName(name)
+	glog.Infof("Converting name '%s' to scene name '%s'", name, sceneName)
+
+	dbshow, err = d.DBH.GetShowFromNameException(sceneName)
+	if err == nil {
+		glog.Infof("Matched provider result %s to show %s", sceneName, dbshow.Name)
+		return dbshow, nil
+	}
+	glog.Infof("Couldn't find a match scene name %s", sceneName)
+
+	return nil, fmt.Errorf("Couldn't find a match for show %s", name)
+}
+
+func (d *Daemon) ProcessProviderResult(r providers.ProviderResult) {
+	np := naming.NewNameParser("", naming.StandardRegexes)
+	pr := np.Parse(r.Name)
+
+	//TODO: make this work with more kinds of episodes:
+	if len(pr.EpisodeNumbers) == 0 {
+		glog.Infof("Provider result %s had no episodes, skipping", pr.OriginalName)
+		return
+	}
+
+	dbshow, err := d.matchShowName(pr.SeriesName)
+
+	if err != nil {
+		return
+	}
+
+	ep, err := d.DBH.GetEpisodeByShowSeasonAndNumber(dbshow.ID, pr.SeasonNumber, pr.EpisodeNumbers[0])
+	if err != nil {
+		glog.Errorf("Can't find episode in DB Show: %s S%dE%d", dbshow.Name, pr.SeasonNumber, pr.EpisodeNumbers[0])
+		return
+	}
+	// Don't like this, super fragile
+	p := d.Providers[r.ProviderName]
+	if ep.Status == types.WANTED {
+		destPath := ""
+		switch p.Type() {
+		case providers.NZB:
+			destPath = d.Config.Storage.NZBBlackhole
+		}
+		filename, filecont, err := p.GetURL(r.URL)
+		if err != nil {
+			glog.Errorf("Couldn't download %s: %s", r.URL, err)
+			return
+		}
+		fname, err := d.Storage.SaveToFile(destPath, filename, filecont)
+		if err != nil {
+			glog.Errorf("Error saving file to %s: %s", fname, err)
+			return
+		}
+		ep.Status = types.SNATCHED
+		err = d.DBH.SaveEpisode(ep)
+		if err != nil {
+			glog.Errorf("Error saving episode %s: %s", ep.Name, err)
+		}
+	}
+	return
 }

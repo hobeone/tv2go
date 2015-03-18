@@ -3,15 +3,16 @@ package db
 import (
 	"errors"
 	"fmt"
+	"log"
 	"path/filepath"
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/golang/glog"
 	"github.com/hobeone/tv2go/quality"
 	"github.com/hobeone/tv2go/types"
 	"github.com/jinzhu/gorm"
-	"github.com/mgutz/logxi/v1"
 	//import sqlite3 driver
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -218,7 +219,7 @@ func setupDB(db gorm.DB) error {
 }
 
 func openDB(dbType string, dbArgs string, verbose bool) gorm.DB {
-	log.Info("Opening database %s:%s", dbType, dbArgs)
+	glog.Infof("Opening database %s:%s", dbType, dbArgs)
 	// Error only returns from this if it is an unknown driver.
 	d, err := gorm.Open(dbType, dbArgs)
 	if err != nil {
@@ -393,7 +394,7 @@ func (h *Handle) SaveEpisodes(eps []*Episode) error {
 		for _, e := range eps {
 			err := tx.Save(e).Error
 			if err != nil {
-				log.Error("Error saving episodes to the database: %s", err.Error())
+				glog.Errorf("Error saving episodes to the database: %s", err.Error())
 				tx.Rollback()
 				return err
 			}
@@ -432,15 +433,15 @@ func (h *Handle) GetQualityGroupFromStringOrDefault(name string) *quality.Qualit
 
 func (h *Handle) SetLastPollTime(name string) error {
 	dbhistory := &LastPollTime{
-		Name:          name,
-		LastRefreshed: time.Now().UTC(),
+		Name: name,
 	}
 
-	err := h.db.Where(dbhistory).FirstOrCreate(dbhistory).Error
+	err := h.db.Where(dbhistory).FirstOrInit(dbhistory).Error
 	if err != nil {
-		log.Error("Couldn't find or create poll history: %s", err)
+		glog.Errorf("Couldn't find or create poll history: %s", err)
 	}
-	return err
+	dbhistory.LastRefreshed = time.Now()
+	return h.db.Save(dbhistory).Error
 }
 
 func (h *Handle) GetLastPollTime(name string) time.Time {
@@ -470,14 +471,14 @@ func (h *Handle) SaveNameExceptions(source string, excepts []*NameException) err
 		tx := h.db.Begin()
 		err := tx.Where("source = ?", source).Delete(NameException{}).Error
 		if err != nil {
-			log.Error("Couldn't delete old name exceptions for %s: %s", source, err)
+			glog.Errorf("Couldn't delete old name exceptions for %s: %s", source, err)
 			tx.Rollback()
 			return err
 		}
 		for _, e := range excepts {
 			err := tx.Save(e).Error
 			if err != nil {
-				log.Error("Error saving exceptions to the database: %s", err.Error())
+				glog.Errorf("Error saving exceptions to the database: %s", err.Error())
 				tx.Rollback()
 				return err
 			}

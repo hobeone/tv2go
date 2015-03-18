@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang/glog"
 	"github.com/hobeone/tv2go/config"
 	"github.com/hobeone/tv2go/db"
 	"github.com/hobeone/tv2go/indexers"
@@ -16,7 +17,6 @@ import (
 	"github.com/hobeone/tv2go/providers"
 	"github.com/hobeone/tv2go/storage"
 	"github.com/hobeone/tv2go/types"
-	"github.com/mgutz/logxi/v1"
 )
 
 type genericResult struct {
@@ -49,9 +49,7 @@ func (server *Server) createShowDirectory(dbshow *db.Show) (string, error) {
 	return createdDir, nil
 }
 
-var logger = log.New("web")
-
-// Logger provides a Logging middleware using logxi
+// Logger provides a Logging middleware using glog
 func Logger() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		t := time.Now()
@@ -61,14 +59,13 @@ func Logger() gin.HandlerFunc {
 		// after request
 		end := time.Now()
 		latency := end.Sub(t)
-
-		logger.Info("Request",
-			"status", c.Writer.Status(),
-			"latency", latency.String(),
-			"clientip", c.ClientIP(),
-			"method", c.Request.Method,
-			"uri", c.Request.URL.RequestURI(),
-			"errors", c.Errors.String(),
+		glog.Infof("[GIN] |%3d| %12v | %s |%-7s %s\n%s",
+			c.Writer.Status(),
+			latency,
+			c.ClientIP(),
+			c.Request.Method,
+			c.Request.URL.RequestURI(),
+			c.Errors.String(),
 		)
 	}
 }

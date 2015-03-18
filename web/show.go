@@ -195,7 +195,7 @@ func (server *Server) ShowUpdateFromIndexer(c *gin.Context) {
 		return
 	}
 
-	err = server.indexers[dbshow.Indexer].UpdateShow(dbshow)
+	err = server.indexers[dbshow.Indexer].UpdateShow(dbshow, dbshow.Episodes)
 	if err != nil {
 		genError(c, http.StatusInternalServerError, fmt.Sprintf("Error updating show: %s", err.Error()))
 		return

@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/golang/glog"
@@ -21,8 +20,6 @@ type NzbsOrg struct {
 	URL    string
 	APIKEY string
 	NZBProvider
-	// TODO: figure out how to set up an interface for this:
-	//Logger glog.Logger
 }
 
 // NewNzbsOrg creates a new nzbs.org client
@@ -31,10 +28,7 @@ func NewNzbsOrg(key string, options ...func(*NzbsOrg)) *NzbsOrg {
 		APIKEY: key,
 		URL:    "https://nzbs.org/api",
 		NZBProvider: NZBProvider{
-			Name: "nzbsOrg",
-			BaseProvider: BaseProvider{
-				Client: &http.Client{},
-			},
+			BaseProvider: NewBaseProvider("nzbsOrg"),
 		},
 	}
 	for _, option := range options {
@@ -49,32 +43,6 @@ func SetClient(c *http.Client) func(*NzbsOrg) {
 	return func(n *NzbsOrg) {
 		n.Client = c
 	}
-}
-
-// GetURL fetches the data from the given url and returns a filename string,
-// the contents as a byte array and an error if one occured.
-func (n *NzbsOrg) GetURL(u string) (string, []byte, error) {
-	glog.Infof("Getting URL '%s'", u)
-	resp, err := n.Client.Get(u)
-	if err != nil {
-		return "", nil, err
-	}
-
-	filename := ""
-	contHeader := resp.Header.Get("Content-Disposition")
-	res := strings.Split(contHeader, "; ")
-	for _, res := range res {
-		if strings.HasPrefix(res, "filename=") {
-			filename = strings.Split(res, "=")[1]
-		}
-	}
-
-	defer resp.Body.Close()
-	b, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return filename, b, err
-	}
-	return filename, b, nil
 }
 
 type tvSearchResponse struct {
@@ -149,10 +117,10 @@ func (n *NzbsOrg) GetNewItems() ([]ProviderResult, error) {
 		}
 
 		results[i] = ProviderResult{
-			Type:         "NZB",
+			Type:         n.Type().String(),
 			Age:          parsedTime,
 			Name:         story.Title,
-			ProviderName: n.name(),
+			ProviderName: n.Name(),
 			URL:          story.Link,
 			Size:         size,
 			TVRageID:     rageID,
@@ -230,7 +198,7 @@ func (n *NzbsOrg) TvSearch(showName string, season, ep int64) ([]ProviderResult,
 			Type:         "NZB",
 			Age:          parsedTime,
 			Name:         story.Title,
-			ProviderName: n.name(),
+			ProviderName: n.Name(),
 			URL:          story.Link,
 			Size:         size,
 		}

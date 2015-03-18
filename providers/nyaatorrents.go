@@ -2,12 +2,9 @@ package providers
 
 import (
 	"encoding/xml"
-	"io/ioutil"
-	"net/http"
 	"net/url"
 	"regexp"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/dustin/go-humanize"
@@ -25,40 +22,13 @@ func NewNyaaTorrents(options ...func(*NyaaTorrents)) *NyaaTorrents {
 	n := &NyaaTorrents{
 		URL: "http://www.nyaa.se/",
 		TorrentProvider: TorrentProvider{
-			Name: "nyaaTorrents",
-			BaseProvider: BaseProvider{
-				Client: &http.Client{},
-			},
+			BaseProvider: NewBaseProvider("nyaaTorrents"),
 		},
 	}
 	for _, option := range options {
 		option(n)
 	}
 	return n
-}
-
-func (n *NyaaTorrents) GetURL(u string) (string, []byte, error) {
-	glog.Infof("Getting URL '%s'", u)
-	resp, err := n.Client.Get(u)
-	if err != nil {
-		return "", nil, err
-	}
-
-	filename := ""
-	contHeader := resp.Header.Get("Content-Disposition")
-	res := strings.Split(contHeader, "; ")
-	for _, res := range res {
-		if strings.HasPrefix(res, "filename=") {
-			filename = strings.Split(res, "=")[1]
-		}
-	}
-
-	defer resp.Body.Close()
-	b, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return filename, b, err
-	}
-	return filename, b, nil
 }
 
 var descRegex = regexp.MustCompile(`^(?i)(?P<seeders>\d+)\s+seeder\(s\), (?P<leechers>\d+)\s+leecher\(s\),\s+(?P<downloads>\d+)\s+download\(s\) - (?P<size>[^-]+) -`)
@@ -130,7 +100,7 @@ func (n *NyaaTorrents) TvSearch(showName string, season, ep int64) ([]ProviderRe
 			Seeders:      seeders,
 			Age:          parsedTime,
 			Type:         n.Type().String(),
-			ProviderName: n.name(),
+			ProviderName: n.Name(),
 		}
 	}
 

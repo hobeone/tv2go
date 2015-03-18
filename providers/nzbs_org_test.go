@@ -99,3 +99,34 @@ func TestNzbsOrgGetNewItems(t *testing.T) {
 	}
 	Expect(res).To(HaveLen(100))
 }
+
+/*
+func TestPolling(t *testing.T) {
+
+	body, err := ioutil.ReadFile("testdata/nzbs_org_feed.rss")
+	if err != nil {
+		t.Fatalf("Error reading test file %s", err)
+	}
+	flag.Set("logtostderr", "true")
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/xml")
+		w.WriteHeader(200)
+		w.Write(body)
+	}))
+	defer server.Close()
+
+	RegisterTestingT(t)
+	n := NewNzbsOrg("API_KEY")
+	n.URL = server.URL
+
+	retchan := make(chan (ProviderResult))
+	poller := NewProviderPoller(n, time.Minute*15, time.Time{}, retchan)
+	reader := func() {
+		for {
+			spew.Dump(<-retchan)
+		}
+	}
+	go reader()
+	go poller.Poll()
+}
+*/
