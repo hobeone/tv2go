@@ -3,9 +3,7 @@ package db
 import (
 	"errors"
 	"fmt"
-	"log"
 	"path/filepath"
-	"strings"
 	"sync"
 	"time"
 
@@ -227,25 +225,12 @@ func openDB(dbType string, dbArgs string, verbose bool) gorm.DB {
 	}
 	d.SingularTable(true)
 	d.LogMode(verbose)
-	d.SetLogger(&loggerShim{})
 	// Actually test that we have a working connection
 	err = d.DB().Ping()
 	if err != nil {
 		panic(err.Error())
 	}
 	return d
-}
-
-type loggerShim struct{}
-
-var dblog = log.New("db")
-
-func (l *loggerShim) Print(v ...interface{}) {
-	strs := make([]string, len(v))
-	for i, val := range v {
-		strs[i] = fmt.Sprintf("%v", val)
-	}
-	dblog.Debug(strings.Join(strs, " "))
 }
 
 func createAndOpenDb(dbPath string, verbose bool, memory bool) *Handle {

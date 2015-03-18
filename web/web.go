@@ -86,7 +86,7 @@ func CORSMiddleware() gin.HandlerFunc {
 
 // StartServing does just what it says.
 func (server *Server) StartServing() {
-	logger.Fatal("Error starting server", "err",
+	glog.Fatal("Error starting server", "err",
 		http.ListenAndServe(
 			server.config.WebServer.ListenAddress, server.Handler,
 		),
