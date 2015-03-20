@@ -3,7 +3,6 @@ package providers
 import (
 	"fmt"
 	"io/ioutil"
-	"math/rand"
 	"net/http"
 	"strings"
 	"time"
@@ -27,18 +26,19 @@ func (pr ProviderRegistry) Search(showname string, season, epnum int64) []Provid
 
 // ProviderResult describes the information that Providers will return from searches
 type ProviderResult struct {
-	Type         string     `json:"type"`
-	Age          *time.Time `json:"age,omitempty"` //hours
-	Name         string     `json:"name"`
-	Size         int64      `json:"size"`
-	Quality      string     `json:"quality"`
-	ProviderName string     `json:"indexer"`
-	URL          string     `json:"url"`
-	Seeders      int64      `json:"seeders"`
-	TVRageID     int64      `json:"tvrage_id"`
-	TVDBID       int64      `json:"tvdb_id"`
-	Season       string     `json:"season"`
-	Episode      string     `json:"episode"`
+	Type         ProviderType `json:"type"`
+	Age          *time.Time   `json:"age,omitempty"` //hours
+	Name         string       `json:"name"`
+	Size         int64        `json:"size"`
+	Quality      string       `json:"quality"`
+	ProviderName string       `json:"indexer"`
+	URL          string       `json:"url"`
+	Seeders      int64        `json:"seeders"`
+	TVRageID     int64        `json:"tvrage_id"`
+	TVDBID       int64        `json:"tvdb_id"`
+	Season       string       `json:"season"`
+	Episode      string       `json:"episode"`
+	Anime        bool         `json:"anime"`
 }
 
 // Provider defines the interface a tv2go provider must implement
@@ -101,12 +101,6 @@ func (b *BaseProvider) GetURL(u string) (string, []byte, error) {
 		return filename, content, err
 	}
 	return filename, content, nil
-}
-
-func (p *BaseProvider) AfterWithJitter(d time.Duration) <-chan time.Time {
-	s := d + time.Duration(rand.Int63n(60))*time.Second
-	fmt.Printf("%v\n", s)
-	return p.after(d)
 }
 
 // TorrentProvider is the base type for Torrent based providers

@@ -2,6 +2,9 @@ package naming
 
 import "github.com/kyoh86/go-pcre"
 
+// AllRegexes is exactly what it sounds like.
+var AllRegexes = append(StandardRegexes, AnimeRegex...)
+
 // NameRegexes is a list of Regular Expressions to try in order when trying to
 // extract information from a filename.
 var StandardRegexes = []NameRegex{

@@ -103,6 +103,16 @@ type ParseResult struct {
 	RegexUsed              string
 }
 
+func (r *ParseResult) FirstEpisode() int64 {
+	if len(r.EpisodeNumbers) > 0 {
+		return r.EpisodeNumbers[0]
+	}
+	if len(r.AbsoluteEpisodeNumbers) > 0 {
+		return r.AbsoluteEpisodeNumbers[0]
+	}
+	return 0
+}
+
 type byScore []ParseResult
 
 func (a byScore) Len() int           { return len(a) }
@@ -110,14 +120,12 @@ func (a byScore) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a byScore) Less(i, j int) bool { return a[i].Score < a[j].Score }
 
 type NameParser struct {
-	FileName string
-	Regexes  []NameRegex
+	Regexes []NameRegex
 }
 
-func NewNameParser(filename string, regexes []NameRegex) *NameParser {
+func NewNameParser(regexes []NameRegex) *NameParser {
 	return &NameParser{
-		FileName: filename,
-		Regexes:  regexes,
+		Regexes: regexes,
 	}
 }
 
@@ -259,7 +267,7 @@ func (np *NameParser) Parse(name string) ParseResult {
 // Parse tries to extract show and episode information from a file path. It
 // considers both the filename and directory when trying to extract information
 func (np *NameParser) ParseFile(name string) ParseResult {
-	glog.Info("Parsing string '%s' for show information")
+	glog.Infof("Parsing string '%s' for show information", name)
 	dirName, fileName := filepath.Split(name)
 	fileName = stripExtension(fileName)
 	dirNameBase := filepath.Base(dirName)

@@ -24,7 +24,7 @@ type Daemon struct {
 	DBH                *db.Handle
 	Indexers           indexers.IndexerRegistry
 	Providers          providers.ProviderRegistry
-	ExceptionProviders map[string]*nameexception.Provider
+	ExceptionProviders map[string]nameexception.Provider
 	Storage            *storage.Broker
 	shutdownChan       chan (int)
 }
@@ -66,14 +66,10 @@ func NewDaemon(cfg *config.Config) *Daemon {
 	}
 	d.Storage = broker
 
-	d.ExceptionProviders = map[string]*nameexception.Provider{
-		"tvdb": nameexception.NewProvider(
-			"tvdb",
-			"tvdb",
-			"https://midgetspy.github.io/sb_tvdb_scene_exceptions/exceptions.txt",
-			time.Hour*24,
-			d.DBH,
-		),
+	d.ExceptionProviders = map[string]nameexception.Provider{
+		"tvdb":        nameexception.NewMidgetSpyTvdb(d.DBH),
+		"thexem_tvdb": nameexception.NewXem(d.DBH, "tvdb"),
+		"thexem_rage": nameexception.NewXem(d.DBH, "rage"),
 	}
 
 	return d
@@ -82,7 +78,8 @@ func NewDaemon(cfg *config.Config) *Daemon {
 func (d *Daemon) Run() {
 	exitChan := make(chan int)
 	for _, ep := range d.ExceptionProviders {
-		go ep.Poll(exitChan)
+		poller := nameexception.NewProviderPoller(ep, time.Hour*24, d.DBH)
+		go poller.Poll(exitChan)
 	}
 
 	go d.ShowUpdater()
@@ -145,21 +142,31 @@ func (d *Daemon) PollProviders() {
 	for {
 		select {
 		case resp := <-respChan:
-			d.ProcessProviderResult(resp)
+			err := d.ProcessProviderResult(resp)
+			if err != nil {
+				glog.Error(err.Error())
+			}
 		}
 	}
 }
 
-func (d *Daemon) matchShowName(name string) (*db.Show, error) {
+func (d *Daemon) matchShowName(name string) (*db.Show, int64, error) {
 	glog.Infof("Trying to match provider result %s", name)
 
 	glog.Infof("Trying to find an exact match in the database for %s", name)
 	dbshow, err := d.DBH.GetShowByName(name)
 	if err == nil {
 		glog.Infof("Matched name %s to show %s", name, dbshow.Name)
-		return dbshow, nil
+		return dbshow, -1, nil
 	}
-	glog.Infof("Couldn't find show with name %s in database.", name)
+	glog.Infof("Couldn't find show with exact name %s in database.", name)
+
+	dbshow, season, err := d.DBH.GetShowAndSeasonFromXEMName(name)
+	if err == nil {
+		glog.Infof("Matched name %s to show %s", name, dbshow.Name)
+		return dbshow, season, nil
+	}
+	glog.Info("Couldn't find show with XEM Exception in database.")
 
 	sceneName := naming.FullSanitizeSceneName(name)
 	glog.Infof("Converting name '%s' to scene name '%s'", name, sceneName)
@@ -167,36 +174,49 @@ func (d *Daemon) matchShowName(name string) (*db.Show, error) {
 	dbshow, err = d.DBH.GetShowFromNameException(sceneName)
 	if err == nil {
 		glog.Infof("Matched provider result %s to show %s", sceneName, dbshow.Name)
-		return dbshow, nil
+		return dbshow, -1, nil
 	}
 	glog.Infof("Couldn't find a match scene name %s", sceneName)
 
-	return nil, fmt.Errorf("Couldn't find a match for show %s", name)
+	return nil, -1, fmt.Errorf("Couldn't find a match for show %s", name)
 }
 
-func (d *Daemon) ProcessProviderResult(r providers.ProviderResult) {
-	np := naming.NewNameParser("", naming.StandardRegexes)
+func (d *Daemon) ProcessProviderResult(r providers.ProviderResult) error {
+	var np *naming.NameParser
+	if r.Anime {
+		np = naming.NewNameParser(naming.AnimeRegex)
+	} else {
+		np = naming.NewNameParser(naming.StandardRegexes)
+	}
 	pr := np.Parse(r.Name)
 
 	//TODO: make this work with more kinds of episodes:
-	if len(pr.EpisodeNumbers) == 0 {
-		glog.Infof("Provider result %s had no episodes, skipping", pr.OriginalName)
-		return
+	if len(pr.EpisodeNumbers) == 0 && len(pr.AbsoluteEpisodeNumbers) == 0 {
+		return fmt.Errorf("Provider result %s had no episodes, skipping", pr.OriginalName)
 	}
 
-	dbshow, err := d.matchShowName(pr.SeriesName)
+	dbshow, season, err := d.matchShowName(pr.SeriesName)
 
 	if err != nil {
-		return
+		return fmt.Errorf("Couldn't match '%s' to any known show name: %s", pr.SeriesName, err)
 	}
 
-	ep, err := d.DBH.GetEpisodeByShowSeasonAndNumber(dbshow.ID, pr.SeasonNumber, pr.EpisodeNumbers[0])
-	if err != nil {
-		glog.Errorf("Can't find episode in DB Show: %s S%dE%d", dbshow.Name, pr.SeasonNumber, pr.EpisodeNumbers[0])
-		return
+	if season > -1 {
+		pr.SeasonNumber = season
 	}
+
+	ep, err := d.DBH.GetEpisodeByShowSeasonAndNumber(dbshow.ID, pr.SeasonNumber, pr.FirstEpisode())
+	if err != nil {
+		return fmt.Errorf("Can't find episode in DB Show: %s S%dE%d: %s", dbshow.Name, pr.SeasonNumber, pr.FirstEpisode(), err)
+	}
+
+	glog.Infof("Found matching episode in db: %s S%dE%d: %s", dbshow.Name, pr.SeasonNumber, pr.FirstEpisode(), ep.Name)
 	// Don't like this, super fragile
-	p := d.Providers[r.ProviderName]
+	p, ok := d.Providers[r.ProviderName]
+	if !ok {
+		return fmt.Errorf("This daemon doesn't know about provider %s, skipping", r.ProviderName)
+	}
+
 	if ep.Status == types.WANTED {
 		destPath := ""
 		switch p.Type() {
@@ -205,13 +225,11 @@ func (d *Daemon) ProcessProviderResult(r providers.ProviderResult) {
 		}
 		filename, filecont, err := p.GetURL(r.URL)
 		if err != nil {
-			glog.Errorf("Couldn't download %s: %s", r.URL, err)
-			return
+			return fmt.Errorf("Couldn't download %s: %s", r.URL, err)
 		}
 		fname, err := d.Storage.SaveToFile(destPath, filename, filecont)
 		if err != nil {
-			glog.Errorf("Error saving file to %s: %s", fname, err)
-			return
+			return fmt.Errorf("Error saving file to %s: %s", fname, err)
 		}
 		ep.Status = types.SNATCHED
 		err = d.DBH.SaveEpisode(ep)
@@ -219,5 +237,5 @@ func (d *Daemon) ProcessProviderResult(r providers.ProviderResult) {
 			glog.Errorf("Error saving episode %s: %s", ep.Name, err)
 		}
 	}
-	return
+	return nil
 }

@@ -25,7 +25,7 @@ func TestMediaFile(t *testing.T) {
 func TestNameParse(t *testing.T) {
 	RegisterTestingT(t)
 
-	np := NewNameParser("foo", StandardRegexes)
+	np := NewNameParser(StandardRegexes)
 	names := [][]string{
 		[]string{"Worlds.Toughest.Jobs.S01E04.Cattle.Ranching.HDTV.x264-C4TV", "Worlds.Toughest.Jobs", "1", "4"},
 		[]string{"The.Flash.2014.S01E15.HDTV.x264-LOL", "The.Flash.2014", "1", "15"},
@@ -42,7 +42,7 @@ func TestNameParse(t *testing.T) {
 func TestNameParser(t *testing.T) {
 	RegisterTestingT(t)
 
-	np := NewNameParser("foo", StandardRegexes)
+	np := NewNameParser(StandardRegexes)
 	names := []string{
 		"TV/Archer (2009)/Season 04/Archer (2009) - S04E12 - Sea Tunt (1) - HD TV.mkv",
 		"TV/Archer (2009)/Season 04/Archer (2009) - S04E13 - Sea Tunt (2) - HD TV.mkv",

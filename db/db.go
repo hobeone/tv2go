@@ -84,6 +84,28 @@ func (e *NameException) BeforeSave() error {
 	return nil
 }
 
+// XEMException maps alternate names to season numbers.
+type XEMException struct {
+	ID        int64
+	Indexer   string
+	IndexerID int64
+	Name      string
+	Season    int64
+}
+
+func (x *XEMException) BeforeSave() error {
+	if x.Indexer == "" {
+		return fmt.Errorf("XEMException Indexer can't be blank")
+	}
+	if x.IndexerID == 0 {
+		return fmt.Errorf("XEMException IndexerID can't be blank")
+	}
+	if x.Name == "" {
+		return fmt.Errorf("XEMException Name can't be blank")
+	}
+	return nil
+}
+
 // LastPollTime stores the last time we polled a particular
 // provider.
 type LastPollTime struct {
@@ -108,6 +130,9 @@ func (s *Show) BeforeSave() error {
 	if s.Indexer == "" {
 		return fmt.Errorf("Indexer must be set")
 	}
+	if s.DefaultEpStatus == types.UNKNOWN {
+		s.DefaultEpStatus = types.IGNORED
+	}
 	return nil
 }
 
@@ -116,6 +141,9 @@ func (s *Show) AfterFind() error {
 	s.LastIndexerUpdate = s.LastIndexerUpdate.UTC()
 	s.CreatedAt = s.CreatedAt.UTC()
 	s.UpdatedAt = s.UpdatedAt.UTC()
+	if s.DefaultEpStatus == types.UNKNOWN {
+		s.DefaultEpStatus = types.IGNORED
+	}
 	return nil
 }
 
@@ -166,11 +194,9 @@ func (e *Episode) BeforeSave() error {
 	if e.Episode == 0 {
 		return errors.New("Episode must be set")
 	}
-
 	if e.Status == types.UNKNOWN {
-		return errors.New("Status must be set")
+		e.Status = types.IGNORED
 	}
-
 	return nil
 }
 
@@ -200,7 +226,7 @@ type Handle struct {
 func setupDB(db gorm.DB) error {
 	tx := db.Begin()
 	err := tx.AutoMigrate(&Show{}, &Episode{}, &quality.QualityGroup{},
-		&NameException{}, &LastPollTime{}).Error
+		&NameException{}, &LastPollTime{}, &XEMException{}).Error
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -450,7 +476,23 @@ func (h *Handle) GetLastPollTime(name string) time.Time {
 	return se.LastRefreshed
 }
 
+func (h *Handle) GetShowAndSeasonFromXEMName(name string) (*Show, int64, error) {
+	xem := &XEMException{}
+	err := h.db.Where("name = ? COLLATE NOCASE", name).Find(xem).Error
+	if err != nil {
+		return nil, -1, err
+	}
+
+	show, err := h.GetShowByIndexerAndID(xem.Indexer, xem.IndexerID)
+	if err != nil {
+		return nil, -1, err
+	}
+	return show, xem.Season, nil
+
+}
+
 func (h *Handle) GetShowFromNameException(name string) (*Show, error) {
+
 	ne := &NameException{}
 	err := h.db.Where("name = ? COLLATE NOCASE", name).Find(ne).Error
 	if err != nil {
@@ -481,7 +523,30 @@ func (h *Handle) SaveNameExceptions(source string, excepts []*NameException) err
 			}
 		}
 		tx.Commit()
-		h.SetLastPollTime(source)
+	}
+	return nil
+}
+
+// SaveXEMException saves a list of exceptions for the given indexer,
+// overwriting all exceptions for that indexer.
+func (h *Handle) SaveXEMExceptions(indexer string, excepts []*XEMException) error {
+	if h.writeUpdates {
+		tx := h.db.Begin()
+		err := tx.Where("indexer = ?", indexer).Delete(XEMException{}).Error
+		if err != nil {
+			glog.Errorf("Couldn't delete old XEM exceptions for %s: %s", indexer, err)
+			tx.Rollback()
+			return err
+		}
+		for _, e := range excepts {
+			err := tx.Save(e).Error
+			if err != nil {
+				glog.Errorf("Error saving exceptions to the database: %s", err.Error())
+				tx.Rollback()
+				return err
+			}
+		}
+		tx.Commit()
 	}
 	return nil
 }
@@ -623,12 +688,13 @@ func LoadFixtures(t TestReporter, d *Handle) []Show {
 					Location: "testdata/show1",
 				},
 				{
-					Name:    "show2episode2",
-					Season:  2,
-					Episode: 1,
-					AirDate: time.Date(2002, time.February, 1, 0, 0, 0, 0, time.UTC),
-					Status:  types.WANTED,
-					Quality: quality.UNKNOWN,
+					Name:           "show2episode2",
+					Season:         2,
+					Episode:        1,
+					AbsoluteNumber: 2,
+					AirDate:        time.Date(2002, time.February, 1, 0, 0, 0, 0, time.UTC),
+					Status:         types.WANTED,
+					Quality:        quality.UNKNOWN,
 				},
 			},
 		},

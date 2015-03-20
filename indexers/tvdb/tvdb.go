@@ -13,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang/glog"
 	"github.com/hobeone/tv2go/db"
+	"github.com/hobeone/tv2go/types"
 	tvd "github.com/hobeone/tvdb"
 )
 
@@ -181,6 +182,10 @@ func (t *TvdbIndexer) UpdateShow(dbshow *db.Show, episodes []db.Episode) error {
 			glog.Infof("tvdb: found new episode for show %s, S%d E%d", dbshow.Name, episode.SeasonNumber, episode.EpisodeNumber)
 		}
 		updateDbEpisodeFromTvdb(&epToUpdate, &episode)
+
+		if epToUpdate.Status == types.UNKNOWN {
+			epToUpdate.Status = dbshow.DefaultEpStatus
+		}
 
 		if epToUpdate.ID == 0 {
 			dbshow.Episodes = append(dbshow.Episodes, epToUpdate)

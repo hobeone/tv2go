@@ -170,6 +170,7 @@ const EpisodeGolden = `{
 	"name": "show1episode1",
 	"season": 1,
 	"episode": 1,
+  "absolute_episode": 0,
 	"airdate": "2006-01-01",
 	"description": "",
 	"file_size": 0,

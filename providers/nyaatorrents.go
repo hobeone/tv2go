@@ -17,7 +17,7 @@ type NyaaTorrents struct {
 	TorrentProvider
 }
 
-// NewNzbsOrg creates a new nzbs.org client
+// NewNyaaTorrents creates a new nzbs.org client
 func NewNyaaTorrents(options ...func(*NyaaTorrents)) *NyaaTorrents {
 	n := &NyaaTorrents{
 		URL: "http://www.nyaa.se/",
@@ -45,18 +45,33 @@ func getMetadata(desc string) map[string]string {
 	return result
 }
 
+// GetNewItems scans the RSS feed for all new items.
+func (n *NyaaTorrents) GetNewItems() ([]ProviderResult, error) {
+	u := url.Values{}
+	u.Add("page", "rss")
+	u.Add("sort", "1")    // descending by seeders
+	u.Add("cats", "1_37") // eng translated anime
+
+	return n.getRss(u)
+}
+
+// TvSearch searchs for a particular show
 func (n *NyaaTorrents) TvSearch(showName string, season, ep int64) ([]ProviderResult, error) {
 	u := url.Values{}
 	u.Add("page", "rss")
 	u.Add("term", showName)
 	u.Add("sort", "2")    // descending by seeders
 	u.Add("cats", "1_37") // eng translated anime
+	return n.getRss(u)
+}
+
+func (n *NyaaTorrents) getRss(u url.Values) ([]ProviderResult, error) {
 	urlStr := u.Encode()
 
 	queryURL, _ := url.Parse(n.URL)
 	queryURL.RawQuery = urlStr
 
-	glog.Infof("Searching NyaaTorrents with %s", queryURL.String())
+	glog.Infof("Getting new items from nyaatorrents with %s", queryURL.String())
 	resp, err := n.Client.Get(queryURL.String())
 	if err != nil {
 		glog.Errorf("Error searching nyaaTorrents: %s", err)
@@ -99,15 +114,12 @@ func (n *NyaaTorrents) TvSearch(showName string, season, ep int64) ([]ProviderRe
 			Size:         int64(bytes),
 			Seeders:      seeders,
 			Age:          parsedTime,
-			Type:         n.Type().String(),
+			Type:         n.Type(),
 			ProviderName: n.Name(),
+			Anime:        true,
 		}
 	}
 
 	return results, nil
-}
 
-// GetNewItems scans the RSS feed for all new items.
-func (n *NyaaTorrents) GetNewItems() ([]ProviderResult, error) {
-	return []ProviderResult{}, nil
 }

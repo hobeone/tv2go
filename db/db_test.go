@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/hobeone/tv2go/quality"
-	"github.com/hobeone/tv2go/types"
 	. "github.com/onsi/gomega"
 )
 
@@ -73,12 +72,6 @@ func TestEpisodeValidations(t *testing.T) {
 	dbep.Episode = 0
 	err = d.SaveEpisode(dbep)
 	Expect(err).To(MatchError("Episode must be set"))
-
-	dbep, _ = d.GetEpisodeByID(1)
-	dbep.Status = types.UNKNOWN
-	err = d.SaveEpisode(dbep)
-	Expect(err).To(MatchError("Status must be set"))
-
 }
 
 func TestAddShow(t *testing.T) {

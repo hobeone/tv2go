@@ -108,7 +108,7 @@ func (server *Server) Postprocess(c *gin.Context) {
 
 	goodresults := []naming.ParseResult{}
 
-	np := naming.NewNameParser("", naming.StandardRegexes)
+	np := naming.NewNameParser(naming.AllRegexes)
 	for _, file := range mediaFiles {
 		writeAndFlush(c, "Trying to parse %s", file)
 		nameres := np.ParseFile(file)
@@ -117,7 +117,7 @@ func (server *Server) Postprocess(c *gin.Context) {
 			continue
 		}
 		if len(nameres.AbsoluteEpisodeNumbers) == 0 && len(nameres.EpisodeNumbers) == 0 {
-			writeAndFlush(c, "Could parse episode numbers from '%s'", reqJSON.Path)
+			writeAndFlush(c, "Couldn't parse episode numbers from '%s'", reqJSON.Path)
 			continue
 		}
 		writeAndFlush(c, "Parsed to %+v", nameres)
@@ -135,12 +135,12 @@ func (server *Server) Postprocess(c *gin.Context) {
 			continue
 		}
 
-		epnum := res.EpisodeNumbers[0]
+		epnum := res.FirstEpisode()
 		dbep, err := server.dbHandle.GetEpisodeByShowSeasonAndNumber(
 			dbshow.ID, res.SeasonNumber, epnum)
 
 		if err != nil {
-			writeAndFlush(c, "Could find an season/episode for %d, %v, %v", dbshow.ID, res.SeasonNumber, epnum)
+			writeAndFlush(c, "Couldn't find an season/episode for %d, %v, %v", dbshow.ID, res.SeasonNumber, epnum)
 			continue
 		}
 
