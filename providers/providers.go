@@ -94,6 +94,7 @@ func (b *BaseProvider) GetURL(u string) (string, []byte, error) {
 			filename = strings.Split(res, "=")[1]
 		}
 	}
+	filename = strings.Trim(filename, "\"")
 
 	defer resp.Body.Close()
 	content, err := ioutil.ReadAll(resp.Body)

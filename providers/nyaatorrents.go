@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/dustin/go-humanize"
@@ -59,7 +60,7 @@ func (n *NyaaTorrents) GetNewItems() ([]ProviderResult, error) {
 func (n *NyaaTorrents) TvSearch(showName string, season, ep int64) ([]ProviderResult, error) {
 	u := url.Values{}
 	u.Add("page", "rss")
-	u.Add("term", showName)
+	u.Add("term", strings.Join([]string{showName, strconv.FormatInt(ep, 10)}, " "))
 	u.Add("sort", "2")    // descending by seeders
 	u.Add("cats", "1_37") // eng translated anime
 	return n.getRss(u)
