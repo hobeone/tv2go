@@ -1,5 +1,5 @@
 # tv2go
-Workalike to Sonarr ad Sickbeard - mostly to learn Go better
+Workalike to [Sonarr](https://sonarr.tv/) and [Sickbeard](http://sickbeard.com/) - mostly to learn Go better
 
 https://godoc.org/github.com/hobeone/tv2go
 
