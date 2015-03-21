@@ -1,6 +1,6 @@
 package naming
 
-import "github.com/kyoh86/go-pcre"
+import "github.com/hobeone/go-pcre"
 
 // AllRegexes is exactly what it sounds like.
 var AllRegexes = append(StandardRegexes, AnimeRegex...)
