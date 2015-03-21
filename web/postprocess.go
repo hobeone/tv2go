@@ -23,23 +23,15 @@ func writeAndFlush(c *gin.Context, str string, args ...interface{}) {
 	c.Writer.Flush()
 }
 
-func (server *Server) getShowFromName(c *gin.Context, name string) (*db.Show, error) {
-	cleanedName := naming.CleanSeriesName(name)
-	dbshow, err := server.dbHandle.GetShowByName(cleanedName)
+func (server *Server) getShowFromName(c *gin.Context, name string) (*db.Show, int64, error) {
+	dbshow, season, err := server.dbHandle.GetShowByAllNames(name)
 	if err == nil {
-		writeAndFlush(c, "Found show with name %s in database.")
-		return dbshow, nil
+		writeAndFlush(c, "Found show with name %s in database.", dbshow.Name)
+		return dbshow, season, nil
 	}
-	writeAndFlush(c, "Couldn't find show with name in db: '%s'.", cleanedName)
+	writeAndFlush(c, "Couldn't find show with name in db: '%s'.", name)
 
-	sceneName := naming.FullSanitizeSceneName(cleanedName)
-	writeAndFlush(c, "Trying to find match in Name Exceptions for %s", sceneName)
-	dbshow, err = server.dbHandle.GetShowFromNameException(sceneName)
-	if err == nil {
-		writeAndFlush(c, "Matched %s to database show %s", sceneName, dbshow.Name)
-		return dbshow, nil
-	}
-
+	sceneName := naming.FullSanitizeSceneName(name)
 	writeAndFlush(c, "Couldn't find show in exception list")
 
 	writeAndFlush(c, "Searching indexers for %s", sceneName)
@@ -62,10 +54,10 @@ func (server *Server) getShowFromName(c *gin.Context, name string) (*db.Show, er
 			//if dbshow.IndexerID != show.IndexerID {
 			//	writeAndFlush(c, "Indexer id for dbshow and indexer result differ (%d != %d), skipping.", dbshow.IndexerID, show.IndexerID)
 			//}
-			return dbshow, nil
+			return dbshow, -1, nil
 		}
 	}
-	return nil, fmt.Errorf("Couldn't match %s with any known show", name)
+	return nil, -1, fmt.Errorf("Couldn't match %s with any known show", name)
 }
 
 // Postprocess takes the given path, tries to match it with a show and episode
@@ -129,7 +121,10 @@ func (server *Server) Postprocess(c *gin.Context) {
 	}
 
 	for _, res := range goodresults {
-		dbshow, err := server.getShowFromName(c, res.SeriesName)
+		dbshow, season, err := server.getShowFromName(c, res.SeriesName)
+		if season > -1 {
+			res.SeasonNumber = season
+		}
 		if err != nil {
 			writeAndFlush(c, "Couldn't find show with name: '%s'.", res.SeriesName)
 			continue

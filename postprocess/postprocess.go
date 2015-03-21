@@ -10,23 +10,38 @@ import (
 	"os"
 	"strings"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/golang/glog"
+	"github.com/jacobstr/confer"
 )
 
 func main() {
-	flag.Set("alsologtostderr", "true")
-	if len(os.Args) < 2 {
-		glog.Fatalf("Too few arguments given")
-	}
+	config := confer.NewConfig()
+	config.ReadPaths("config.yaml")
+	config.SetDefault("app.host", "localhost")
+	spew.Dump(config.GetString("app.host"))
+	spew.Dump(config.GetString("app.port"))
 
 	glog.Infof("Got arguments: %v", os.Args)
 
+	serverURL := url.URL{
+		Scheme: "http",
+		Host:   fmt.Sprintf("%s:%s", config.GetString("app.host"), config.GetString("app.port")),
+		Path:   "/api/1/postprocess",
+	}
+
+	flag.Set("logtostderr", "true")
+	if len(os.Args) < 2 {
+		fmt.Println("Too few arguments given")
+		os.Exit(1)
+	}
 	formVals := url.Values{
 		"path":   {os.Args[1]},
 		"source": {""},
 	}
 
-	req, err := http.NewRequest("POST", "http://localhost:9001/api/1/postprocess", strings.NewReader(formVals.Encode()))
+	req, err := http.NewRequest("POST", serverURL.String(),
+		strings.NewReader(formVals.Encode()))
 	if err != nil {
 		glog.Fatalf("Error creating request: %s", err)
 	}

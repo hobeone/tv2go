@@ -150,37 +150,6 @@ func (d *Daemon) PollProviders() {
 	}
 }
 
-func (d *Daemon) matchShowName(name string) (*db.Show, int64, error) {
-	glog.Infof("Trying to match provider result %s", name)
-
-	glog.Infof("Trying to find an exact match in the database for %s", name)
-	dbshow, err := d.DBH.GetShowByName(name)
-	if err == nil {
-		glog.Infof("Matched name %s to show %s", name, dbshow.Name)
-		return dbshow, -1, nil
-	}
-	glog.Infof("Couldn't find show with exact name %s in database.", name)
-
-	dbshow, season, err := d.DBH.GetShowAndSeasonFromXEMName(name)
-	if err == nil {
-		glog.Infof("Matched name %s to show %s", name, dbshow.Name)
-		return dbshow, season, nil
-	}
-	glog.Info("Couldn't find show with XEM Exception in database.")
-
-	sceneName := naming.FullSanitizeSceneName(name)
-	glog.Infof("Converting name '%s' to scene name '%s'", name, sceneName)
-
-	dbshow, err = d.DBH.GetShowFromNameException(sceneName)
-	if err == nil {
-		glog.Infof("Matched provider result %s to show %s", sceneName, dbshow.Name)
-		return dbshow, -1, nil
-	}
-	glog.Infof("Couldn't find a match scene name %s", sceneName)
-
-	return nil, -1, fmt.Errorf("Couldn't find a match for show %s", name)
-}
-
 func (d *Daemon) ProcessProviderResult(r providers.ProviderResult) error {
 	var np *naming.NameParser
 	if r.Anime {
@@ -195,7 +164,7 @@ func (d *Daemon) ProcessProviderResult(r providers.ProviderResult) error {
 		return fmt.Errorf("Provider result %s had no episodes, skipping", pr.OriginalName)
 	}
 
-	dbshow, season, err := d.matchShowName(pr.SeriesName)
+	dbshow, season, err := d.DBH.GetShowByAllNames(pr.SeriesName)
 
 	if err != nil {
 		return fmt.Errorf("Couldn't match '%s' to any known show name: %s", pr.SeriesName, err)
