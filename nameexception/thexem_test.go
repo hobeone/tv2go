@@ -18,7 +18,7 @@ func TestXEM(t *testing.T) {
 	srv, client := test_helpers.ServeFile(200, string(content), "application/json")
 	defer srv.Close()
 
-	xem := NewXem(d, "tvdb")
+	xem := NewXEM(d, "tvdb")
 	xem.client = client
 	xem.url = "http://test"
 
@@ -42,7 +42,7 @@ func TestXEMRage(t *testing.T) {
 	srv, client := test_helpers.ServeFile(200, string(content), "application/json")
 	defer srv.Close()
 
-	xem := NewXem(d, "rage")
+	xem := NewXEM(d, "rage")
 	xem.client = client
 	xem.url = "http://test"
 

@@ -37,7 +37,6 @@ func setupDB(db gorm.DB) error {
 		&quality.QualityGroup{},
 		&NameException{},
 		&LastPollTime{},
-		&XEMException{},
 	).Error
 	if err != nil {
 		tx.Rollback()

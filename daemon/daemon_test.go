@@ -19,8 +19,9 @@ func TestProcessProviderResult(t *testing.T) {
 
 	db.LoadFixtures(t, d.DBH)
 
-	d.DBH.SaveXEMExceptions("tvdb", []*db.XEMException{
-		&db.XEMException{
+	d.DBH.SaveNameExceptions("xem_tvdb", []*db.NameException{
+		&db.NameException{
+			Source:    "xem_tvdb",
 			Indexer:   "tvdb",
 			IndexerID: 2,
 			Name:      "Yowamushi Pedal - Grande Road",

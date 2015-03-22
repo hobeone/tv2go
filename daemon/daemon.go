@@ -29,6 +29,7 @@ type Daemon struct {
 	shutdownChan       chan (int)
 }
 
+//NewDaemon creates a new Daemon using the given config.
 func NewDaemon(cfg *config.Config) *Daemon {
 	var dbh *db.Handle
 	if cfg.DB.Type == "memory" {
@@ -68,13 +69,14 @@ func NewDaemon(cfg *config.Config) *Daemon {
 
 	d.ExceptionProviders = map[string]nameexception.Provider{
 		"tvdb":        nameexception.NewMidgetSpyTvdb(d.DBH),
-		"thexem_tvdb": nameexception.NewXem(d.DBH, "tvdb"),
-		"thexem_rage": nameexception.NewXem(d.DBH, "rage"),
+		"thexem_tvdb": nameexception.NewXEM(d.DBH, "tvdb"),
+		"thexem_rage": nameexception.NewXEM(d.DBH, "rage"),
 	}
 
 	return d
 }
 
+// Run will start the daemon which will run forever.
 func (d *Daemon) Run() {
 	exitChan := make(chan int)
 	for _, ep := range d.ExceptionProviders {
@@ -134,6 +136,8 @@ func (d *Daemon) ShowUpdater() {
 	}
 }
 
+// PollProviders sets up goroutines that poll the configured providers on a set
+// interval.  It then listens for new results and sends them for processing.
 func (d *Daemon) PollProviders() {
 	respChan := make(chan (providers.ProviderResult))
 	for _, p := range d.Providers {
@@ -150,6 +154,10 @@ func (d *Daemon) PollProviders() {
 	}
 }
 
+// ProcessProviderResult takes a ProviderResult parses the name and sees if
+// there it matches a show we are interested in.  If so it will try to download
+// the url for that episode and send it to the right handler for that file
+// type.
 func (d *Daemon) ProcessProviderResult(r providers.ProviderResult) error {
 	var np *naming.NameParser
 	if r.Anime {

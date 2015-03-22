@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/golang/glog"
-	"github.com/hobeone/tv2go/naming"
 	"github.com/hobeone/tv2go/quality"
 	"github.com/hobeone/tv2go/types"
 )
@@ -151,22 +150,12 @@ func (h *Handle) GetShowByAllNames(name string) (*Show, int64, error) {
 	}
 	glog.Infof("Couldn't find show with exact name %s in database.", name)
 
-	dbshow, season, err := h.GetShowAndSeasonFromXEMName(name)
+	dbshow, season, err := h.GetShowFromNameException(name)
 	if err == nil {
-		glog.Infof("Matched name %s to show %s", name, dbshow.Name)
+		glog.Infof("Matched provider result %s to show %s", name, dbshow.Name)
 		return dbshow, season, nil
 	}
-	glog.Info("Couldn't find show with XEM Exception in database.")
-
-	sceneName := naming.FullSanitizeSceneName(name)
-	glog.Infof("Converting name '%s' to scene name '%s'", name, sceneName)
-
-	dbshow, err = h.GetShowFromNameException(sceneName)
-	if err == nil {
-		glog.Infof("Matched provider result %s to show %s", sceneName, dbshow.Name)
-		return dbshow, -1, nil
-	}
-	glog.Infof("Couldn't find a match scene name %s", sceneName)
+	glog.Infof("Couldn't find a match scene name %s", name)
 
 	return nil, -1, fmt.Errorf("Couldn't find a match for show %s", name)
 }
