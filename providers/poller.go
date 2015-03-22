@@ -7,6 +7,8 @@ import (
 	"github.com/hobeone/tv2go/db"
 )
 
+// ProviderPoller wraps the functionality to poll a Provider on a given
+// interval.
 type ProviderPoller struct {
 	Interval     time.Duration
 	ResponseChan chan (ProviderResult)
@@ -16,6 +18,7 @@ type ProviderPoller struct {
 	after        func(time.Duration) <-chan time.Time // Allow for mocking out in test.
 }
 
+//NewProviderPoller returns a new configured ProviderPoller ready to use.
 func NewProviderPoller(p Provider, interval time.Duration, dbh *db.Handle, respChan chan (ProviderResult)) *ProviderPoller {
 	return &ProviderPoller{
 		Interval:     interval,

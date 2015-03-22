@@ -6,7 +6,6 @@ import (
 
 	"github.com/golang/glog"
 	"github.com/hobeone/tv2go/naming"
-	"github.com/jinzhu/gorm"
 )
 
 // NameException stores alternate names of shows to use when parsing input files.
@@ -42,25 +41,25 @@ func (e *NameException) BeforeSave() error {
 //a known Name Exception.  If found it will then try to match that to a Show by
 //matching the indexer and indexerid.
 func (h *Handle) GetShowFromNameException(name string) (*Show, int64, error) {
-	ne := &NameException{}
+	ne := &[]NameException{}
 	err := h.db.Where("name = ? COLLATE NOCASE", name).Find(ne).Error
-	if err != nil && err != gorm.RecordNotFound {
-		return nil, -1, err
-	}
-
-	sceneName := naming.FullSanitizeSceneName(name)
-	glog.Infof("searching for name '%s' with scene name '%s'", name, sceneName)
-
-	err = h.db.Where("name = ? COLLATE NOCASE", name).Find(ne).Error
 	if err != nil {
-		return nil, -1, err
-	}
+		ne = &[]NameException{}
+		sceneName := naming.FullSanitizeSceneName(name)
+		glog.Infof("searching for name '%s' with scene name '%s'", name, sceneName)
 
-	show, err := h.GetShowByIndexerAndID(ne.Indexer, ne.IndexerID)
-	if err != nil {
-		return nil, -1, err
+		err = h.db.Where("name = ? COLLATE NOCASE", name).Find(ne).Error
+		if err != nil {
+			return nil, -1, err
+		}
 	}
-	return show, ne.Season, nil
+	for _, exp := range *ne {
+		show, err := h.GetShowByIndexerAndID(exp.Indexer, exp.IndexerID)
+		if err == nil {
+			return show, exp.Season, nil
+		}
+	}
+	return nil, -1, fmt.Errorf("Couldn't find matching show for %s", name)
 }
 
 //SaveNameExceptions saves all the given exceptions, totally replacing the

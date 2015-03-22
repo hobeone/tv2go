@@ -1,6 +1,7 @@
 package daemon
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -199,6 +200,12 @@ func (d *Daemon) ProcessProviderResult(r providers.ProviderResult) error {
 		switch p.Type() {
 		case providers.NZB:
 			destPath = d.Config.Storage.NZBBlackhole
+		case providers.TORRENT:
+			destPath = d.Config.Storage.TorrentBlackhole
+		default:
+			e := fmt.Sprintf("Unknown provider type %s for %s", p.Type(), r.ProviderName)
+			glog.Error(e)
+			return errors.New(e)
 		}
 		filename, filecont, err := p.GetURL(r.URL)
 		if err != nil {
