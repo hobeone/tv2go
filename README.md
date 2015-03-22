@@ -20,6 +20,10 @@ You can add shows, get information from tvdb and tvrage, manually search for epi
 ## Install instructions:
 
 ```
+- A working go install (1.4+)
+- libpcre development files
+- For Debian/Ubuntu: apt-get install libpcre3-dev
+
 go get -t github.com/hobeone/tv2go
 
 cd $GOPATH/src/github.com/hobeone/tv2go/
